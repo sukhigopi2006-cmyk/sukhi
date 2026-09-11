@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>IgnitePro - Shopping Cart</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#ff6a00",
+                        "primary-dark": "#e05a00",
+                        "on-primary": "#ffffff",
+                        "charcoal": "#1c1917",
+                        "charcoal-muted": "#44403c",
+                        "charcoal-subtle": "#78716c",
+                        "card-bg": "#faf8f5",
+                        "card-highlight": "#f4efe9",
+                        "badge-blue": "#0284c7",
+                        "badge-red": "#dc2626",
+                        "border-subtle": "#e7e0d8",
+                        "border-light": "#f0ebe4"
+                    },
+                    "fontFamily": {
+                        "sans": ["Plus Jakarta Sans", "sans-serif"],
+                        "mono": ["Space Grotesk", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-white text-charcoal font-sans min-h-screen flex flex-col pt-16 pb-20 md:pb-0">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 border-b border-border-subtle/80 bg-white/90 backdrop-blur-md shadow-sm">
+<div class="flex justify-between items-center h-16 px-4 md:px-12 max-w-7xl mx-auto">
+<a href="index.html" class="font-extrabold text-2xl md:text-3xl text-primary tracking-tight font-sans">Sukhi</a>
+<!-- Hidden on mobile, flex on desktop -->
+<nav class="hidden md:flex gap-8 items-center">
+<a class="text-charcoal-muted hover:text-primary transition-colors font-medium text-sm" href="index.html">Home</a>
+<a class="text-charcoal-muted hover:text-primary transition-colors font-medium text-sm" href="shop.html">Shop</a>
+<a class="text-charcoal-muted hover:text-primary transition-colors font-medium text-sm" href="wishlist.html">Wishlist</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1 text-sm" href="cart.html">Cart</a>
+</nav>
+<div class="flex gap-4 items-center">
+<a href="wishlist.html" aria-label="Favorites" class="text-charcoal-muted hover:text-primary transition-colors relative p-1">
+<span class="material-symbols-outlined align-middle" data-icon="favorite">favorite</span>
+<span data-wishlist-count class="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-bold w-4 h-4 rounded-full items-center justify-center hidden">0</span>
+</a>
+<a href="cart.html" aria-label="Cart" class="text-primary relative transition-colors p-1">
+<span class="material-symbols-outlined align-middle" data-icon="shopping_cart">shopping_cart</span>
+<span data-cart-count class="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-bold w-4 h-4 rounded-full items-center justify-center hidden">0</span>
+</a>
+<a href="login.html" aria-label="Account" class="text-charcoal-muted hover:text-primary transition-colors p-1">
+<span class="material-symbols-outlined align-middle" data-icon="account_circle">account_circle</span>
+</a>
+</div>
+</div>
+</header>
+<main class="flex-grow w-full max-w-7xl mx-auto px-4 md:px-12 py-8 md:py-10">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h1 class="text-2xl md:text-3xl font-extrabold text-charcoal tracking-tight">Shopping Cart</h1>
+<p class="text-sm text-charcoal-subtle mt-1 font-medium">Review your items and proceed to secure checkout</p>
+</div>
+<span class="text-sm font-semibold bg-primary/10 text-primary px-3 py-1 rounded-full">2 Items</span>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Product List -->
+<div class="lg:col-span-8 flex flex-col gap-4">
+<!-- Cart Item 1 -->
+<div class="bg-card-bg border border-border-subtle rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row gap-5 items-start sm:items-center relative hover:shadow-md hover:border-primary/30 transition-all duration-300">
+<div class="w-24 h-24 rounded-xl overflow-hidden shrink-0 border border-border-subtle shadow-sm bg-white">
+<img class="w-full h-full object-cover" data-alt="A high-quality, dramatic product shot of a premium firework cake named 'Midnight Thunder'." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVEuqLYwCG-Gkex-ZWkkYkvK8s1iP0QsojmflRcqy8R_pNoD41B-9ECYUNPk2OU2AX5wpxjfqeyXmBSfSRRerBbaH0LQQb94frJowE051LrY5D4FVst8kD6aBzuGIQAiAoaUm-wxadk5HK9sFTzGX_GRdcuwGWeeA1Ct78jbb8FGci9DdQBUlaot-T6w4e7cx4ZUzpglgZEMZpmJvVibSAkvxP3j6NSStdhaaGnBytcuO_HjeHi9Xi6g"/>
+</div>
+<div class="flex-grow flex flex-col gap-1.5">
+<div class="flex items-center gap-2">
+<h3 class="font-bold text-lg text-charcoal">Midnight Thunder</h3>
+</div>
+<span class="inline-flex items-center w-fit text-xs font-semibold text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded-md">High Altitude</span>
+<div class="text-sm text-charcoal-subtle font-medium">₹45.00 / unit</div>
+</div>
+<div class="flex items-center gap-2 bg-white rounded-xl p-1.5 border border-border-subtle shadow-sm">
+<button aria-label="Decrease quantity" class="text-charcoal-muted hover:text-primary hover:bg-card-bg rounded-lg transition-colors p-1 flex items-center justify-center">
+<span class="material-symbols-outlined text-base">remove</span>
+</button>
+<span class="font-bold text-sm text-charcoal w-7 text-center font-mono">2</span>
+<button aria-label="Increase quantity" class="text-charcoal-muted hover:text-primary hover:bg-card-bg rounded-lg transition-colors p-1 flex items-center justify-center">
+<span class="material-symbols-outlined text-base">add</span>
+</button>
+</div>
+<div class="text-xl font-extrabold text-charcoal sm:ml-auto font-mono">₹90.00</div>
+<button aria-label="Remove item" class="absolute top-4 right-4 text-charcoal-subtle hover:text-red-600 transition-colors p-1 rounded-full hover:bg-red-50">
+<span class="material-symbols-outlined text-lg">close</span>
+</button>
+</div>
+<!-- Cart Item 2 -->
+<div class="bg-card-bg border border-border-subtle rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row gap-5 items-start sm:items-center relative hover:shadow-md hover:border-primary/30 transition-all duration-300">
+<div class="w-24 h-24 rounded-xl overflow-hidden shrink-0 border border-border-subtle shadow-sm bg-white">
+<img class="w-full h-full object-cover" data-alt="A macro shot of a pack of 'Neon Sparklers'." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkRo1qXVYmuyVAnQeXOdcegwvrqtdHpxg-g_jCUQYTeifdvH33S-UC3036wWuWD2A1j_qJshn6WbB2WKaD6qZG1vMvRmNQeMsuQ-_0ttsT7Smzbw8pO5iK6Nzo_3ARpy7FWxHA46XgUaBEfhlMoMJGsyd5wqE03zT-hs9fBPe7t4a0y-ackDli_32cw0f-F5x1IeNpyE324thO5vUT0Q7ZYB4Bp0vBKeeDDidzo1z2L-oRAt9MEoeuRQ"/>
+</div>
+<div class="flex-grow flex flex-col gap-1.5">
+<div class="flex items-center gap-2">
+<h3 class="font-bold text-lg text-charcoal">Neon Sparklers (6-Pack)</h3>
+</div>
+<span class="inline-flex items-center w-fit text-xs font-semibold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-md">Loud</span>
+<div class="text-sm text-charcoal-subtle font-medium">₹15.00 / unit</div>
+</div>
+<div class="flex items-center gap-2 bg-white rounded-xl p-1.5 border border-border-subtle shadow-sm">
+<button aria-label="Decrease quantity" class="text-charcoal-muted hover:text-primary hover:bg-card-bg rounded-lg transition-colors p-1 flex items-center justify-center">
+<span class="material-symbols-outlined text-base">remove</span>
+</button>
+<span class="font-bold text-sm text-charcoal w-7 text-center font-mono">1</span>
+<button aria-label="Increase quantity" class="text-charcoal-muted hover:text-primary hover:bg-card-bg rounded-lg transition-colors p-1 flex items-center justify-center">
+<span class="material-symbols-outlined text-base">add</span>
+</button>
+</div>
+<div class="text-xl font-extrabold text-charcoal sm:ml-auto font-mono">₹15.00</div>
+<button aria-label="Remove item" class="absolute top-4 right-4 text-charcoal-subtle hover:text-red-600 transition-colors p-1 rounded-full hover:bg-red-50">
+<span class="material-symbols-outlined text-lg">close</span>
+</button>
+</div>
+</div>
+<!-- Order Summary Sidebar -->
+<div class="lg:col-span-4 mt-2 lg:mt-0">
+<div class="bg-card-bg border border-border-subtle rounded-2xl p-6 sticky top-24 shadow-sm">
+<h2 class="text-xl font-extrabold text-charcoal mb-5 pb-3 border-b border-border-subtle">Order Summary</h2>
+<div class="flex flex-col gap-3.5 border-b border-border-subtle pb-5 mb-5 text-sm">
+<div class="flex justify-between items-center">
+<span class="text-charcoal-muted">Subtotal</span>
+<span class="font-semibold text-charcoal font-mono">₹105.00</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-charcoal-muted">Shipping</span>
+<span class="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded text-xs">FREE</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-charcoal-muted">Tax</span>
+<span class="font-semibold text-charcoal font-mono">₹8.40</span>
+</div>
+</div>
+<div class="flex justify-between items-baseline mb-6">
+<span class="text-base font-bold text-charcoal">Total</span>
+<span class="text-2xl font-extrabold text-charcoal font-mono">₹113.40</span>
+</div>
+<a href="checkout.html" class="w-full bg-primary hover:bg-primary-dark text-white font-bold text-sm py-4 rounded-xl flex items-center justify-center gap-2 shadow-md shadow-primary/25 hover:shadow-lg hover:shadow-primary/35 transition-all duration-300 active:scale-[0.99]">
+    Proceed to Order
+    <span class="material-symbols-outlined text-base">arrow_forward</span>
+</a>
+<div class="mt-4 p-3 bg-card-highlight rounded-xl text-center border border-border-subtle/60">
+<span class="text-xs font-semibold text-emerald-700 flex items-center justify-center gap-1.5">
+<span class="material-symbols-outlined text-base">local_shipping</span>
+    Free delivery unlocked!
+</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center h-16 pb-safe px-4 md:hidden border-t border-border-subtle bg-white/95 backdrop-blur-xl shadow-lg z-50">
+<a class="flex flex-col items-center justify-center text-charcoal-subtle hover:text-primary transition-colors" href="index.html">
+<span class="material-symbols-outlined text-xl" data-icon="home">home</span>
+<span class="text-[11px] font-semibold mt-0.5">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-charcoal-subtle hover:text-primary transition-colors" href="shop.html">
+<span class="material-symbols-outlined text-xl">storefront</span>
+<span class="text-[11px] font-semibold mt-0.5">Shop</span>
+</a>
+<a class="flex flex-col items-center justify-center text-charcoal-subtle hover:text-primary transition-colors" href="wishlist.html">
+<span class="material-symbols-outlined text-xl" data-icon="favorite">favorite</span>
+<span class="text-[11px] font-semibold mt-0.5">Wishlist</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary bg-primary/10 rounded-xl px-3 py-1" href="cart.html">
+<span class="material-symbols-outlined text-xl" data-icon="shopping_bag" data-weight="fill" style="font-variation-settings: 'FILL' 1;">shopping_bag</span>
+<span class="text-[11px] font-bold mt-0.5">Cart</span>
+</a>
+<a class="flex flex-col items-center justify-center text-charcoal-subtle hover:text-primary transition-colors" href="login.html">
+<span class="material-symbols-outlined text-xl" data-icon="person">person</span>
+<span class="text-[11px] font-semibold mt-0.5">Profile</span>
+</a>
+</nav>
+<!-- Footer -->
+<footer class="relative w-full border-t border-border-subtle bg-card-highlight hidden md:block mt-12">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8 px-4 md:px-12 py-10 max-w-7xl mx-auto">
+<div class="col-span-1 md:col-span-2">
+<div class="text-2xl font-extrabold text-primary mb-2">Sukhi</div>
+<p class="text-sm text-charcoal-subtle font-medium">© 2024 Sukhi Pyrotechnics. Light with caution.</p>
+</div>
+<div class="col-span-1 flex flex-col gap-2">
+<a class="text-sm text-charcoal-muted hover:text-charcoal hover:translate-x-0.5 transition-all duration-200 font-medium" href="#">Safety Guide</a>
+<a class="text-sm text-charcoal-muted hover:text-charcoal hover:translate-x-0.5 transition-all duration-200 font-medium" href="#">Privacy Policy</a>
+</div>
+<div class="col-span-1 flex flex-col gap-2">
+<a class="text-sm text-charcoal-muted hover:text-charcoal hover:translate-x-0.5 transition-all duration-200 font-medium" href="#">Shipping Info</a>
+<a class="text-sm text-charcoal-muted hover:text-charcoal hover:translate-x-0.5 transition-all duration-200 font-medium" href="#">Contact Us</a>
+</div>
+</div>
+</footer>
+
+<!-- Firebase SDK + App Logic -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/app.js"></script>
+<script>
+  // Fix navigation links on all pages
+  document.addEventListener('DOMContentLoaded', () => {
+    // Bottom nav
+    const bottomLinks = document.querySelectorAll('nav.fixed a, nav[class*="bottom"] a');
+    bottomLinks.forEach(a => {
+      const text = (a.textContent || '').toLowerCase();
+      if (text.includes('home')) a.href = 'index.html';
+      else if (text.includes('wishlist') || text.includes('favorite')) a.href = 'wishlist.html';
+      else if (text.includes('cart') || text.includes('bag')) a.href = 'cart.html';
+      else if (text.includes('profile') || text.includes('person')) a.href = 'login.html';
+    });
+  });
+</script>
+</body></html>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  await Products.load();
+  renderCart();
+});
+
+function renderCart() {
+  const cart = Cart.load();
+  const container = document.querySelector('main') || document.body;
+  
+  // Find or create cart items area
+  let itemsArea = document.getElementById('cart-items-dynamic');
+  if (!itemsArea) {
+    // Try to replace existing static content with dynamic
+    const main = document.querySelector('main') || document.querySelector('[class*="container"]') || document.body;
+    const wrapper = document.createElement('div');
+    wrapper.id = 'cart-items-dynamic';
+    wrapper.className = 'max-w-4xl mx-auto px-4 py-8';
+    // Insert near top of main content
+    const firstSection = main.querySelector('section, div');
+    if (firstSection) firstSection.before(wrapper);
+    else main.prepend(wrapper);
+    itemsArea = wrapper;
+  }
+
+  if (cart.length === 0) {
+    itemsArea.innerHTML = `
+      <div class="text-center py-16">
+        <span class="material-symbols-outlined text-6xl text-stone-300">shopping_cart</span>
+        <h2 class="text-2xl font-bold mt-4 text-stone-800">Your cart is empty</h2>
+        <p class="text-stone-500 mt-2">Add some festive fireworks to get started!</p>
+        <a href="shop.html" class="inline-block mt-6 px-6 py-3 bg-primary text-white rounded-full font-semibold hover:bg-orange-600 transition">Browse Products</a>
+      </div>`;
+    return;
+  }
+
+  const total = Cart.getTotal();
+  itemsArea.innerHTML = `
+    <h1 class="text-2xl font-bold mb-6">Shopping Cart (${Cart.getCount()} items)</h1>
+    <div class="space-y-4" id="cart-list">
+      ${cart.map(item => `
+        <div class="flex gap-4 p-4 bg-white border border-stone-100 rounded-2xl shadow-sm" data-id="${item.id}">
+          <img src="${item.image || 'https://via.placeholder.com/100'}" alt="${item.name}" class="w-24 h-24 object-cover rounded-xl bg-stone-100"/>
+          <div class="flex-1">
+            <h3 class="font-semibold text-stone-900">${item.name}</h3>
+            <p class="text-primary font-bold mt-1">${formatPrice(item.price)}</p>
+            <div class="flex items-center gap-3 mt-3">
+              <button onclick="updateQty('${item.id}', ${item.qty - 1})" class="w-8 h-8 rounded-full border border-stone-200 flex items-center justify-center hover:bg-stone-50">−</button>
+              <span class="font-medium w-6 text-center">${item.qty}</span>
+              <button onclick="updateQty('${item.id}', ${item.qty + 1})" class="w-8 h-8 rounded-full border border-stone-200 flex items-center justify-center hover:bg-stone-50">+</button>
+              <button onclick="removeItem('${item.id}')" class="ml-auto text-red-500 text-sm hover:underline">Remove</button>
+            </div>
+          </div>
+          <div class="text-right font-bold text-stone-900">${formatPrice(item.price * item.qty)}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="mt-8 p-6 bg-stone-50 rounded-2xl">
+      <div class="flex justify-between text-lg font-bold">
+        <span>Total</span>
+        <span class="text-primary">${formatPrice(total)}</span>
+      </div>
+      <a href="checkout.html" class="mt-4 block w-full text-center py-3.5 bg-primary text-white rounded-full font-semibold hover:bg-orange-600 transition">Proceed to Checkout</a>
+      <a href="shop.html" class="mt-3 block w-full text-center py-2.5 text-stone-600 hover:text-primary text-sm">Continue Shopping</a>
+    </div>
+  `;
+}
+
+function updateQty(id, qty) {
+  if (qty < 1) { removeItem(id); return; }
+  Cart.updateQty(id, qty);
+  renderCart();
+}
+function removeItem(id) {
+  Cart.remove(id);
+  renderCart();
+  showToast('Item removed from cart');
+}
+</script>

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sukhi - Wishlist</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "surface-container-highest": "#e9e1dd",
+          "primary-fixed-dim": "#ffb694",
+          "error-container": "#ffdad6",
+          "on-secondary-fixed": "#001f28",
+          "primary-container": "#ff6a00",
+          "secondary-fixed-dim": "#9acee3",
+          "on-error-container": "#93000a",
+          "on-tertiary-container": "#660900",
+          "outline-variant": "#e2bfb0",
+          "on-primary": "#ffffff",
+          "outline": "#8e7164",
+          "background": "#fff8f5",
+          "on-surface": "#1e1b19",
+          "surface-container": "#f4ece8",
+          "tertiary-fixed": "#ffdad3",
+          "on-primary-container": "#571f00",
+          "on-secondary-fixed-variant": "#114d5e",
+          "on-secondary": "#ffffff",
+          "on-surface-variant": "#5a4136",
+          "on-error": "#ffffff",
+          "secondary-container": "#b3e8fc",
+          "on-primary-fixed-variant": "#7b2f00",
+          "surface-container-high": "#eee7e3",
+          "secondary-fixed": "#b7eaff",
+          "primary": "#a14000",
+          "secondary": "#306577",
+          "on-secondary-container": "#35697b",
+          "on-primary-fixed": "#351000",
+          "inverse-surface": "#33302d",
+          "on-tertiary-fixed": "#3f0300",
+          "surface-tint": "#a14000",
+          "surface-dim": "#e0d8d5",
+          "inverse-on-surface": "#f7efeb",
+          "surface-bright": "#fff8f5",
+          "error": "#ba1a1a",
+          "surface-container-lowest": "#ffffff",
+          "tertiary-container": "#ff674c",
+          "on-tertiary-fixed-variant": "#8f1100",
+          "surface-variant": "#e9e1dd",
+          "on-tertiary": "#ffffff",
+          "primary-fixed": "#ffdbcc",
+          "surface-container-low": "#faf2ee",
+          "surface": "#fff8f5",
+          "inverse-primary": "#ffb694",
+          "tertiary-fixed-dim": "#ffb4a6",
+          "on-background": "#1e1b19",
+          "tertiary": "#b82007"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "2xl": "1rem",
+          "full": "9999px"
+        },
+        "fontFamily": {
+          "title-lg": ["Plus Jakarta Sans"],
+          "headline-md": ["Plus Jakarta Sans"],
+          "title-md": ["Plus Jakarta Sans"],
+          "label-sm": ["Space Grotesk"],
+          "body-md": ["Plus Jakarta Sans"],
+          "label-lg": ["Space Grotesk"],
+          "body-sm": ["Plus Jakarta Sans"],
+          "headline-lg": ["Plus Jakarta Sans"],
+          "display-lg": ["Plus Jakarta Sans"],
+          "display-md": ["Plus Jakarta Sans"],
+          "body-lg": ["Plus Jakarta Sans"],
+          "label-md": ["Space Grotesk"]
+        }
+      }
+    }
+  }
+</script>
+<style>
+        .product-card {
+            background: #ffffff;
+            border: 1px solid rgba(226, 191, 176, 0.4);
+            box-shadow: 0 4px 20px -2px rgba(90, 65, 54, 0.05), 0 2px 6px -1px rgba(90, 65, 54, 0.03);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 32px -4px rgba(161, 64, 0, 0.1), 0 4px 12px -2px rgba(90, 65, 54, 0.06);
+            border-color: rgba(255, 106, 0, 0.4);
+        }
+        
+        .sparkle-btn {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #ff6a00 0%, #e05300 100%);
+            box-shadow: 0 3px 12px rgba(255, 106, 0, 0.28);
+            transition: all 0.25s ease;
+        }
+        .sparkle-btn:hover {
+            box-shadow: 0 6px 18px rgba(255, 106, 0, 0.4);
+            filter: brightness(1.04);
+            transform: translateY(-1px);
+        }
+        .sparkle-btn:active {
+            transform: translateY(0px);
+        }
+
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+</style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col font-body-md overflow-x-hidden selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 border-b border-outline-variant/40 bg-surface/90 backdrop-blur-xl shadow-sm transition-colors">
+<div class="flex justify-between items-center h-16 px-4 md:px-12 max-w-7xl mx-auto">
+<!-- Brand -->
+<a class="font-headline-lg text-2xl md:text-3xl font-extrabold text-primary tracking-tight flex items-center gap-1.5" href="index.html">
+<span class="material-symbols-outlined text-primary-container text-2xl">local_fire_department</span>
+<span>Sukhi</span>
+</a>
+<!-- Search (Desktop) -->
+<div class="hidden md:flex items-center space-x-6 flex-1 px-8">
+<div class="relative w-full max-w-md mx-auto">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-xl">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant/60 rounded-full py-2 pl-10 pr-4 text-on-surface text-sm placeholder-on-surface-variant/60 focus:outline-none focus:border-primary-container focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container/20 transition-all" placeholder="Search fireworks..." type="text" onkeydown="if(event.key==='Enter') location.href='shop.html?search='+encodeURIComponent(this.value)"/>
+</div>
+</div>
+<!-- Navigation Links (Desktop) -->
+<div class="hidden md:flex items-center space-x-7 mr-6">
+<a class="text-on-surface-variant hover:text-primary font-title-md font-medium text-sm transition-colors" href="index.html">Home</a>
+<a class="text-on-surface-variant hover:text-primary font-title-md font-medium text-sm transition-colors" href="shop.html">Shop</a>
+<a class="text-primary font-title-md font-bold text-sm border-b-2 border-primary-container pb-0.5" href="wishlist.html">Wishlist</a>
+<a class="text-on-surface-variant hover:text-primary font-title-md font-medium text-sm transition-colors" href="cart.html">Cart</a>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center space-x-2">
+<a href="wishlist.html" aria-label="Favorites" class="p-2 text-primary-container bg-primary-fixed/40 hover:bg-primary-fixed transition-all duration-200 rounded-full relative">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<span data-wishlist-count class="absolute top-0 right-0 w-4 h-4 bg-primary text-white text-[9px] font-bold rounded-full items-center justify-center hidden">0</span>
+</a>
+<a href="cart.html" aria-label="Cart" class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-all duration-200 rounded-full relative">
+<span class="material-symbols-outlined text-[22px]">shopping_cart</span>
+<span data-cart-count class="absolute top-0 right-0 w-4 h-4 bg-primary text-white text-[9px] font-bold rounded-full items-center justify-center hidden">0</span>
+</a>
+<a href="login.html" aria-label="Account" class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-all duration-200 rounded-full hidden md:block">
+<span class="material-symbols-outlined text-[22px]">account_circle</span>
+</a>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-grow pt-24 pb-28 md:pb-12 px-4 md:px-12 max-w-7xl mx-auto w-full">
+<!-- Header -->
+<header class="mb-8 flex items-center justify-between">
+<div>
+<div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary-fixed/50 text-on-primary-fixed-variant text-xs font-label-md uppercase tracking-wider mb-2 font-semibold">
+  Saved Sparks
+</div>
+<h1 class="font-headline-lg text-2xl md:text-3xl font-extrabold text-on-surface tracking-tight">Your Favorites</h1>
+<p class="font-body-md text-sm md:text-base text-on-surface-variant mt-1">3 items saved for celebrations and festivals.</p>
+</div>
+<!-- Subtle decorative element -->
+<div class="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl bg-surface-container-low border border-outline-variant/30 text-on-surface-variant">
+<span class="material-symbols-outlined text-primary-container">local_fire_department</span>
+<span class="text-xs font-label-lg font-semibold text-on-surface-variant uppercase tracking-wider">Festive Ready</span>
+</div>
+</header>
+<!-- Wishlist Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Item 1 -->
+<article class="product-card rounded-2xl overflow-hidden flex flex-col group relative">
+<!-- Remove Button overlay -->
+<button aria-label="Remove item" class="absolute top-3 right-3 z-10 p-1.5 bg-surface-container-lowest/90 hover:bg-error-container hover:text-on-error-container text-on-surface-variant backdrop-blur-md rounded-full shadow-sm transition-all">
+<span class="material-symbols-outlined text-lg leading-none block">close</span>
+</button>
+<!-- Thumbnail -->
+<div class="h-52 w-full overflow-hidden bg-surface-container-high relative">
+<img alt="Dragon's Breath Shell" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A macro shot of a vibrant red and gold firework shell casing resting on a dark slate surface. The lighting is cinematic, highlighting the metallic gold accents and rough cardboard texture of the premium pyrotechnic product. The background is a deep, out-of-focus midnight blue, creating a high-contrast, explosive energy aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9MQ_AdcLVhxuvrAqUSpNmk2z0n0JdW_noD41JjRLDZU9FO4zKcdTgQoaWl8kPFNT1jOt8p0ujyIN_ikLW1wfDmzYVVpTeGh9yuSKF1f58fiBBezaMa51A3QOyKwuwJaYCdU4x7og9-9Ixvq_kB7rGJBVLUNyUOPFkFms4dNFHCw68AcjBDWIxnrf6zG9lcxVzRDarCtSyS1PnjUkaamtm7A9BlXIqerJPlH0rjrx1roKnHwhE3WH1ag"/>
+<!-- Badge -->
+<div class="absolute bottom-3 left-3 bg-amber-400 text-stone-900 px-2.5 py-1 rounded-md text-[11px] font-label-sm font-bold tracking-wider uppercase shadow-sm">
+  Loud
+</div>
+</div>
+<!-- Content -->
+<div class="p-5 flex flex-col flex-grow bg-surface-container-lowest">
+<h2 class="font-headline-md text-lg font-bold text-on-surface mb-1 line-clamp-1 group-hover:text-primary transition-colors">Dragon's Breath Artillery</h2>
+<p class="font-body-sm text-sm text-on-surface-variant line-clamp-2 mb-4 flex-grow leading-relaxed">A massive 60g canister shell producing sprawling red and crackling willows that dominate the night sky.</p>
+<div class="flex items-center justify-between mt-auto pt-3 border-t border-outline-variant/30">
+<div class="flex flex-col">
+<span class="text-[11px] font-label-sm text-on-surface-variant/70 uppercase tracking-wider">Price</span>
+<span class="font-headline-md text-xl font-extrabold text-on-surface">₹129.99</span>
+</div>
+<button class="sparkle-btn text-on-primary px-4 py-2.5 rounded-lg font-label-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base">shopping_cart</span>
+Move to Cart
+</button>
+</div>
+</div>
+</article>
+<!-- Item 2 -->
+<article class="product-card rounded-2xl overflow-hidden flex flex-col group relative">
+<button aria-label="Remove item" class="absolute top-3 right-3 z-10 p-1.5 bg-surface-container-lowest/90 hover:bg-error-container hover:text-on-error-container text-on-surface-variant backdrop-blur-md rounded-full shadow-sm transition-all">
+<span class="material-symbols-outlined text-lg leading-none block">close</span>
+</button>
+<div class="h-52 w-full overflow-hidden bg-surface-container-high relative">
+<img alt="Nebula Roman Candles" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A cluster of brightly colored Roman candles arranged dynamically against a pitch-black background. Sparks subtly emanate from the tips. The lighting emphasizes the high-gloss metallic labels in electric purple and neon green, contrasting sharply with the dark surroundings to convey a high-energy, festive pyrotechnic vibe." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpwmxvPnq_o_uRi2B0AVWn9a4A8iC0xeIIgA8XTrCXsm5u-UEpqCORIqxZse2btAth81SQdIB-uusn1aydoP3BbxqwSVIqnjYkAo9VetcYs22aqKKK37_gvGWqax2rlccyGKJxSAU_VwMgL7iX9lkBu17179FIIV43qfU5vTdi6-Jo36Hp5SDnfAFkFITHXTNoGYgu74rX-KNXupcNEmh0tv9-3_rrm65tE7opm4b9jWDpbI_LkXM4WA"/>
+<div class="absolute bottom-3 left-3 bg-primary-container text-on-primary px-2.5 py-1 rounded-md text-[11px] font-label-sm font-bold tracking-wider uppercase shadow-sm">
+  Staff Pick
+</div>
+</div>
+<div class="p-5 flex flex-col flex-grow bg-surface-container-lowest">
+<h2 class="font-headline-md text-lg font-bold text-on-surface mb-1 line-clamp-1 group-hover:text-primary transition-colors">Nebula Roman Candles</h2>
+<p class="font-body-sm text-sm text-on-surface-variant line-clamp-2 mb-4 flex-grow leading-relaxed">A pack of 6 premium candles shooting vibrant purple and green pearls with a titanium salute finish.</p>
+<div class="flex items-center justify-between mt-auto pt-3 border-t border-outline-variant/30">
+<div class="flex flex-col">
+<span class="text-[11px] font-label-sm text-on-surface-variant/70 uppercase tracking-wider">Price</span>
+<span class="font-headline-md text-xl font-extrabold text-on-surface">₹34.50</span>
+</div>
+<button class="sparkle-btn text-on-primary px-4 py-2.5 rounded-lg font-label-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base">shopping_cart</span>
+Move to Cart
+</button>
+</div>
+</div>
+</article>
+<!-- Item 3 -->
+<article class="product-card rounded-2xl overflow-hidden flex flex-col group relative">
+<button aria-label="Remove item" class="absolute top-3 right-3 z-10 p-1.5 bg-surface-container-lowest/90 hover:bg-error-container hover:text-on-error-container text-on-surface-variant backdrop-blur-md rounded-full shadow-sm transition-all">
+<span class="material-symbols-outlined text-lg leading-none block">close</span>
+</button>
+<div class="h-52 w-full overflow-hidden bg-surface-container-high relative">
+<img alt="Midnight Symphony Cake" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A sleek, cube-shaped 500-gram multi-shot firework cake sits on a reflective dark glass table. Soft amber underglow lighting accentuates the warning labels and branding. The environment is sleek, modern, and dark-mode, designed to highlight the premium, powerful nature of the explosive product within." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDh9MLzyjmSyatdWL8uB9QAdJI7BMQGMqqrglbgiAESP1nlC8N6msxq2Cq9nMwcuTrtbNxXIRbgxT4xH6SeN33xKSWZcdGbN4ya_nuZn_pKWWv0SqvSRbhNtq1nUrC3st-VtxwV3yRzh6dDiYKB7eTznOFjFw8sjm8uj0X-s3IWzLuFOuAVYN1a3W6CksjG9zRlSVeWpx84zLxVzye3GSJHNtoAIpxhUnOqM3NqNeya9rn6c3NI3JRTUw"/>
+<div class="absolute bottom-3 left-3 bg-sky-500 text-white px-2.5 py-1 rounded-md text-[11px] font-label-sm font-bold tracking-wider uppercase shadow-sm">
+  High Altitude
+</div>
+</div>
+<div class="p-5 flex flex-col flex-grow bg-surface-container-lowest">
+<h2 class="font-headline-md text-lg font-bold text-on-surface mb-1 line-clamp-1 group-hover:text-primary transition-colors">Midnight Symphony Cake</h2>
+<p class="font-body-sm text-sm text-on-surface-variant line-clamp-2 mb-4 flex-grow leading-relaxed">36 shots of alternating gold brocades and electric blue stars, culminating in a deafening 6-shot finale.</p>
+<div class="flex items-center justify-between mt-auto pt-3 border-t border-outline-variant/30">
+<div class="flex flex-col">
+<span class="text-[11px] font-label-sm text-on-surface-variant/70 uppercase tracking-wider">Price</span>
+<span class="font-headline-md text-xl font-extrabold text-on-surface">₹89.00</span>
+</div>
+<button class="sparkle-btn text-on-primary px-4 py-2.5 rounded-lg font-label-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base">shopping_cart</span>
+Move to Cart
+</button>
+</div>
+</div>
+</article>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center h-16 pb-safe px-4 md:hidden border-t border-outline-variant/30 bg-surface/95 backdrop-blur-xl z-50 shadow-lg">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-transform duration-200" href="index.html">
+<span class="material-symbols-outlined text-xl mb-0.5">home</span>
+<span class="font-label-sm text-[10px]">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-transform duration-200" href="shop.html">
+<span class="material-symbols-outlined text-xl mb-0.5">storefront</span>
+<span class="font-label-sm text-[10px]">Shop</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary font-bold transition-transform duration-200" href="wishlist.html">
+<span class="material-symbols-outlined text-xl mb-0.5 text-primary-container" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<span class="font-label-sm text-[10px]">Wishlist</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-transform duration-200" href="cart.html">
+<span class="material-symbols-outlined text-xl mb-0.5">shopping_bag</span>
+<span class="font-label-sm text-[10px]">Cart</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-transform duration-200" href="login.html">
+<span class="material-symbols-outlined text-xl mb-0.5">person</span>
+<span class="font-label-sm text-[10px]">Profile</span>
+</a>
+</nav>
+<!-- Footer -->
+<footer class="relative w-full border-t border-outline-variant/40 bg-surface-container-low mb-16 md:mb-0">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8 px-4 md:px-12 py-12 max-w-7xl mx-auto">
+<!-- Brand Column -->
+<div class="col-span-1 flex flex-col items-start md:col-span-2">
+<a class="font-headline-lg text-2xl font-extrabold text-primary flex items-center gap-1.5 mb-2" href="index.html">
+<span class="material-symbols-outlined text-primary-container text-2xl">local_fire_department</span>
+<span>Sukhi</span>
+</a>
+<p class="font-body-md text-sm text-on-surface-variant max-w-sm leading-relaxed">Premium pyrotechnics for spectacular celebrations. Engineered for awe, safety, and radiant joy.</p>
+</div>
+<!-- Links Columns -->
+<div class="col-span-1 flex flex-col space-y-2.5">
+<span class="font-label-lg text-xs font-bold text-on-surface uppercase tracking-wider mb-1">Explore</span>
+<a class="text-on-surface-variant hover:text-primary font-body-sm text-sm transition-colors" href="index.html">Home</a>
+<a class="text-on-surface-variant hover:text-primary font-body-sm text-sm transition-colors" href="shop.html">Shop All</a>
+</div>
+<div class="col-span-1 flex flex-col space-y-2.5">
+<span class="font-label-lg text-xs font-bold text-on-surface uppercase tracking-wider mb-1">Account</span>
+<a class="text-on-surface-variant hover:text-primary font-body-sm text-sm transition-colors" href="cart.html">Shopping Cart</a>
+<a class="text-on-surface-variant hover:text-primary font-body-sm text-sm transition-colors" href="login.html">Login / Register</a>
+</div>
+<!-- Copyright -->
+<div class="col-span-1 md:col-span-4 mt-4 pt-6 border-t border-outline-variant/30 text-center md:text-left flex flex-col md:flex-row justify-between items-center text-xs text-on-surface-variant">
+<p>© 2024 Sukhi Pyrotechnics. Light with caution.</p>
+<p class="mt-2 md:mt-0 font-label-sm text-[11px] text-outline">Festive Radiance Collection</p>
+</div>
+</div>
+</footer>
+
+<!-- Firebase SDK + App Logic -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/app.js"></script>
+<script>
+  // Fix navigation links on all pages
+  document.addEventListener('DOMContentLoaded', () => {
+    // Bottom nav
+    const bottomLinks = document.querySelectorAll('nav.fixed a, nav[class*="bottom"] a');
+    bottomLinks.forEach(a => {
+      const text = (a.textContent || '').toLowerCase();
+      if (text.includes('home')) a.href = 'index.html';
+      else if (text.includes('wishlist') || text.includes('favorite')) a.href = 'wishlist.html';
+      else if (text.includes('cart') || text.includes('bag')) a.href = 'cart.html';
+      else if (text.includes('profile') || text.includes('person')) a.href = 'login.html';
+    });
+  });
+</script>
+</body></html>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  await Products.load();
+  renderWishlist();
+});
+
+function renderWishlist() {
+  const list = Wishlist.load();
+  let area = document.getElementById('wishlist-dynamic');
+  if (!area) {
+    area = document.createElement('div');
+    area.id = 'wishlist-dynamic';
+    area.className = 'max-w-6xl mx-auto px-4 py-8';
+    const main = document.querySelector('main') || document.body;
+    main.prepend(area);
+  }
+
+  if (!list.length) {
+    area.innerHTML = `
+      <div class="text-center py-16">
+        <span class="material-symbols-outlined text-6xl text-stone-300">favorite</span>
+        <h2 class="text-2xl font-bold mt-4">Your wishlist is empty</h2>
+        <p class="text-stone-500 mt-2">Save your favourite fireworks here</p>
+        <a href="shop.html" class="inline-block mt-6 px-6 py-3 bg-primary text-white rounded-full font-semibold">Explore Shop</a>
+      </div>`;
+    return;
+  }
+
+  area.innerHTML = `
+    <h1 class="text-2xl font-bold mb-6">My Favorites (${list.length})</h1>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      ${list.map(p => `
+        <div class="bg-white border border-stone-100 rounded-2xl p-4 shadow-sm">
+          <a href="product.html?id=${p.id}">
+            <img src="${p.image}" class="w-full h-40 object-cover rounded-xl bg-stone-100" alt="${p.name}"/>
+          </a>
+          <h3 class="font-semibold mt-3">${p.name}</h3>
+          <p class="text-primary font-bold">${formatPrice(p.price)}</p>
+          <div class="flex gap-2 mt-3">
+            <button data-add-cart="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${p.image}"
+              class="flex-1 py-2 rounded-full bg-primary text-white text-sm font-semibold">Add to Cart</button>
+            <button onclick="Wishlist.remove('${p.id}'); renderWishlist(); showToast('Removed')"
+              class="px-3 py-2 rounded-full border border-stone-200 text-red-500 text-sm">Remove</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+</script>
