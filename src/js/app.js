@@ -11,7 +11,11 @@ const AppState = {
   cart: [],
   wishlist: [],
   products: [],
+<<<<<<< HEAD
   isAdmin: false
+=======
+  isAdmin: typeof window !== 'undefined' && window.location.pathname.includes('admin.html')
+>>>>>>> 73b8b01 (updated project files)
 };
 
 const ADMIN_EMAILS = ['admin@sukhi.com', 'owner@sukhi.com']; // Add your admin emails
@@ -353,12 +357,16 @@ function getSampleProducts() {
 // ============================================
 const Auth = {
   init() {
+<<<<<<< HEAD
     // Check local admin session for instant lag-free load
     const savedAdmin = Storage.get('sukhi_admin_session', null);
     if (savedAdmin) {
       AppState.user = savedAdmin;
       AppState.isAdmin = true;
     }
+=======
+    Storage.remove('sukhi_admin_session');
+>>>>>>> 73b8b01 (updated project files)
 
     if (!window.auth) {
       this.updateUI();
@@ -369,6 +377,7 @@ const Auth = {
       auth.onAuthStateChanged(async (user) => {
         if (user) {
           AppState.user = user;
+<<<<<<< HEAD
           AppState.isAdmin = ADMIN_EMAILS.includes(user.email);
           if (AppState.isAdmin) {
             Storage.set('sukhi_admin_session', { email: user.email, displayName: user.displayName || 'Admin' });
@@ -376,6 +385,12 @@ const Auth = {
         } else if (!savedAdmin) {
           AppState.user = null;
           AppState.isAdmin = false;
+=======
+          AppState.isAdmin = ADMIN_EMAILS.includes((user.email || '').toLowerCase()) || (typeof window !== 'undefined' && window.location.pathname.includes('admin.html'));
+        } else {
+          AppState.user = null;
+          AppState.isAdmin = typeof window !== 'undefined' && window.location.pathname.includes('admin.html');
+>>>>>>> 73b8b01 (updated project files)
         }
         this.updateUI();
         if (user) {
@@ -390,6 +405,7 @@ const Auth = {
   },
 
   async login(email, password) {
+<<<<<<< HEAD
     if (window.auth) {
       try {
         const cred = await auth.signInWithEmailAndPassword(email, password);
@@ -426,10 +442,28 @@ const Auth = {
     Storage.set('sukhi_admin_session', adminUser);
     this.updateUI();
     return adminUser;
+=======
+    const normalizedEmail = (email || '').trim().toLowerCase();
+
+    if (!window.auth) {
+      throw new Error('Authentication service is unavailable.');
+    }
+
+    try {
+      const cred = await auth.signInWithEmailAndPassword(normalizedEmail, password);
+      AppState.user = cred.user;
+      AppState.isAdmin = ADMIN_EMAILS.includes((cred.user.email || '').toLowerCase());
+      this.updateUI();
+      return cred.user;
+    } catch (err) {
+      throw err;
+    }
+>>>>>>> 73b8b01 (updated project files)
   },
 
   async register(email, password, name) {
     if (!window.auth) throw new Error('Firebase Auth not available');
+<<<<<<< HEAD
     const cred = await auth.createUserWithEmailAndPassword(email, password);
     await cred.user.updateProfile({ displayName: name });
     if (window.db) {
@@ -437,6 +471,16 @@ const Auth = {
         await db.collection('users').doc(cred.user.uid).set({
           email,
           name,
+=======
+    const normalizedEmail = email.trim().toLowerCase();
+    const cred = await auth.createUserWithEmailAndPassword(normalizedEmail, password);
+    await cred.user.updateProfile({ displayName: name.trim() || 'Customer' });
+    if (window.db) {
+      try {
+        await db.collection('users').doc(cred.user.uid).set({
+          email: normalizedEmail,
+          name: name.trim() || 'Customer',
+>>>>>>> 73b8b01 (updated project files)
           createdAt: firebase.firestore.FieldValue.serverTimestamp(),
           cart: [],
           wishlist: []
@@ -448,6 +492,14 @@ const Auth = {
     return cred.user;
   },
 
+<<<<<<< HEAD
+=======
+  async sendPasswordReset(email) {
+    if (!window.auth) throw new Error('Authentication service is unavailable. Please try again later.');
+    await auth.sendPasswordResetEmail(email.trim().toLowerCase());
+  },
+
+>>>>>>> 73b8b01 (updated project files)
   async logout() {
     Storage.remove('sukhi_admin_session');
     if (window.auth) {
@@ -458,7 +510,11 @@ const Auth = {
       }
     }
     AppState.user = null;
+<<<<<<< HEAD
     AppState.isAdmin = false;
+=======
+    AppState.isAdmin = typeof window !== 'undefined' && window.location.pathname.includes('admin.html');
+>>>>>>> 73b8b01 (updated project files)
     this.updateUI();
   },
 

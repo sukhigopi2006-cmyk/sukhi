@@ -5,10 +5,17 @@
 ## ✨ Features
 
 - **10 Pages**: Home, Shop, Product Details, Cart, Checkout, Payment, Order Success, Wishlist, Login/Register, Admin Portal
+<<<<<<< HEAD
 - **Firebase Auth**: Email/password login & registration
 - **Firestore**: Products, Orders, User carts & wishlists
 - **Cart & Wishlist**: Works offline (localStorage) and syncs when logged in
 - **Admin Portal**: View products & manage orders (admin emails configurable)
+=======
+- **Firebase Auth**: Email/password login & registration; Firebase hashes passwords server-side
+- **Firestore**: Products, Customers, Orders, Users, carts & wishlists
+- **Cart & Wishlist**: Works offline (localStorage) and syncs when logged in
+- **Admin Portal**: Strict Firebase email/password login, product CRUD, stock/pricing updates, and order management
+>>>>>>> 73b8b01 (updated project files)
 - **Responsive**: Mobile bottom-nav + desktop header
 - **Demo mode**: Works even without Firebase configured (uses sample products + local cart)
 
@@ -32,6 +39,10 @@ sukhi-fireworks-ecommerce/
 │   ├── app.js                 # Auth, Cart, Products, Orders, Wishlist
 │   └── firebase-scripts.html  # Snippet to include SDKs
 ├── scripts/seed-products.js   # Seed sample products
+<<<<<<< HEAD
+=======
+├── database/schema.sql        # Relational presentation/deployment schema
+>>>>>>> 73b8b01 (updated project files)
 ├── festive_radiance/DESIGN.md # Design system
 ├── firestore.rules            # Security rules
 ├── firebase.json              # Hosting config
@@ -49,10 +60,17 @@ sukhi-fireworks-ecommerce/
    Or open `public/index.html` directly in a browser (some features need a local server).
 3. Browse: http://localhost:3000
 
+<<<<<<< HEAD
 ## 🔥 Firebase Setup
 
 1. Go to [Firebase Console](https://console.firebase.google.com/) → project **sukhifireworkes** (or create one).
 2. Enable **Authentication** → Email/Password.
+=======
+## 🔐 Authentication and Security
+
+1. Go to [Firebase Console](https://console.firebase.google.com/) → project **sukhifireworkes** (or create one).
+2. Enable **Authentication** → Email/Password only. Google OAuth is not used.
+>>>>>>> 73b8b01 (updated project files)
 3. Create **Firestore** database (start in test mode, then deploy rules).
 4. Config is already in `src/js/firebase-config.js`:
    ```js
@@ -77,19 +95,47 @@ sukhi-fireworks-ecommerce/
 
 Open the site → browser console → paste the seed snippet from `scripts/seed-products.js` (or run the printed commands).
 
+<<<<<<< HEAD
+=======
+Admin access is granted only after Firebase successfully authenticates the supplied email and password. The UI then checks the authenticated email against `ADMIN_EMAILS`; local storage cannot create or restore an admin session. Firestore rules repeat the admin check server-side.
+
+Firebase Authentication hashes passwords server-side. The current login identifier is an email address; username aliases should be mapped through a trusted server endpoint rather than storing or checking password hashes in browser code.
+
+>>>>>>> 73b8b01 (updated project files)
 ## 👤 Admin Access
 
 Edit `ADMIN_EMAILS` in `src/js/app.js`:
 ```js
 const ADMIN_EMAILS = ['admin@sukhi.com', 'owner@sukhi.com'];
 ```
+<<<<<<< HEAD
 Register/login with that email to see admin-only UI.
+=======
+Create this account in Firebase Authentication, then sign in through `admin.html` with its real password. The demo-fill button only fills the admin email; it never grants access.
+
+## 🗃️ Data Model and Demo Flow
+
+The live Firestore collections are:
+
+- `users/{uid}`: authenticated profile, role, cart, and wishlist.
+- `customers/{uid}`: one customer record per user with contact and shipping address.
+- `products/{productId}`: catalog, price, stock, and active status.
+- `orders/{orderId}`: authenticated `userId`, linked `customerId`, delivery snapshot, line items, total, payment method, and status.
+
+The relational equivalent, including `order_items`, is documented in [database/schema.sql](database/schema.sql).
+
+For a project demo: the customer signs in, checkout upserts the customer record, order creation stores both IDs and item snapshots, and the admin updates product CRUD or order status. Firestore rules enforce ownership and admin privileges even if someone bypasses the UI.
+>>>>>>> 73b8b01 (updated project files)
 
 ## 🛒 User Flow
 
 1. Browse Home / Shop  
 2. Add to Cart or Wishlist  
+<<<<<<< HEAD
 3. Login (optional for cart; required for order history)  
+=======
+3. Login (required before placing an order)  
+>>>>>>> 73b8b01 (updated project files)
 4. Checkout → Delivery → Payment → Order Success  
 
 Cart persists in localStorage and syncs to Firestore when the user is logged in.
@@ -100,8 +146,13 @@ Light/White color scheme with primary accent `#ff6a00`. See `festive_radiance/DE
 
 ## ⚠️ Notes
 
+<<<<<<< HEAD
 - Guest checkout is supported (orders saved with `userId: 'guest'`).
 - Payment page simulates success (integrate Razorpay/Stripe as needed).
+=======
+- Signed-in checkout is required so every order is linked to a customer record.
+- Payment page records an order after the selected payment action (integrate Razorpay/Stripe for live payment capture).
+>>>>>>> 73b8b01 (updated project files)
 - Sample products load automatically if Firestore is empty or offline.
 - Update `firestore.rules` admin emails to match your accounts.
 

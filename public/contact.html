@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contact SKYRA Fireworks</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="js/site-shell.css" />
+</head>
+<body class="contact-page">
+  <main>
+    <section class="contact-hero reveal-on-scroll" aria-labelledby="contact-title">
+      <span class="brand-kicker">We are here for the moment</span>
+      <h1 id="contact-title">Let’s make it<br />brilliant.</h1>
+      <p>Whether you are choosing a family box, planning an event, or checking delivery coverage, our team is ready to help you find the right spark.</p>
+    </section>
+
+    <section class="contact-grid">
+      <div class="contact-card reveal-on-scroll">
+        <h2>Find the team</h2>
+        <div class="contact-detail">
+          <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
+          <div><strong>Showroom &amp; dispatch</strong><span>227, Amman Kovil Patti Middle Street<br />Sivakasi - 626 189, Tamil Nadu</span></div>
+        </div>
+        <div class="contact-detail">
+          <span class="material-symbols-outlined" aria-hidden="true">call</span>
+          <div><strong>Call us</strong><a href="tel:+919876543210">+91 98765 43210</a></div>
+        </div>
+        <div class="contact-detail">
+          <span class="material-symbols-outlined" aria-hidden="true">mail</span>
+          <div><strong>Email</strong><a href="mailto:hello@skyrafireworks.in">hello@skyrafireworks.in</a></div>
+        </div>
+        <div class="contact-detail">
+          <span class="material-symbols-outlined" aria-hidden="true">schedule</span>
+          <div><strong>Hours</strong><span>Mon–Sat · 9:00 AM–7:00 PM</span></div>
+        </div>
+      </div>
+
+      <div class="contact-card reveal-on-scroll">
+        <h2>Start a conversation</h2>
+        <form class="contact-form" data-contact-form>
+          <label for="contact-name">Your name<input id="contact-name" name="name" required autocomplete="name" placeholder="How should we call you?" /></label>
+          <label for="contact-email">Email address<input id="contact-email" name="email" required type="email" autocomplete="email" placeholder="you@example.com" /></label>
+          <label for="contact-message">How can we help?<textarea id="contact-message" name="message" required placeholder="Tell us about your celebration, order, or delivery question."></textarea></label>
+          <button type="submit">Send enquiry <span aria-hidden="true">→</span></button>
+          <p class="contact-status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/site-shell.js"></script>
+</body>
+</html>

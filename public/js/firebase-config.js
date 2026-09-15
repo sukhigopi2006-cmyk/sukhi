@@ -11,12 +11,45 @@ const firebaseConfig = {
   measurementId: "G-15BQL1V860"
 };
 
+<<<<<<< HEAD
 // Initialize Firebase (compat mode for simpler multi-page usage)
 if (typeof firebase !== 'undefined') {
   firebase.initializeApp(firebaseConfig);
   window.auth = firebase.auth();
   window.db = firebase.firestore();
   window.storage = firebase.storage();
+=======
+const firebaseConfigErrors = [];
+if (window.location.protocol === 'file:') {
+  firebaseConfigErrors.push('Open the site through a local web server or Firebase Hosting, not a file:// URL.');
+}
+if (!firebaseConfig.apiKey || !firebaseConfig.projectId || !firebaseConfig.authDomain || firebaseConfig.apiKey.includes('REPLACE') || firebaseConfig.apiKey.includes('___')) {
+  firebaseConfigErrors.push('Replace public/js/firebase-config.js with the Web app configuration from the active Firebase project.');
+}
+if (typeof firebase === 'undefined') {
+  firebaseConfigErrors.push('Firebase SDK files could not be loaded. Check the internet connection.');
+}
+
+window.firebaseConfigStatus = {
+  ready: firebaseConfigErrors.length === 0,
+  message: firebaseConfigErrors.join(' ')
+};
+
+// Initialize Firebase only when the page can use an authorized web origin.
+if (window.firebaseConfigStatus.ready) {
+  try {
+    firebase.initializeApp(firebaseConfig);
+    window.auth = firebase.auth();
+    window.db = firebase.firestore();
+    window.storage = firebase.storage();
+  } catch (error) {
+    window.firebaseConfigStatus = {
+      ready: false,
+      message: 'Firebase could not be initialized. Verify the Web app configuration in public/js/firebase-config.js.'
+    };
+    console.error('Firebase initialization failed:', error);
+  }
+>>>>>>> 73b8b01 (updated project files)
 }
 
 // Export for module usage if needed

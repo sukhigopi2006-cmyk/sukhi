@@ -102,7 +102,15 @@
     border-color: #ff6a00;
     box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.15);
   }
+<<<<<<< HEAD
 </style>
+=======
+
+  /* The previous phone/OTP demonstration interface is no longer part of the live portal. */
+  #method-toggle-container, #step-1, #step-2 { display: none !important; }
+</style>
+<link rel="stylesheet" href="js/site-shell.css"/>
+>>>>>>> 73b8b01 (updated project files)
 </head>
 <body class="min-h-screen flex flex-col justify-between items-center p-4 md:p-6 text-on-surface">
 <!-- Top bar with Back to Shop -->
@@ -125,11 +133,45 @@
 <span class="font-display text-4xl font-extrabold tracking-tight text-brand-orange">Sukhi</span>
 <span class="text-xs font-semibold uppercase tracking-wider bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded ml-2">India</span>
 </a>
+<<<<<<< HEAD
 <h1 class="text-xl font-bold text-gray-900 tracking-tight" id="auth-title">Login or Create Account</h1>
 <p class="text-sm text-gray-500 mt-1" id="auth-subtitle">Enter your details to sign in or shop as guest</p>
 </div>
 <!-- Auth Method Toggle (OTP / Password) -->
 <div class="grid grid-cols-2 bg-surface-container p-1 rounded-xl mb-6 text-xs font-semibold" id="method-toggle-container">
+=======
+<h1 class="text-xl font-bold text-gray-900 tracking-tight" id="auth-title">Welcome back</h1>
+<p class="text-sm text-gray-500 mt-1" id="auth-subtitle">Sign in with your email and password</p>
+</div>
+<!-- Live Firebase email/password authentication -->
+<form class="flex flex-col gap-4" id="email-auth-form" novalidate>
+  <div class="hidden flex-col gap-1.5" id="name-group">
+    <label class="text-xs font-semibold text-gray-700 tracking-wide uppercase" for="name">Full name</label>
+    <input class="w-full bg-surface-container-low/40 rounded-xl border border-outline-variant/70 focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 px-3.5 py-3 text-sm text-gray-900 placeholder-gray-400" id="name" autocomplete="name" placeholder="Your name" type="text"/>
+  </div>
+  <div class="flex flex-col gap-1.5">
+    <label class="text-xs font-semibold text-gray-700 tracking-wide uppercase" for="email">Email address</label>
+    <input class="w-full bg-surface-container-low/40 rounded-xl border border-outline-variant/70 focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 px-3.5 py-3 text-sm text-gray-900 placeholder-gray-400" id="email" autocomplete="email" placeholder="you@example.com" required type="email"/>
+  </div>
+  <div class="flex flex-col gap-1.5">
+    <div class="flex items-center justify-between">
+      <label class="text-xs font-semibold text-gray-700 tracking-wide uppercase" for="live-password">Password</label>
+      <button class="text-xs text-brand-orange hover:underline" id="forgot-password" type="button">Forgot password?</button>
+    </div>
+    <input class="w-full bg-surface-container-low/40 rounded-xl border border-outline-variant/70 focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 px-3.5 py-3 text-sm text-gray-900 placeholder-gray-400" id="live-password" autocomplete="current-password" minlength="6" placeholder="At least 6 characters" required type="password"/>
+  </div>
+  <p aria-live="polite" class="hidden text-sm rounded-lg px-3 py-2" id="auth-message"></p>
+  <button class="w-full py-3.5 rounded-xl font-bold text-sm bg-brand-orange hover:bg-brand-orange-hover text-white shadow-md shadow-brand-orange/25 active:scale-[0.99] transition-all flex items-center justify-center gap-2" id="email-auth-submit" type="submit">
+    <span>Sign in</span><span class="material-symbols-outlined text-[18px]">login</span>
+  </button>
+  <p class="text-center text-sm text-gray-600">
+    <span id="auth-switch-label">New to Sukhi?</span>
+    <button class="font-semibold text-brand-orange hover:underline ml-1" id="auth-switch" type="button">Create an account</button>
+  </p>
+</form>
+<!-- Auth Method Toggle (OTP / Password) -->
+<div class="hidden grid grid-cols-2 bg-surface-container p-1 rounded-xl mb-6 text-xs font-semibold" id="method-toggle-container">
+>>>>>>> 73b8b01 (updated project files)
 <button class="py-2 rounded-lg bg-white text-gray-900 shadow-sm transition-all text-center" id="tab-otp" onclick="switchMethod('otp')" type="button">
           Login with OTP
         </button>
@@ -138,7 +180,11 @@
         </button>
 </div>
 <!-- Step 1: Mobile Input -->
+<<<<<<< HEAD
 <div class="flex flex-col gap-4" id="step-1">
+=======
+<div class="hidden flex-col gap-4" id="step-1">
+>>>>>>> 73b8b01 (updated project files)
 <div class="flex flex-col gap-1.5">
 <label class="text-xs font-semibold text-gray-700 tracking-wide uppercase" for="mobile">Mobile Number</label>
 <div class="flex rounded-xl overflow-hidden border border-outline-variant/70 focus-within:border-brand-orange focus-within:ring-2 focus-within:ring-brand-orange/20 transition-all bg-surface-container-low/40">
@@ -170,7 +216,11 @@
 </div>
 <!-- Quick / Social Login Options -->
 <div class="grid grid-cols-2 gap-3">
+<<<<<<< HEAD
 <button class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-outline-variant/60 bg-white hover:bg-surface-container-low text-xs font-semibold text-gray-700 transition-colors shadow-sm" type="button">
+=======
+<button id="google-sign-in" class="hidden" type="button">
+>>>>>>> 73b8b01 (updated project files)
 <svg class="w-4 h-4" viewbox="0 0 24 24">
 <path d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z" fill="#4285F4"></path>
 <path d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.15C3.25 21.36 7.33 24 12 24z" fill="#34A853"></path>
@@ -231,17 +281,24 @@
         </p>
 </div>
 </div>
+<<<<<<< HEAD
 <!-- Discreet bottom shop support & Admin Portal -->
+=======
+<!-- Discreet bottom shop support -->
+>>>>>>> 73b8b01 (updated project files)
 <div class="text-center mt-4 space-y-2">
 <p class="text-xs text-on-surface-variant">
         Need assistance with your festive order? <a class="font-semibold text-brand-orange hover:underline" href="#">Chat with Support</a>
 </p>
+<<<<<<< HEAD
 <div>
   <a href="admin.html" class="inline-flex items-center gap-1.5 text-xs font-bold text-stone-700 hover:text-brand-orange bg-white hover:bg-orange-50 px-3.5 py-1.5 rounded-full border border-outline-variant/60 shadow-xs transition">
     <span class="material-symbols-outlined text-sm text-brand-orange">admin_panel_settings</span>
     Store Manager / Admin Portal →
   </a>
 </div>
+=======
+>>>>>>> 73b8b01 (updated project files)
 </div>
 </main>
 <!-- Footer Info -->
@@ -374,7 +431,101 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
 <script src="js/firebase-config.js"></script>
 <script src="js/app.js"></script>
+<<<<<<< HEAD
 <script>
+=======
+<script src="js/site-shell.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('email-auth-form');
+    const nameGroup = document.getElementById('name-group');
+    const name = document.getElementById('name');
+    const email = document.getElementById('email');
+    const password = document.getElementById('live-password');
+    const submit = document.getElementById('email-auth-submit');
+    const switchButton = document.getElementById('auth-switch');
+    const switchLabel = document.getElementById('auth-switch-label');
+    const title = document.getElementById('auth-title');
+    const subtitle = document.getElementById('auth-subtitle');
+    const message = document.getElementById('auth-message');
+    let registering = false;
+
+    const setMessage = (text, type = 'error') => {
+      message.textContent = text;
+      message.className = `text-sm rounded-lg px-3 py-2 ${type === 'error' ? 'bg-red-50 text-red-700' : 'bg-emerald-50 text-emerald-700'}`;
+    };
+
+    const friendlyError = (error) => ({
+      'auth/invalid-email': 'Enter a valid email address.',
+      'auth/user-not-found': 'No account exists with this email.',
+      'auth/wrong-password': 'Incorrect password. Please try again.',
+      'auth/invalid-credential': 'Incorrect email or password.',
+      'auth/email-already-in-use': 'An account already exists with this email. Please sign in.',
+      'auth/weak-password': 'Your password must contain at least 6 characters.',
+      'auth/too-many-requests': 'Too many attempts. Please wait a moment and try again.',
+      'auth/network-request-failed': 'Network error. Check your connection and try again.',
+      'auth/operation-not-allowed': 'Email/password sign-in is disabled in Firebase. Enable it in Firebase Console → Authentication → Sign-in method.',
+      'auth/api-key-not-valid': 'The Firebase configuration is invalid. Check the API key in public/js/firebase-config.js.',
+      'auth/configuration-not-found': 'Firebase project configuration was not found. Replace the values in public/js/firebase-config.js with the configuration from your active Firebase project.',
+      'auth/unauthorized-domain': 'This website domain is not authorised in Firebase. Add it in Firebase Console → Authentication → Settings → Authorised domains.'
+    }[error.code] || error.message || 'We could not complete that request. Please try again.');
+
+    if (!window.firebaseConfigStatus?.ready) {
+      setMessage(window.firebaseConfigStatus.message, 'error');
+    }
+
+    switchButton.addEventListener('click', () => {
+      registering = !registering;
+      nameGroup.classList.toggle('hidden', !registering);
+      nameGroup.classList.toggle('flex', registering);
+      name.required = registering;
+      password.autocomplete = registering ? 'new-password' : 'current-password';
+      title.textContent = registering ? 'Create your account' : 'Welcome back';
+      subtitle.textContent = registering ? 'Use your email and a secure password to get started' : 'Sign in with your email and password';
+      submit.innerHTML = registering ? '<span>Create account</span><span class="material-symbols-outlined text-[18px]">person_add</span>' : '<span>Sign in</span><span class="material-symbols-outlined text-[18px]">login</span>';
+      switchLabel.textContent = registering ? 'Already have an account?' : 'New to Sukhi?';
+      switchButton.textContent = registering ? 'Sign in' : 'Create an account';
+      message.className = 'hidden text-sm rounded-lg px-3 py-2';
+    });
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!form.checkValidity()) return form.reportValidity();
+      submit.disabled = true;
+      submit.classList.add('opacity-70', 'cursor-wait');
+      message.className = 'hidden text-sm rounded-lg px-3 py-2';
+      try {
+        if (registering) {
+          await Auth.register(email.value, password.value, name.value);
+          setMessage('Account created. You are now signed in.', 'success');
+        } else {
+          await Auth.login(email.value, password.value);
+          setMessage('Signed in successfully. Redirecting…', 'success');
+        }
+        window.setTimeout(() => { window.location.href = 'index.html'; }, 700);
+      } catch (error) {
+        setMessage(friendlyError(error));
+      } finally {
+        submit.disabled = false;
+        submit.classList.remove('opacity-70', 'cursor-wait');
+      }
+    });
+
+    document.getElementById('forgot-password').addEventListener('click', async () => {
+      if (!email.checkValidity()) {
+        email.reportValidity();
+        return;
+      }
+      try {
+        await Auth.sendPasswordReset(email.value);
+        setMessage('Password reset email sent. Check your inbox.', 'success');
+      } catch (error) {
+        setMessage(friendlyError(error));
+      }
+    });
+  });
+
+>>>>>>> 73b8b01 (updated project files)
   // Fix navigation links on all pages
   document.addEventListener('DOMContentLoaded', () => {
     // Bottom nav
@@ -389,6 +540,7 @@
   });
 </script>
 </body></html>
+<<<<<<< HEAD
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   // Attach to existing forms if present, otherwise create handlers
@@ -443,3 +595,5 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 </script>
+=======
+>>>>>>> 73b8b01 (updated project files)

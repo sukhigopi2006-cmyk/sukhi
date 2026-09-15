@@ -58,6 +58,7 @@
 <body class="bg-background text-on-surface font-body min-h-screen antialiased flex flex-col">
 
   <!-- ========================================================================= -->
+<<<<<<< HEAD
   <!-- 1. ADMIN LOGIN VIEW (Displayed when user is not authenticated as Admin)    -->
   <!-- ========================================================================= -->
   <div id="admin-login-view" class="flex-1 flex flex-col justify-center items-center p-4 md:p-8 min-h-screen">
@@ -136,6 +137,11 @@
   <!-- 2. AUTHENTICATED ADMIN DASHBOARD VIEW                                      -->
   <!-- ========================================================================= -->
   <div id="admin-dashboard-view" class="hidden min-h-screen flex flex-col md:flex-row">
+=======
+  <!-- ADMIN DASHBOARD VIEW (Direct Access Without Login)                        -->
+  <!-- ========================================================================= -->
+  <div id="admin-dashboard-view" class="min-h-screen flex flex-col md:flex-row">
+>>>>>>> 73b8b01 (updated project files)
     
     <!-- Mobile Header -->
     <header class="md:hidden fixed top-0 w-full z-40 bg-white/95 backdrop-blur-md border-b border-outline-variant/40 px-4 h-16 flex items-center justify-between shadow-sm">
@@ -147,8 +153,13 @@
         <button onclick="openAddProductModal()" class="px-3 py-1.5 bg-primary-container text-white text-xs font-bold rounded-lg flex items-center gap-1 shadow-sm">
           <span class="material-symbols-outlined text-base">add</span> Add
         </button>
+<<<<<<< HEAD
         <button onclick="handleAdminLogout()" class="p-2 text-stone-600 hover:text-primary rounded-lg" title="Sign Out">
           <span class="material-symbols-outlined text-xl">logout</span>
+=======
+        <button onclick="handleAdminLogout()" class="p-2 text-stone-600 hover:text-primary rounded-lg" title="Exit to Store">
+          <span class="material-symbols-outlined text-xl">storefront</span>
+>>>>>>> 73b8b01 (updated project files)
         </button>
       </div>
     </header>
@@ -188,6 +199,7 @@
           <span class="material-symbols-outlined text-xl">store</span>
           <span class="text-sm font-label">View Live Store</span>
         </a>
+<<<<<<< HEAD
         <a href="https://console.firebase.google.com/project/sukhifireworkes/firestore" target="_blank"
           class="flex items-center gap-3 px-4 py-3 rounded-xl text-amber-800 hover:bg-amber-50 font-medium transition-all text-left group">
           <span class="material-symbols-outlined text-xl text-amber-600 group-hover:scale-110 transition-transform">database</span>
@@ -210,6 +222,25 @@
           class="w-full flex items-center justify-center gap-2 py-2.5 border border-outline-variant/70 text-stone-700 rounded-xl hover:border-red-400 hover:text-red-600 hover:bg-red-50 transition-all text-xs font-bold cursor-pointer">
           <span class="material-symbols-outlined text-base">logout</span>
           Sign Out
+=======
+      </nav>
+
+      <!-- User Profile & Exit to Store -->
+      <div class="px-4 mt-auto space-y-3">
+        <div class="p-3 bg-surface-container rounded-xl border border-outline-variant/30 flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-primary-container text-white flex items-center justify-center font-bold text-sm shadow-sm">
+            <span class="material-symbols-outlined text-lg">admin_panel_settings</span>
+          </div>
+          <div class="min-w-0 flex-1">
+            <p class="text-xs font-bold text-stone-900 truncate" id="adminDisplayName">Store Administrator</p>
+            <p class="text-[11px] text-emerald-600 font-semibold truncate" id="adminEmailDisplay">● Direct Access Mode</p>
+          </div>
+        </div>
+        <button onclick="handleAdminLogout()"
+          class="w-full flex items-center justify-center gap-2 py-2.5 border border-outline-variant/70 text-stone-700 rounded-xl hover:border-primary-container hover:text-primary-container hover:bg-orange-50 transition-all text-xs font-bold cursor-pointer">
+          <span class="material-symbols-outlined text-base">storefront</span>
+          Exit to Store
+>>>>>>> 73b8b01 (updated project files)
         </button>
       </div>
     </aside>
@@ -225,6 +256,7 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-2.5">
+<<<<<<< HEAD
           <button onclick="handleSeedFirestore()" id="btnSeedFirestore"
             class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold text-xs transition-colors shadow-xs" title="Sync & seed sample fireworks into your cloud Firestore database">
             <span class="material-symbols-outlined text-base text-amber-700">cloud_upload</span>
@@ -235,6 +267,8 @@
             <span class="material-symbols-outlined text-base text-amber-600">database</span>
             Firebase Console
           </a>
+=======
+>>>>>>> 73b8b01 (updated project files)
           <a href="shop.html" class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-outline-variant/80 text-stone-700 hover:text-primary hover:bg-orange-50 font-bold text-xs transition-colors">
             <span class="material-symbols-outlined text-base">open_in_new</span>
             Live Store
@@ -248,6 +282,7 @@
         </div>
       </div>
 
+<<<<<<< HEAD
       <!-- Cloud Database Banner with Live Health Diagnostic -->
       <div class="mb-6 p-5 rounded-2xl bg-gradient-to-r from-amber-50 via-orange-50 to-white border border-amber-200 shadow-xs space-y-3">
         <div class="flex flex-col md:flex-row justify-between md:items-center gap-3">
@@ -291,6 +326,8 @@
         <div id="customerTestResult" class="hidden"></div>
       </div>
 
+=======
+>>>>>>> 73b8b01 (updated project files)
       <!-- Metrics Bento Grid -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 mb-8">
         <!-- Metric 1: Total Revenue -->
@@ -383,6 +420,7 @@
             <select id="productCategoryFilter" onchange="filterAdminProducts()"
               class="py-2 px-3 text-xs rounded-xl border border-outline-variant/60 focus:border-primary-container focus:ring-1 focus:ring-primary-container text-stone-700 font-medium">
               <option value="all">All Categories</option>
+<<<<<<< HEAD
               <option value="Crackers">Crackers</option>
               <option value="Aerial">Aerial</option>
               <option value="Sparklers">Sparklers</option>
@@ -390,6 +428,12 @@
               <option value="Rockets">Rockets</option>
               <option value="Ground">Ground</option>
               <option value="Gift Boxes">Gift Boxes</option>
+=======
+              <option value="Pencils">Pencils</option>
+              <option value="Ground Chakker">Ground Chakker</option>
+              <option value="Flower Pots">Flower Pots</option>
+              <option value="Twinkling Star">Twinkling Star</option>
+>>>>>>> 73b8b01 (updated project files)
             </select>
 
             <button onclick="openAddProductModal()"
@@ -421,6 +465,36 @@
         </div>
       </section>
 
+<<<<<<< HEAD
+=======
+      <section id="section-offers" class="mb-10 card-surface rounded-2xl p-5 md:p-6">
+        <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-5">
+          <div>
+            <h3 class="font-headline text-xl font-bold text-stone-900 flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary-container text-2xl">campaign</span>
+              Offers & Promotional Banners
+            </h3>
+            <p class="text-xs text-stone-500 mt-0.5">Manage the rotating promotion shown at the top of the Shop page.</p>
+          </div>
+          <label class="inline-flex items-center gap-2 text-xs font-bold text-stone-700">
+            <input id="offerActive" type="checkbox" checked class="rounded border-stone-300 text-primary focus:ring-primary" />
+            Active
+          </label>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <input id="offerText" type="text" placeholder="Flat 5% off on selected fireworks" class="px-3.5 py-2.5 rounded-xl border border-outline-variant/60 text-sm" />
+          <input id="offerImage" type="url" placeholder="Promotional image URL (optional)" class="px-3.5 py-2.5 rounded-xl border border-outline-variant/60 text-sm" />
+        </div>
+        <div class="flex items-center gap-3 mt-3">
+          <button onclick="saveOfferFromAdmin()" class="px-4 py-2.5 bg-primary-container hover:bg-orange-600 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-base">save</span> Save Offer
+          </button>
+          <span id="offerSaveStatus" class="text-xs text-stone-500"></span>
+        </div>
+        <div id="adminOffersList" class="mt-4 space-y-2"></div>
+      </section>
+
+>>>>>>> 73b8b01 (updated project files)
       <!-- ========================================================== -->
       <!-- TAB SECTION: RECENT ORDERS & LOW INVENTORY (Split Grid)    -->
       <!-- ========================================================== -->
@@ -548,7 +622,11 @@
             <span class="material-symbols-outlined text-lg">add_shopping_cart</span>
           </div>
           <div>
+<<<<<<< HEAD
             <h3 class="font-headline text-lg font-bold text-stone-900">Add New Firework Product</h3>
+=======
+            <h3 id="productModalTitle" class="font-headline text-lg font-bold text-stone-900">Add New Firework Product</h3>
+>>>>>>> 73b8b01 (updated project files)
             <p class="text-[11px] text-stone-500">Product will immediately appear in your online store and catalog.</p>
           </div>
         </div>
@@ -559,10 +637,18 @@
 
       <!-- Modal Body (Form) -->
       <form id="addProductForm" onsubmit="handleSaveProduct(event)" class="p-6 space-y-4 overflow-y-auto flex-1">
+<<<<<<< HEAD
         <!-- Product Name -->
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1" for="prodName">Product Name *</label>
           <input type="text" id="prodName" required placeholder="e.g. 5000 Wala Supreme Crackers"
+=======
+        <input type="hidden" id="editingProductId"/>
+        <!-- Product Name -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1" for="prodName">Product Name *</label>
+          <input type="text" id="prodName" required placeholder="e.g. 7&quot; PENCIL SINGLE BOX"
+>>>>>>> 73b8b01 (updated project files)
             class="w-full px-3.5 py-2.5 rounded-xl border border-outline-variant/70 text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-stone-900"/>
         </div>
 
@@ -572,6 +658,7 @@
             <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1" for="prodCategory">Category *</label>
             <select id="prodCategory" required
               class="w-full px-3.5 py-2.5 rounded-xl border border-outline-variant/70 text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-stone-900 font-medium">
+<<<<<<< HEAD
               <option value="Crackers">Crackers</option>
               <option value="Aerial">Aerial Shots</option>
               <option value="Sparklers">Sparklers</option>
@@ -579,6 +666,12 @@
               <option value="Rockets">Rockets</option>
               <option value="Ground">Ground Spinners</option>
               <option value="Gift Boxes">Gift Boxes</option>
+=======
+              <option value="Pencils">Pencils</option>
+              <option value="Ground Chakker">Ground Chakker</option>
+              <option value="Flower Pots">Flower Pots</option>
+              <option value="Twinkling Star">Twinkling Star</option>
+>>>>>>> 73b8b01 (updated project files)
             </select>
           </div>
 
@@ -622,13 +715,21 @@
             <span class="text-[11px] font-semibold text-stone-500 block mb-1">Quick Presets:</span>
             <div class="flex flex-wrap gap-1.5">
               <button type="button" onclick="selectImagePreset('cracker')" class="px-2.5 py-1 text-[11px] rounded-lg bg-stone-100 hover:bg-orange-100 text-stone-700 hover:text-primary font-medium transition">
+<<<<<<< HEAD
                 💥 Crackers
+=======
+                ✏️ Pencils
+>>>>>>> 73b8b01 (updated project files)
               </button>
               <button type="button" onclick="selectImagePreset('aerial')" class="px-2.5 py-1 text-[11px] rounded-lg bg-stone-100 hover:bg-orange-100 text-stone-700 hover:text-primary font-medium transition">
                 🚀 Sky Shot
               </button>
               <button type="button" onclick="selectImagePreset('sparkler')" class="px-2.5 py-1 text-[11px] rounded-lg bg-stone-100 hover:bg-orange-100 text-stone-700 hover:text-primary font-medium transition">
+<<<<<<< HEAD
                 ✨ Sparklers
+=======
+                ✨ Twinkling Star
+>>>>>>> 73b8b01 (updated project files)
               </button>
               <button type="button" onclick="selectImagePreset('giftbox')" class="px-2.5 py-1 text-[11px] rounded-lg bg-stone-100 hover:bg-orange-100 text-stone-700 hover:text-primary font-medium transition">
                 🎁 Gift Hamper
@@ -691,6 +792,7 @@
 
     let allLoadedProducts = [];
 
+<<<<<<< HEAD
     // Initialize Page
     document.addEventListener('DOMContentLoaded', async () => {
       // Check admin status
@@ -763,11 +865,50 @@
       Auth.logout();
       showToast('Logged out of Admin Console');
       checkAdminAuthentication();
+=======
+    // Enable Admin mode directly without requiring login
+    AppState.isAdmin = true;
+
+    // Initialize Page
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Initialize admin dashboard and load store data
+      await checkAdminAuthentication();
+    });
+
+    async function checkAdminAuthentication() {
+      AppState.isAdmin = true;
+      const dashView = document.getElementById('admin-dashboard-view');
+      if (dashView) dashView.classList.remove('hidden');
+
+      // Update profile pill in sidebar
+      const emailEl = document.getElementById('adminEmailDisplay');
+      const nameEl = document.getElementById('adminDisplayName');
+      if (emailEl) emailEl.textContent = AppState.user?.email || '● Direct Access Mode';
+      if (nameEl) nameEl.textContent = AppState.user?.displayName || 'Store Administrator';
+
+      // Load data cleanly
+      await loadAndRenderAdminData();
+    }
+
+    // Exit handler to return to store
+    function handleAdminLogout() {
+      if (AppState.user && window.auth) {
+        Auth.logout();
+      }
+      showToast('Returning to store...');
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 300);
+>>>>>>> 73b8b01 (updated project files)
     }
 
     // Load products and populate table + metrics
     async function loadAndRenderAdminData() {
       try {
+<<<<<<< HEAD
+=======
+        if (window.db) await AdminProducts.doubleAllPrices();
+>>>>>>> 73b8b01 (updated project files)
         allLoadedProducts = await AdminProducts.getAll();
       } catch (err) {
         console.warn('Error loading products for admin:', err);
@@ -777,6 +918,10 @@
       renderProductsTable(allLoadedProducts);
       renderLowInventory(allLoadedProducts);
       updateDashboardMetrics(allLoadedProducts);
+<<<<<<< HEAD
+=======
+      await loadAdminOffers();
+>>>>>>> 73b8b01 (updated project files)
       testFirebaseHealth();
     }
 
@@ -839,6 +984,13 @@
                   class="p-1.5 text-stone-500 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition" title="Add 25 to stock">
                   <span class="material-symbols-outlined text-base">add_box</span>
                 </button>
+<<<<<<< HEAD
+=======
+                <button onclick="openEditProductModal('${p.id}')" title="Edit product"
+                  class="p-1.5 text-stone-500 hover:text-primary-container hover:bg-orange-50 rounded-lg transition">
+                  <span class="material-symbols-outlined text-base">edit</span>
+                </button>
+>>>>>>> 73b8b01 (updated project files)
                 <a href="product.html?id=${p.id}" target="_blank" title="View product page"
                   class="p-1.5 text-stone-500 hover:text-primary-container hover:bg-orange-50 rounded-lg transition">
                   <span class="material-symbols-outlined text-base">visibility</span>
@@ -949,13 +1101,43 @@
 
     // Modal Controls
     function openAddProductModal() {
+<<<<<<< HEAD
+=======
+      document.getElementById('editingProductId').value = '';
+      document.getElementById('productModalTitle').textContent = 'Add New Firework Product';
+      document.getElementById('btnSaveProduct').innerHTML = '<span class="material-symbols-outlined text-base">check</span> Save Product to Store';
+>>>>>>> 73b8b01 (updated project files)
       document.getElementById('addProductModal').classList.remove('hidden');
       document.getElementById('prodName')?.focus();
+    }
+
+<<<<<<< HEAD
+    function closeAddProductModal() {
+      document.getElementById('addProductModal').classList.add('hidden');
+      document.getElementById('addProductForm')?.reset();
+=======
+    function openEditProductModal(productId) {
+      const product = allLoadedProducts.find(item => item.id === productId);
+      if (!product) return;
+      document.getElementById('editingProductId').value = product.id;
+      document.getElementById('prodName').value = product.name || '';
+      document.getElementById('prodCategory').value = product.category || 'Pencils';
+      document.getElementById('prodStock').value = product.stock ?? 0;
+      document.getElementById('prodPrice').value = product.price ?? 0;
+      document.getElementById('prodOriginalPrice').value = product.originalPrice ?? '';
+      document.getElementById('prodImage').value = product.image || '';
+      document.getElementById('prodDesc').value = product.description || '';
+      updateImagePreview(product.image || IMAGE_PRESETS.cracker);
+      document.getElementById('productModalTitle').textContent = 'Edit Firework Product';
+      document.getElementById('btnSaveProduct').innerHTML = '<span class="material-symbols-outlined text-base">save</span> Update Product';
+      document.getElementById('addProductModal').classList.remove('hidden');
     }
 
     function closeAddProductModal() {
       document.getElementById('addProductModal').classList.add('hidden');
       document.getElementById('addProductForm')?.reset();
+      document.getElementById('editingProductId').value = '';
+>>>>>>> 73b8b01 (updated project files)
     }
 
     function updateImagePreview(url) {
@@ -985,6 +1167,10 @@
       const stock = parseInt(document.getElementById('prodStock').value) || 50;
       const image = document.getElementById('prodImage').value.trim() || IMAGE_PRESETS.cracker;
       const description = document.getElementById('prodDesc').value.trim() || 'Premium fireworks for Diwali & festival celebrations.';
+<<<<<<< HEAD
+=======
+      const editingId = document.getElementById('editingProductId').value;
+>>>>>>> 73b8b01 (updated project files)
 
       const newProdData = {
         name,
@@ -999,8 +1185,18 @@
       };
 
       try {
+<<<<<<< HEAD
         await AdminProducts.add(newProdData);
         showToast(`🎉 "${name}" added to catalog successfully!`);
+=======
+        if (editingId) {
+          await AdminProducts.update(editingId, newProdData);
+          showToast(`"${name}" updated successfully!`);
+        } else {
+          await AdminProducts.add(newProdData);
+          showToast(`"${name}" added to catalog successfully!`);
+        }
+>>>>>>> 73b8b01 (updated project files)
         closeAddProductModal();
         await loadAndRenderAdminData();
       } catch (err) {
@@ -1051,6 +1247,7 @@
 
       try {
         const samples = getSampleProducts();
+<<<<<<< HEAD
         let addedCount = 0;
         for (const p of samples) {
           const snap = await db.collection('products').where('name', '==', p.name).get();
@@ -1067,6 +1264,10 @@
         } else {
           showToast('Products already synced in Firestore cloud!');
         }
+=======
+        await AdminProducts.replaceCatalog(samples);
+        showToast(`🎉 Replaced the catalog with ${samples.length} price-list products!`);
+>>>>>>> 73b8b01 (updated project files)
         await loadAndRenderAdminData();
       } catch (err) {
         console.error('Firestore sync error:', err);
@@ -1079,6 +1280,69 @@
       }
     }
 
+<<<<<<< HEAD
+=======
+    async function handleDoublePrices() {
+      const btn = document.getElementById('btnDoublePrices');
+      if (!confirm('Multiply every current Firestore product price by 2? This should only be done once.')) return;
+      if (btn) btn.disabled = true;
+      try {
+        const count = await AdminProducts.doubleAllPrices();
+        showToast(`Updated ${count} product prices to 2x.`);
+        await loadAndRenderAdminData();
+      } catch (err) {
+        showToast('Price update failed: ' + err.message, 'error');
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    async function loadAdminOffers() {
+      const offers = await Offers.getAll();
+      const list = document.getElementById('adminOffersList');
+      if (!list) return;
+      list.innerHTML = offers.map(offer => `
+        <div class="flex items-center justify-between gap-3 p-3 rounded-xl border border-outline-variant/40 bg-stone-50">
+          <div class="min-w-0">
+            <p class="text-sm font-bold text-stone-900 truncate">${offer.text}</p>
+            <p class="text-[11px] ${offer.active ? 'text-emerald-700' : 'text-stone-500'}">${offer.active ? 'Active on Shop' : 'Inactive'}</p>
+          </div>
+          <button onclick="removeAdminOffer('${offer.id}')" class="shrink-0 p-1.5 text-stone-500 hover:text-red-600 rounded-lg" title="Remove offer">
+            <span class="material-symbols-outlined text-base">delete</span>
+          </button>
+        </div>`).join('');
+      const active = offers.find(offer => offer.active) || offers[0];
+      if (active) {
+        document.getElementById('offerText').value = active.text || '';
+        document.getElementById('offerImage').value = active.image || '';
+        document.getElementById('offerActive').checked = active.active !== false;
+      }
+    }
+
+    async function saveOfferFromAdmin() {
+      const text = document.getElementById('offerText').value.trim();
+      if (!text) return showToast('Enter an offer message first.', 'error');
+      try {
+        await Offers.save({ id: 'offer-active', text, image: document.getElementById('offerImage').value.trim(), active: document.getElementById('offerActive').checked });
+        document.getElementById('offerSaveStatus').textContent = 'Saved just now';
+        showToast('Offer updated on the Shop page.');
+        await loadAdminOffers();
+      } catch (err) {
+        showToast('Offer save failed: ' + err.message, 'error');
+      }
+    }
+
+    async function removeAdminOffer(id) {
+      try {
+        await Offers.remove(id);
+        showToast('Offer removed.');
+        await loadAdminOffers();
+      } catch (err) {
+        showToast('Offer removal failed: ' + err.message, 'error');
+      }
+    }
+
+>>>>>>> 73b8b01 (updated project files)
     // Live Health Diagnostic
     async function testFirebaseHealth() {
       const pill = document.getElementById('firestoreStatusPill');
