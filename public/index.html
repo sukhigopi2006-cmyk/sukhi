@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SKYRA — Sukhi Fireworks</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "on-primary": "#ffffff",
+          "tertiary-container": "#ff674c",
+          "on-secondary-container": "#35697b",
+          "on-primary-fixed": "#351000",
+          "outline": "#8e7164",
+          "on-tertiary": "#ffffff",
+          "surface": "#fff8f5",
+          "error-container": "#ffdad6",
+          "on-background": "#1e1b19",
+          "tertiary-fixed-dim": "#ffb4a6",
+          "on-tertiary-container": "#660900",
+          "on-surface-variant": "#5a4136",
+          "on-secondary-fixed-variant": "#114d5e",
+          "inverse-primary": "#ffb694",
+          "tertiary": "#0284c7",
+          "on-tertiary-fixed-variant": "#8f1100",
+          "primary": "#ff6a00",
+          "error": "#dc2626",
+          "surface-bright": "#fff8f5",
+          "background": "#ffffff",
+          "surface-container-high": "#eee7e3",
+          "secondary-fixed": "#b7eaff",
+          "on-primary-fixed-variant": "#7b2f00",
+          "surface-container-lowest": "#ffffff",
+          "secondary-fixed-dim": "#9acee3",
+          "surface-container-low": "#faf8f5",
+          "on-surface": "#1c1917",
+          "inverse-surface": "#33302d",
+          "tertiary-fixed": "#ffdad3",
+          "surface-container": "#f4ece8",
+          "surface-tint": "#ff6a00",
+          "primary-fixed": "#ffdbcc",
+          "inverse-on-surface": "#f7efeb",
+          "on-secondary-fixed": "#001f28",
+          "on-error-container": "#93000a",
+          "on-error": "#ffffff",
+          "secondary": "#306577",
+          "surface-variant": "#f3efe9",
+          "on-primary-container": "#571f00",
+          "surface-container-highest": "#e9e1dd",
+          "primary-container": "#ff6a00",
+          "primary-fixed-dim": "#ffb694",
+          "on-secondary": "#ffffff",
+          "secondary-container": "#b3e8fc",
+          "outline-variant": "#eddcd2",
+          "on-tertiary-fixed": "#3f0300",
+          "surface-dim": "#e0d8d5"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "stack-sm": "8px",
+          "margin-mobile": "16px",
+          "gutter": "24px",
+          "stack-lg": "32px",
+          "margin-desktop": "48px",
+          "container-max-width": "1280px",
+          "unit": "4px",
+          "stack-md": "16px"
+        },
+        "fontFamily": {
+          "display-lg-mobile": ["Plus Jakarta Sans"],
+          "body-lg": ["Plus Jakarta Sans"],
+          "headline-md": ["Plus Jakarta Sans"],
+          "price-display": ["Space Grotesk"],
+          "headline-lg": ["Plus Jakarta Sans"],
+          "label-lg": ["Space Grotesk"],
+          "display-lg": ["Plus Jakarta Sans"],
+          "body-md": ["Plus Jakarta Sans"]
+        },
+        "fontSize": {
+          "display-lg-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "800" }],
+          "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+          "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+          "price-display": ["28px", { "lineHeight": "32px", "fontWeight": "800" }],
+          "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+          "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+          "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+          "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+        }
+      }
+    }
+  }
+</script>
+<style>
+        body {
+            background-color: #ffffff;
+            color: #1c1917;
+        }
+        .light-card {
+            background: #ffffff;
+            border: 1px solid #eddcd2;
+            box-shadow: 0 4px 20px -2px rgba(255, 106, 0, 0.05), 0 2px 8px -1px rgba(0, 0, 0, 0.04);
+        }
+        .glow-hover:hover {
+            box-shadow: 0 12px 30px -4px rgba(255, 106, 0, 0.16), 0 4px 12px -2px rgba(0, 0, 0, 0.05);
+            border-color: #ffb694;
+        }
+        .sparkle-btn {
+            position: relative;
+            overflow: hidden;
+        }
+        .sparkle-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.4) 10%, transparent 10.01%);
+            background-size: 10px 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .sparkle-btn:hover::after {
+            opacity: 1;
+            animation: move-bg 1s linear infinite;
+        }
+        @keyframes move-bg {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(10px, 10px); }
+        }
+</style>
+<link rel="stylesheet" href="js/site-shell.css"/>
+</head>
+<body class="font-body-md text-body-md antialiased pb-24 md:pb-0 bg-background text-on-surface selection:bg-primary/20 selection:text-primary">
+<!-- TopNavBar (Desktop) -->
+<nav class="hidden md:flex fixed top-0 w-full z-50 border-b border-outline-variant/60 bg-white/90 backdrop-blur-xl shadow-[0_2px_12px_rgba(0,0,0,0.03)] justify-between items-center h-16 px-margin-desktop max-w-container-max-width mx-auto left-0 right-0">
+<a href="index.html" class="font-display-lg text-primary tracking-tighter flex items-center gap-1.5" style="font-size: 26px; line-height: 28px;">
+<span>Sukhi</span>
+<span class="inline-block w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+</a>
+<div class="flex items-center gap-7 text-sm font-medium text-stone-600">
+<a href="index.html" class="text-primary font-bold">Home</a>
+<a href="shop.html" class="hover:text-primary transition-colors">Shop</a>
+<a href="wishlist.html" class="hover:text-primary transition-colors">Wishlist</a>
+<a href="cart.html" class="hover:text-primary transition-colors">Cart</a>
+</div>
+<div class="flex items-center gap-3">
+<a href="shop.html" aria-label="Search" class="material-symbols-outlined text-stone-600 hover:text-primary hover:bg-orange-50 transition-colors p-2 rounded-full active:scale-95">search</a>
+<a href="wishlist.html" aria-label="Wishlist" class="relative p-2 rounded-full hover:bg-orange-50 text-stone-600 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[24px]">favorite</span>
+<span data-wishlist-count class="absolute -top-0.5 -right-0.5 w-5 h-5 bg-primary text-white text-[10px] font-bold rounded-full items-center justify-center hidden">0</span>
+</a>
+<a href="cart.html" aria-label="Cart" class="relative p-2 rounded-full hover:bg-orange-50 text-stone-600 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[24px]">shopping_cart</span>
+<span data-cart-count class="absolute -top-0.5 -right-0.5 w-5 h-5 bg-primary text-white text-[10px] font-bold rounded-full items-center justify-center hidden">0</span>
+</a>
+<a href="login.html" data-auth-login class="px-4 py-2 rounded-full bg-primary text-white text-sm font-semibold hover:bg-orange-600 transition-colors shadow-sm">Login</a>
+<div data-auth-user class="hidden items-center gap-2">
+<span data-user-name class="text-sm font-medium text-stone-700"></span>
+<button onclick="Auth.logout()" class="text-xs text-stone-500 hover:text-primary">Logout</button>
+</div>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="w-full max-w-container-max-width mx-auto px-margin-mobile md:px-margin-desktop pt-6 md:pt-24 pb-stack-lg flex flex-col gap-stack-lg">
+<!-- Hero Section -->
+<section class="relative w-full h-[60vh] rounded-2xl overflow-hidden flex items-center justify-center p-stack-lg text-center shadow-lg border border-outline-variant/40" data-alt="A spectacular nighttime scene of an epic fireworks display bursting in the deep midnight sky. Brilliant trails of primary orange and secondary gold rain down, illuminating the dark scene. The atmosphere is highly festive, energetic, and premium, designed to evoke the thrill of an elite pyrotechnic show. Deep rich blacks contrast with high-octane vivid glows." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBzdVtmuocVoHOOBx6eeL0ZwoeC7LjfNwHuC0BmlKemeSWHZwANbfXfLn436anF36UuAyc72p8GtBBeTnIQWLixHfco22EQMt6gszC0IXQCnzcCM8d-V5X4ZbQsCnT8vPE1b2703ke6at0WDZMxyVg0jlLj8O7NV42qDEUOYWFQxsbIkQJCGtYSVw_XJoYx8M4eUpf1nOMxmF5Lf7e23XrvbG8CoEsy3P-yQsAQo-X0JEFJ3Hy963PoZw'); background-size: cover; background-position: center;">
+<div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/30"></div>
+<div class="relative z-10 max-w-2xl text-white">
+<span class="inline-block bg-primary text-white font-label-lg text-xs px-3.5 py-1 rounded-full uppercase tracking-wider mb-3 shadow-md">SKYRA Signature Series</span>
+<h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-white mb-stack-sm drop-shadow-md font-bold">Light Up Your Night</h1>
+<p class="font-body-lg text-body-lg text-white/90 mb-stack-md drop-shadow">A cinematic collection of premium fireworks for unforgettable celebrations.</p>
+<a href="shop.html" class="inline-block bg-primary hover:bg-[#e65c00] text-on-primary font-label-lg text-label-lg px-8 py-3 rounded-full sparkle-btn transition-all duration-300 shadow-[0_4px_20px_rgba(255,106,0,0.45)] hover:shadow-[0_6px_25px_rgba(255,106,0,0.6)] active:scale-95 font-semibold">Shop Collection</a>
+</div>
+</section>
+<!-- Brand Story -->
+<section class="brand-intro reveal-on-scroll" aria-labelledby="brand-story-title">
+  <div>
+    <span class="brand-kicker">The new Sukhi identity</span>
+    <h2 id="brand-story-title">Make the night remember you.</h2>
+    <p>SKYRA brings a sharper, more cinematic way to celebrate — crafted in Sivakasi, curated for modern homes, and delivered with care.</p>
+  </div>
+  <div class="brand-intro-art" aria-hidden="true">
+    <div class="brand-orbit"><div class="brand-orbit-core"><span>SKYRA</span></div></div>
+  </div>
+</section>
+<!-- Stories -->
+<section id="stories" class="reveal-on-scroll" aria-labelledby="stories-title">
+  <div class="flex items-end justify-between mb-4">
+    <div><span class="brand-kicker">Beyond the box</span><h2 id="stories-title" class="font-headline-lg-mobile md:font-headline-lg text-stone-900 mt-1">Stories in every spark</h2></div>
+    <a href="contact.html" class="text-sm font-semibold text-primary hover:underline">Talk to us →</a>
+  </div>
+  <div class="story-rail">
+    <article class="story-card"><span class="material-symbols-outlined">auto_awesome</span><h3>Made in Sivakasi</h3><p>Generations of craft, reimagined for a new celebration.</p></article>
+    <article class="story-card"><span class="material-symbols-outlined">family_restroom</span><h3>For every together</h3><p>Thoughtful picks for family evenings, big entrances, and little joys.</p></article>
+    <article class="story-card"><span class="material-symbols-outlined">local_shipping</span><h3>Arrives with care</h3><p>Clear updates, careful packing, and a smoother festive experience.</p></article>
+  </div>
+</section>
+<!-- Category Pills -->
+<section class="flex overflow-x-auto gap-stack-sm pb-2 scrollbar-hide py-1">
+<a href="shop.html?cat=Pencils" class="whitespace-nowrap px-6 py-2.5 rounded-full bg-primary text-white font-label-lg text-label-lg shadow-sm hover:bg-[#e65c00] transition-all">Pencils</a>
+<a href="shop.html?cat=Ground%20Chakker" class="whitespace-nowrap px-6 py-2.5 rounded-full bg-[#faf8f5] text-stone-700 border border-outline-variant hover:border-primary hover:text-primary font-label-lg text-label-lg hover:bg-orange-50/50 transition-all">Ground Chakker</a>
+<a href="shop.html?cat=Flower%20Pots" class="whitespace-nowrap px-6 py-2.5 rounded-full bg-[#faf8f5] text-stone-700 border border-outline-variant hover:border-primary hover:text-primary font-label-lg text-label-lg hover:bg-orange-50/50 transition-all">Flower Pots</a>
+<a href="shop.html?cat=Twinkling%20Star" class="whitespace-nowrap px-6 py-2.5 rounded-full bg-[#faf8f5] text-stone-700 border border-outline-variant hover:border-primary hover:text-primary font-label-lg text-label-lg hover:bg-orange-50/50 transition-all">Twinkling Star</a>
+</section>
+<!-- Featured Products -->
+<section>
+<div class="flex items-center justify-between mb-stack-md">
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-stone-900">Featured Fireworks</h2>
+<a href="shop.html" class="text-sm font-semibold text-primary cursor-pointer hover:underline">View All →</a>
+</div>
+<div id="featured-products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter"></div>
+<div id="legacy-products-grid" class="hidden">
+<!-- Product Card 1 -->
+<div class="light-card rounded-2xl p-4 flex flex-col gap-stack-sm glow-hover transition-all duration-300 group">
+<div class="relative w-full h-52 rounded-xl overflow-hidden bg-stone-100">
+<a href="product.html?id=p1" class="block w-full h-full">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="1000 Wala Red Giant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWx00X12Fmm_QPvB_J9Tluq3vf6rtzggOm_EKuLuelzTzoVVvmflkMr68b26FEaYEZX8cseX6WTS_HOEOoU6E3dCYFw1bl790Aty1dfmtc4sm7ILB37Rtrx1CQTxaNFELlpw5cNgHjNQTzFUNYsONsnWRnVwMKiJk3x8n-UxZfMZF62eR_7t9_Hs8n4I0K6J31CX7VVo8mz4esG684TDwcFTih5r1MixKm-sMrDfj5OULBRbWj_cx2qQ"/>
+</a>
+<div class="absolute top-3 left-3 bg-red-600 text-white px-2.5 py-1 rounded-md font-label-lg text-[11px] tracking-wider font-bold shadow-sm">20% OFF</div>
+<button data-toggle-wishlist="p1" data-name="1000 Wala Red Giant" data-price="899" data-image="https://lh3.googleusercontent.com/aida-public/AB6AXuBWx00X12Fmm_QPvB_J9Tluq3vf6rtzggOm_EKuLuelzTzoVVvmflkMr68b26FEaYEZX8cseX6WTS_HOEOoU6E3dCYFw1bl790Aty1dfmtc4sm7ILB37Rtrx1CQTxaNFELlpw5cNgHjNQTzFUNYsONsnWRnVwMKiJk3x8n-UxZfMZF62eR_7t9_Hs8n4I0K6J31CX7VVo8mz4esG684TDwcFTih5r1MixKm-sMrDfj5OULBRbWj_cx2qQ" aria-label="Add to wishlist" class="absolute top-3 right-3 p-2 rounded-full bg-white/90 hover:bg-white text-stone-600 hover:text-primary transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">favorite</span>
+</button>
+</div>
+<div class="flex justify-between items-start pt-1">
+<div>
+<a href="product.html?id=p1" class="font-headline-md text-[18px] leading-tight text-stone-900 font-semibold mb-1 group-hover:text-primary transition-colors block">1000 Wala Red Giant</a>
+<div class="flex items-center gap-1 text-emerald-600">
+<span class="material-symbols-outlined text-[15px]">check_circle</span>
+<span class="font-label-lg text-[12px] font-medium">In Stock</span>
+</div>
+</div>
+</div>
+<div class="flex justify-between items-end mt-auto pt-3 border-t border-stone-100">
+<div>
+<div class="text-stone-400 line-through text-xs font-medium">MRP ₹1,125</div>
+<div class="font-price-display text-price-display text-primary font-bold">₹899</div>
+</div>
+<button data-add-cart="p1" data-name="1000 Wala Red Giant" data-price="899" data-image="https://lh3.googleusercontent.com/aida-public/AB6AXuBWx00X12Fmm_QPvB_J9Tluq3vf6rtzggOm_EKuLuelzTzoVVvmflkMr68b26FEaYEZX8cseX6WTS_HOEOoU6E3dCYFw1bl790Aty1dfmtc4sm7ILB37Rtrx1CQTxaNFELlpw5cNgHjNQTzFUNYsONsnWRnVwMKiJk3x8n-UxZfMZF62eR_7t9_Hs8n4I0K6J31CX7VVo8mz4esG684TDwcFTih5r1MixKm-sMrDfj5OULBRbWj_cx2qQ" class="bg-orange-50 hover:bg-primary text-primary hover:text-white border border-primary/40 hover:border-primary px-4 py-2 rounded-xl font-label-lg text-sm font-semibold transition-all flex items-center gap-2 shadow-sm active:scale-95">
+<span class="material-symbols-outlined text-[18px]">shopping_cart</span> Add
+</button>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="light-card rounded-2xl p-4 flex flex-col gap-stack-sm glow-hover transition-all duration-300 group">
+<div class="relative w-full h-52 rounded-xl overflow-hidden bg-stone-100">
+<a href="product.html?id=p2" class="block w-full h-full">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Sky Dragon Aerial Shot" src="https://images.unsplash.com/photo-1467810563316-b5412438a3b7?w=600&h=400&fit=crop"/>
+</a>
+<div class="absolute top-3 left-3 bg-red-600 text-white px-2.5 py-1 rounded-md font-label-lg text-[11px] tracking-wider font-bold shadow-sm">21% OFF</div>
+<button data-toggle-wishlist="p2" data-name="Sky Dragon Aerial Shot" data-price="1499" data-image="https://images.unsplash.com/photo-1467810563316-b5412438a3b7?w=600&h=400&fit=crop" aria-label="Add to wishlist" class="absolute top-3 right-3 p-2 rounded-full bg-white/90 hover:bg-white text-stone-600 hover:text-primary transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">favorite</span>
+</button>
+</div>
+<div class="flex justify-between items-start pt-1">
+<div>
+<a href="product.html?id=p2" class="font-headline-md text-[18px] leading-tight text-stone-900 font-semibold mb-1 group-hover:text-primary transition-colors block">Sky Dragon Aerial Shot</a>
+<div class="flex items-center gap-1 text-emerald-600">
+<span class="material-symbols-outlined text-[15px]">check_circle</span>
+<span class="font-label-lg text-[12px] font-medium">In Stock</span>
+</div>
+</div>
+</div>
+<div class="flex justify-between items-end mt-auto pt-3 border-t border-stone-100">
+<div>
+<div class="text-stone-400 line-through text-xs font-medium">MRP ₹1,899</div>
+<div class="font-price-display text-price-display text-primary font-bold">₹1,499</div>
+</div>
+<button data-add-cart="p2" data-name="Sky Dragon Aerial Shot" data-price="1499" data-image="https://images.unsplash.com/photo-1467810563316-b5412438a3b7?w=600&h=400&fit=crop" class="bg-orange-50 hover:bg-primary text-primary hover:text-white border border-primary/40 hover:border-primary px-4 py-2 rounded-xl font-label-lg text-sm font-semibold transition-all flex items-center gap-2 shadow-sm active:scale-95">
+<span class="material-symbols-outlined text-[18px]">shopping_cart</span> Add
+</button>
+</div>
+</div>
+<!-- Product Card 3 -->
+<div class="light-card rounded-2xl p-4 flex flex-col gap-stack-sm glow-hover transition-all duration-300 group">
+<div class="relative w-full h-52 rounded-xl overflow-hidden bg-stone-100">
+<a href="product.html?id=p3" class="block w-full h-full">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Golden Sparkler Pack" src="https://images.unsplash.com/photo-1513151233558-d860c5398176?w=600&h=400&fit=crop"/>
+</a>
+<div class="absolute top-3 left-3 bg-red-600 text-white px-2.5 py-1 rounded-md font-label-lg text-[11px] tracking-wider font-bold shadow-sm">17% OFF</div>
+<button data-toggle-wishlist="p3" data-name="Golden Sparkler Pack (50pcs)" data-price="249" data-image="https://images.unsplash.com/photo-1513151233558-d860c5398176?w=600&h=400&fit=crop" aria-label="Add to wishlist" class="absolute top-3 right-3 p-2 rounded-full bg-white/90 hover:bg-white text-stone-600 hover:text-primary transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">favorite</span>
+</button>
+</div>
+<div class="flex justify-between items-start pt-1">
+<div>
+<a href="product.html?id=p3" class="font-headline-md text-[18px] leading-tight text-stone-900 font-semibold mb-1 group-hover:text-primary transition-colors block">Golden Sparkler Pack (50pcs)</a>
+<div class="flex items-center gap-1 text-emerald-600">
+<span class="material-symbols-outlined text-[15px]">check_circle</span>
+<span class="font-label-lg text-[12px] font-medium">In Stock</span>
+</div>
+</div>
+</div>
+<div class="flex justify-between items-end mt-auto pt-3 border-t border-stone-100">
+<div>
+<div class="text-stone-400 line-through text-xs font-medium">MRP ₹299</div>
+<div class="font-price-display text-price-display text-primary font-bold">₹249</div>
+</div>
+<button data-add-cart="p3" data-name="Golden Sparkler Pack (50pcs)" data-price="249" data-image="https://images.unsplash.com/photo-1513151233558-d860c5398176?w=600&h=400&fit=crop" class="bg-orange-50 hover:bg-primary text-primary hover:text-white border border-primary/40 hover:border-primary px-4 py-2 rounded-xl font-label-lg text-sm font-semibold transition-all flex items-center gap-2 shadow-sm active:scale-95">
+<span class="material-symbols-outlined text-[18px]">shopping_cart</span> Add
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Safety Tips -->
+<section id="coverage" class="coverage-band reveal-on-scroll" aria-labelledby="coverage-title">
+  <div>
+    <span class="brand-kicker">Coverage, made simple</span>
+    <h2 id="coverage-title">From Sivakasi to your celebration.</h2>
+    <p>We are building a smoother delivery experience for festive homes, event planners, and families across South India.</p>
+    <a href="contact.html" class="inline-flex items-center gap-2 mt-3 text-sm font-bold text-primary hover:underline">Check your delivery area <span>→</span></a>
+  </div>
+  <div class="coverage-points" aria-label="Delivery coverage highlights">
+    <div class="coverage-point"><span class="material-symbols-outlined">location_on</span><span>Sivakasi &amp; Virudhunagar</span></div>
+    <div class="coverage-point"><span class="material-symbols-outlined">local_shipping</span><span>South India delivery</span></div>
+    <div class="coverage-point"><span class="material-symbols-outlined">event</span><span>Event &amp; bulk orders</span></div>
+    <div class="coverage-point"><span class="material-symbols-outlined">support_agent</span><span>Human support</span></div>
+  </div>
+</section>
+<section class="contact-cta reveal-on-scroll" aria-label="Contact call to action">
+  <div><h3>Planning something unforgettable?</h3><p>Tell us the mood, the moment, and the magic you want to create.</p></div>
+  <a href="contact.html">Contact the team →</a>
+</section>
+
+<!-- Safety Tips -->
+<section class="mt-stack-lg bg-surface-container-low rounded-2xl p-6 md:p-8 border border-outline-variant/60">
+<h2 class="font-headline-md text-headline-md text-stone-900 mb-stack-md text-center font-bold">Celebrate Safely</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-stack-md">
+<div class="bg-white p-6 rounded-xl flex flex-col items-center text-center border border-outline-variant/50 shadow-sm hover:border-primary/40 transition-colors">
+<div class="w-14 h-14 rounded-full bg-orange-50 text-primary flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-[32px]">social_distance</span>
+</div>
+<h4 class="font-headline-md text-[16px] text-stone-900 font-semibold">Keep Distance</h4>
+<p class="font-body-md text-[14px] text-stone-600 mt-1">Maintain a safe distance after lighting fireworks.</p>
+</div>
+<div class="bg-white p-6 rounded-xl flex flex-col items-center text-center border border-outline-variant/50 shadow-sm hover:border-primary/40 transition-colors">
+<div class="w-14 h-14 rounded-full bg-orange-50 text-primary flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-[32px]">supervised_user_circle</span>
+</div>
+<h4 class="font-headline-md text-[16px] text-stone-900 font-semibold">Adult Supervision</h4>
+<p class="font-body-md text-[14px] text-stone-600 mt-1">Never let children handle fireworks alone.</p>
+</div>
+<div class="bg-white p-6 rounded-xl flex flex-col items-center text-center border border-outline-variant/50 shadow-sm hover:border-primary/40 transition-colors">
+<div class="w-14 h-14 rounded-full bg-orange-50 text-primary flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-[32px]">water_drop</span>
+</div>
+<h4 class="font-headline-md text-[16px] text-stone-900 font-semibold">Water Ready</h4>
+<p class="font-body-md text-[14px] text-stone-600 mt-1">Keep a bucket of water or hose nearby at all times.</p>
+</div>
+</section>
+</main>
+
+<!-- Footer -->
+<footer class="border-t border-outline-variant/60 bg-[#faf8f5] mt-12 py-12">
+<div class="max-w-container-max-width mx-auto px-margin-mobile md:px-margin-desktop">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+<div class="col-span-1 md:col-span-2">
+<a href="index.html" class="font-display-lg text-2xl font-extrabold text-primary tracking-tight">Sukhi</a>
+<p class="text-sm text-stone-600 mt-2 max-w-sm">Premium Festive Fireworks for an unforgettable celebration. Safe, certified, and delivered directly to your doorstep.</p>
+<p class="text-xs text-stone-400 mt-4">© 2026 Sukhi Fireworks. Light with caution.</p>
+</div>
+<div>
+<h4 class="font-bold text-sm text-stone-900 uppercase tracking-wider mb-3">Quick Links</h4>
+<div class="flex flex-col gap-2 text-sm text-stone-600">
+<a href="index.html" class="hover:text-primary transition">Home</a>
+<a href="shop.html" class="hover:text-primary transition">All Fireworks</a>
+<a href="wishlist.html" class="hover:text-primary transition">My Wishlist</a>
+<a href="cart.html" class="hover:text-primary transition">Shopping Cart</a>
+</div>
+</div>
+<div>
+<h4 class="font-bold text-sm text-stone-900 uppercase tracking-wider mb-3">Account</h4>
+<div class="flex flex-col gap-2 text-sm text-stone-600">
+<a href="login.html" class="hover:text-primary transition">Login / Register</a>
+<a href="checkout.html" class="hover:text-primary transition">Checkout</a>
+</div>
+</div>
+</div>
+</div>
+</footer>
+
+<!-- BottomNavBar (Mobile) -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center h-20 pb-safe px-4 md:hidden z-50 border-t border-outline-variant bg-white/95 backdrop-blur-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.06)] rounded-t-2xl">
+<a class="flex flex-col items-center justify-center text-primary bg-orange-50 rounded-xl px-4 py-1.5 transition-transform duration-200" href="index.html">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-lg text-[11px] mt-0.5 font-bold">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 hover:text-primary transition-transform duration-200" href="shop.html">
+<span class="material-symbols-outlined">storefront</span>
+<span class="font-label-lg text-[11px] mt-0.5 font-medium">Shop</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 hover:text-primary transition-transform duration-200 relative" href="wishlist.html">
+<span class="material-symbols-outlined">favorite</span>
+<span data-wishlist-count class="absolute top-1 right-3 w-4 h-4 bg-primary text-white text-[9px] font-bold rounded-full items-center justify-center hidden">0</span>
+<span class="font-label-lg text-[11px] mt-0.5 font-medium">Wishlist</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 hover:text-primary transition-transform duration-200 relative" href="cart.html">
+<span class="material-symbols-outlined">shopping_bag</span>
+<span data-cart-count class="absolute top-1 right-3 w-4 h-4 bg-primary text-white text-[9px] font-bold rounded-full items-center justify-center hidden">0</span>
+<span class="font-label-lg text-[11px] mt-0.5 font-medium">Cart</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 hover:text-primary transition-transform duration-200" href="login.html">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-lg text-[11px] mt-0.5 font-medium">Profile</span>
+</a>
+</nav>
+
+<!-- Firebase SDK + App Logic -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/app.js"></script>
+<script src="js/site-shell.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  // Sync wishlist icon states on index cards
+  const syncWishlistIcons = () => {
+    document.querySelectorAll('[data-toggle-wishlist]').forEach(btn => {
+      const id = btn.dataset.toggleWishlist;
+      const inWish = Wishlist.has(id);
+      const icon = btn.querySelector('.material-symbols-outlined');
+      if (icon) {
+        icon.style.fontVariationSettings = inWish ? "'FILL' 1" : "'FILL' 0";
+        icon.classList.toggle('text-primary', inWish);
+      }
+    });
+  };
+
+  const renderFeaturedProducts = (products) => {
+    const grid = document.getElementById('featured-products-grid');
+    if (!grid) return;
+
+    const imageFallback = 'https://lh3.googleusercontent.com/aida-public/AB6AXuBWx00X12Fmm_QPvB_J9Tluq3vf6rtzggOm_EKuLuelzTzoVVvmflkMr68b26FEaYEZX8cseX6WTS_HOEOoU6E3dCYFw1bl790Aty1dfmtc4sm7ILB37Rtrx1CQTxaNFELlpw5cNgHjNQTzFUNYsONsnWRnVwMKiJk3x8n-UxZfMZF62eR_7t9_Hs8n4I0K6J31CX7VVo8mz4esG684TDwcFTih5r1MixKm-sMrDfj5OULBRbWj_cx2qQ';
+    grid.innerHTML = products.slice(0, 3).map(product => `
+      <article class="light-card rounded-2xl p-4 flex flex-col gap-stack-sm glow-hover transition-all duration-300 group">
+        <a href="product.html?id=${product.id}" class="relative w-full h-52 rounded-xl overflow-hidden bg-stone-100 block">
+          <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${product.image || imageFallback}" alt="${product.name}"/>
+        </a>
+        <div class="flex justify-between items-start pt-1">
+          <div>
+            <a href="product.html?id=${product.id}" class="font-headline-md text-[18px] leading-tight text-stone-900 font-semibold mb-1 group-hover:text-primary transition-colors block">${product.name}</a>
+            <div class="flex items-center gap-1 text-emerald-600">
+              <span class="material-symbols-outlined text-[15px]">check_circle</span>
+              <span class="font-label-lg text-[12px] font-medium">${product.category} | In Stock</span>
+            </div>
+          </div>
+          <button data-toggle-wishlist="${product.id}" data-name="${product.name}" data-price="${product.price}" data-image="${product.image || imageFallback}" aria-label="Add to wishlist" class="p-2 rounded-full bg-white hover:bg-orange-50 text-stone-600 hover:text-primary transition-colors shadow-sm">
+            <span class="material-symbols-outlined text-[20px]">favorite</span>
+          </button>
+        </div>
+        <div class="flex justify-between items-end mt-auto pt-3 border-t border-stone-100">
+          <div>
+            <div class="text-xs text-stone-500">${product.contents} contents</div>
+            <div class="font-price-display text-price-display text-primary font-bold">${formatPrice(product.price)}</div>
+          </div>
+          <button data-add-cart="${product.id}" data-name="${product.name}" data-price="${product.price}" data-image="${product.image || imageFallback}" class="bg-orange-50 hover:bg-primary text-primary hover:text-white border border-primary/40 hover:border-primary px-4 py-2 rounded-xl font-label-lg text-sm font-semibold transition-all flex items-center gap-2 shadow-sm active:scale-95">
+            <span class="material-symbols-outlined text-[18px]">shopping_cart</span> Add
+          </button>
+        </div>
+      </article>`).join('');
+  };
+
+  try {
+    const products = await Products.load();
+    renderFeaturedProducts(products);
+    syncWishlistIcons();
+  } catch (e) {
+    console.warn(e);
+  }
+});
+</script>
+</body></html>

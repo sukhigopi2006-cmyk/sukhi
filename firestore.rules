@@ -1,0 +1,54 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper: is signed in
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    // Helper: is admin (customize emails)
+    function isAdmin() {
+      return isSignedIn() && 
+        request.auth.token.email in ['admin@sukhi.com', 'owner@sukhi.com'];
+    }
+    
+    // Helper: is owner of the document
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Products - public read, admin write
+    match /products/{productId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Users - owner read/write their own data
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+      allow read: if isAdmin();
+    }
+
+    // Orders - user can create & read own, admin can read/update all
+    match /orders/{orderId} {
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow read: if isSignedIn() && 
+        (resource.data.userId == request.auth.uid || isAdmin());
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Customers - allow create on checkout/register, admin read/manage
+    match /customers/{customerId} {
+      allow create: if isAdmin() || (isSignedIn() && customerId == request.auth.uid && request.resource.data.userId == request.auth.uid);
+      allow read, update, delete: if isAdmin() || (isSignedIn() && customerId == request.auth.uid);
+    }
+
+    // Promotional offers - public read, admin write
+    match /offers/{offerId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+  }
+}

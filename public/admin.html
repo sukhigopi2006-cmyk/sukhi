@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Admin Portal - Sukhi Fireworks</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#a14000",
+            "primary-container": "#ff6a00",
+            "primary-fixed": "#ffdbcc",
+            "primary-hover": "#e05800",
+            "on-primary": "#ffffff",
+            "background": "#fff8f5",
+            "surface": "#ffffff",
+            "surface-container": "#f8f1ec",
+            "surface-container-high": "#eee7e3",
+            "outline-variant": "#e2bfb0",
+            "on-surface": "#1e1b19",
+            "on-surface-variant": "#5a4136",
+            "error": "#ba1a1a"
+          },
+          fontFamily: {
+            "headline": ["Plus Jakarta Sans", "sans-serif"],
+            "body": ["Plus Jakarta Sans", "sans-serif"],
+            "label": ["Space Grotesk", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    .card-surface {
+      background-color: #ffffff;
+      border: 1px solid #eddcd2;
+      box-shadow: 0 2px 8px -2px rgba(161, 64, 0, 0.05), 0 1px 3px -1px rgba(0, 0, 0, 0.04);
+    }
+    .card-hover:hover {
+      box-shadow: 0 10px 25px -5px rgba(255, 106, 0, 0.12), 0 4px 10px -2px rgba(0, 0, 0, 0.04);
+      border-color: #ffb694;
+    }
+    .animate-fadeIn {
+      animation: fadeIn 0.25s ease-out forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body min-h-screen antialiased flex flex-col">
+
+  <!-- ========================================================================= -->
+  <!-- ADMIN DASHBOARD VIEW (Direct Access Without Login)                        -->
+  <!-- ========================================================================= -->
+  <div id="admin-dashboard-view" class="min-h-screen flex flex-col md:flex-row">
+    
+    <!-- Mobile Header -->
+    <header class="md:hidden fixed top-0 w-full z-40 bg-white/95 backdrop-blur-md border-b border-outline-variant/40 px-4 h-16 flex items-center justify-between shadow-sm">
+      <div class="flex items-center gap-2">
+        <a href="index.html" class="font-headline text-2xl font-extrabold text-primary-container tracking-tight">Sukhi</a>
+        <span class="px-2 py-0.5 rounded-md bg-orange-100 text-primary text-[10px] font-bold font-label uppercase">Admin</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="openAddProductModal()" class="px-3 py-1.5 bg-primary-container text-white text-xs font-bold rounded-lg flex items-center gap-1 shadow-sm">
+          <span class="material-symbols-outlined text-base">add</span> Add
+        </button>
+        <button onclick="handleAdminLogout()" class="p-2 text-stone-600 hover:text-primary rounded-lg" title="Exit to Store">
+          <span class="material-symbols-outlined text-xl">storefront</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Desktop Sidebar -->
+    <aside class="hidden md:flex flex-col w-64 fixed h-full z-30 bg-white border-r border-outline-variant/40 pt-7 pb-6 shadow-[2px_0_12px_rgba(161,64,0,0.03)]">
+      <!-- Logo -->
+      <div class="px-6 mb-8">
+        <a href="index.html" class="block">
+          <h1 class="font-headline text-3xl font-extrabold text-primary-container tracking-tight">Sukhi</h1>
+        </a>
+        <div class="flex items-center gap-1.5 mt-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="px-2 py-0.5 rounded bg-primary-fixed text-primary font-label text-[11px] font-bold uppercase tracking-wider">STORE ADMIN</span>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="flex-1 px-4 space-y-1.5">
+        <button onclick="switchAdminTab('dashboard')" id="nav-tab-dashboard"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-primary-container bg-orange-50 font-bold transition-all text-left">
+          <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+          <span class="text-sm font-label">Dashboard</span>
+        </button>
+        <button onclick="switchAdminTab('products')" id="nav-tab-products"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-stone-600 hover:bg-surface-container hover:text-primary-container font-medium transition-all text-left">
+          <span class="material-symbols-outlined text-xl">inventory_2</span>
+          <span class="text-sm font-label">Products Catalog</span>
+        </button>
+        <button onclick="switchAdminTab('orders')" id="nav-tab-orders"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-stone-600 hover:bg-surface-container hover:text-primary-container font-medium transition-all text-left">
+          <span class="material-symbols-outlined text-xl">shopping_cart_checkout</span>
+          <span class="text-sm font-label">Recent Orders</span>
+        </button>
+        <a href="shop.html"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-stone-600 hover:bg-surface-container hover:text-primary-container font-medium transition-all text-left">
+          <span class="material-symbols-outlined text-xl">store</span>
+          <span class="text-sm font-label">View Live Store</span>
+        </a>
+      </nav>
+
+      <!-- User Profile & Exit to Store -->
+      <div class="px-4 mt-auto space-y-3">
+        <div class="p-3 bg-surface-container rounded-xl border border-outline-variant/30 flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-primary-container text-white flex items-center justify-center font-bold text-sm shadow-sm">
+            <span class="material-symbols-outlined text-lg">admin_panel_settings</span>
+          </div>
+          <div class="min-w-0 flex-1">
+            <p class="text-xs font-bold text-stone-900 truncate" id="adminDisplayName">Store Administrator</p>
+            <p class="text-[11px] text-emerald-600 font-semibold truncate" id="adminEmailDisplay">● Direct Access Mode</p>
+          </div>
+        </div>
+        <button onclick="handleAdminLogout()"
+          class="w-full flex items-center justify-center gap-2 py-2.5 border border-outline-variant/70 text-stone-700 rounded-xl hover:border-primary-container hover:text-primary-container hover:bg-orange-50 transition-all text-xs font-bold cursor-pointer">
+          <span class="material-symbols-outlined text-base">storefront</span>
+          Exit to Store
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 w-full pt-20 pb-20 md:pt-8 md:pb-12 md:ml-64 px-4 md:px-8 max-w-[1340px] mx-auto animate-fadeIn">
+      
+      <!-- Top Action Bar -->
+      <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
+        <div>
+          <h2 id="currentSectionTitle" class="font-headline text-2xl md:text-3xl font-extrabold text-stone-900 tracking-tight">Dashboard Overview</h2>
+          <p class="text-stone-500 text-xs md:text-sm mt-0.5">Real-time store management, inventory, and festive sales metrics.</p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2.5">
+          <a href="shop.html" class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-outline-variant/80 text-stone-700 hover:text-primary hover:bg-orange-50 font-bold text-xs transition-colors">
+            <span class="material-symbols-outlined text-base">open_in_new</span>
+            Live Store
+          </a>
+          <!-- Add Product Button -->
+          <button onclick="openAddProductModal()"
+            class="bg-gradient-to-r from-primary-container to-orange-600 hover:from-orange-600 hover:to-primary text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-md hover:shadow-orange-500/25 transition-all flex items-center justify-center gap-2 active:scale-95">
+            <span class="material-symbols-outlined text-xl">add</span>
+            + New Product
+          </button>
+        </div>
+      </div>
+
+      <!-- Metrics Bento Grid -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 mb-8">
+        <!-- Metric 1: Total Revenue -->
+        <div class="card-surface card-hover rounded-2xl p-5 flex flex-col justify-between h-32 transition-all">
+          <div class="flex justify-between items-start">
+            <span class="font-label text-xs font-bold tracking-wider text-stone-500 uppercase">Total Sales</span>
+            <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-700">
+              <span class="material-symbols-outlined text-lg">payments</span>
+            </div>
+          </div>
+          <div>
+            <div class="font-headline text-2xl font-extrabold text-stone-900">₹1,24,500</div>
+            <div class="text-[11px] font-semibold text-emerald-700 flex items-center gap-0.5 mt-0.5">
+              <span class="material-symbols-outlined text-xs">trending_up</span> +14% this month
+            </div>
+          </div>
+        </div>
+
+        <!-- Metric 2: Active Orders -->
+        <div class="card-surface card-hover rounded-2xl p-5 flex flex-col justify-between h-32 transition-all">
+          <div class="flex justify-between items-start">
+            <span class="font-label text-xs font-bold tracking-wider text-stone-500 uppercase">Active Orders</span>
+            <div class="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center text-primary-container">
+              <span class="material-symbols-outlined text-lg">local_shipping</span>
+            </div>
+          </div>
+          <div>
+            <div class="font-headline text-2xl font-extrabold text-stone-900" id="statActiveOrders">84</div>
+            <div class="text-[11px] font-medium text-stone-500 mt-0.5">
+              <span class="text-primary font-bold">12</span> pending shipment
+            </div>
+          </div>
+        </div>
+
+        <!-- Metric 3: Total Products -->
+        <div class="card-surface card-hover rounded-2xl p-5 flex flex-col justify-between h-32 transition-all cursor-pointer" onclick="switchAdminTab('products')">
+          <div class="flex justify-between items-start">
+            <span class="font-label text-xs font-bold tracking-wider text-stone-500 uppercase">Total Products</span>
+            <div class="w-8 h-8 rounded-lg bg-sky-100 flex items-center justify-center text-sky-700">
+              <span class="material-symbols-outlined text-lg">inventory</span>
+            </div>
+          </div>
+          <div>
+            <div class="font-headline text-2xl font-extrabold text-stone-900" id="statTotalProducts">...</div>
+            <div class="text-[11px] font-semibold text-sky-700 flex items-center gap-0.5 mt-0.5">
+              <span>View catalog →</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Metric 4: Low Stock Alerts -->
+        <div class="card-surface card-hover rounded-2xl p-5 flex flex-col justify-between h-32 transition-all">
+          <div class="flex justify-between items-start">
+            <span class="font-label text-xs font-bold tracking-wider text-stone-500 uppercase">Low Stock Alerts</span>
+            <div class="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center text-error">
+              <span class="material-symbols-outlined text-lg">warning</span>
+            </div>
+          </div>
+          <div>
+            <div class="font-headline text-2xl font-extrabold text-stone-900" id="statLowStock">...</div>
+            <div class="text-[11px] font-semibold text-error mt-0.5 flex items-center gap-0.5">
+              <span id="statLowStockSub">Items below 20 units</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================================== -->
+      <!-- TAB SECTION: PRODUCTS CATALOG                              -->
+      <!-- ========================================================== -->
+      <section id="section-products" class="mb-10 card-surface rounded-2xl p-5 md:p-6">
+        <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6">
+          <div>
+            <h3 class="font-headline text-xl font-bold text-stone-900 flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary-container text-2xl">inventory_2</span>
+              Product Inventory Management
+            </h3>
+            <p class="text-xs text-stone-500 mt-0.5">Manage live fireworks, adjust stock quantities, and add new seasonal products.</p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2.5">
+            <!-- Search Filter -->
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-2.5 text-stone-400 text-base">search</span>
+              <input type="text" id="productSearchInput" oninput="filterAdminProducts()" placeholder="Search products..."
+                class="pl-9 pr-3.5 py-2 text-xs rounded-xl border border-outline-variant/60 focus:border-primary-container focus:ring-1 focus:ring-primary-container w-44 md:w-56"/>
+            </div>
+
+            <!-- Category Filter -->
+            <select id="productCategoryFilter" onchange="filterAdminProducts()"
+              class="py-2 px-3 text-xs rounded-xl border border-outline-variant/60 focus:border-primary-container focus:ring-1 focus:ring-primary-container text-stone-700 font-medium">
+              <option value="all">All Categories</option>
+              <option value="Pencils">Pencils</option>
+              <option value="Ground Chakker">Ground Chakker</option>
+              <option value="Flower Pots">Flower Pots</option>
+              <option value="Twinkling Star">Twinkling Star</option>
+            </select>
+
+            <button onclick="openAddProductModal()"
+              class="py-2 px-3.5 bg-primary-container hover:bg-orange-600 text-white rounded-xl text-xs font-bold flex items-center gap-1 shadow-sm transition">
+              <span class="material-symbols-outlined text-base">add</span> New Product
+            </button>
+          </div>
+        </div>
+
+        <!-- Products Table -->
+        <div class="overflow-x-auto rounded-xl border border-outline-variant/40">
+          <table class="w-full text-left border-collapse text-sm">
+            <thead class="bg-stone-50 border-b border-outline-variant/40 text-stone-500 font-label text-xs uppercase tracking-wider">
+              <tr>
+                <th class="py-3 px-4 font-bold">Product</th>
+                <th class="py-3 px-4 font-bold">Category</th>
+                <th class="py-3 px-4 font-bold">Price</th>
+                <th class="py-3 px-4 font-bold">Stock</th>
+                <th class="py-3 px-4 font-bold">Status</th>
+                <th class="py-3 px-4 font-bold text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="adminProductsTableBody" class="divide-y divide-outline-variant/20 font-body">
+              <tr>
+                <td colspan="6" class="py-8 text-center text-stone-400">Loading fireworks inventory...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="section-offers" class="mb-10 card-surface rounded-2xl p-5 md:p-6">
+        <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-5">
+          <div>
+            <h3 class="font-headline text-xl font-bold text-stone-900 flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary-container text-2xl">campaign</span>
+              Offers & Promotional Banners
+            </h3>
+            <p class="text-xs text-stone-500 mt-0.5">Manage the rotating promotion shown at the top of the Shop page.</p>
+          </div>
+          <label class="inline-flex items-center gap-2 text-xs font-bold text-stone-700">
+            <input id="offerActive" type="checkbox" checked class="rounded border-stone-300 text-primary focus:ring-primary" />
+            Active
+          </label>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <input id="offerText" type="text" placeholder="Flat 5% off on selected fireworks" class="px-3.5 py-2.5 rounded-xl border border-outline-variant/60 text-sm" />
+          <input id="offerImage" type="url" placeholder="Promotional image URL (optional)" class="px-3.5 py-2.5 rounded-xl border border-outline-variant/60 text-sm" />
+        </div>
+        <div class="flex items-center gap-3 mt-3">
+          <button onclick="saveOfferFromAdmin()" class="px-4 py-2.5 bg-primary-container hover:bg-orange-600 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-base">save</span> Save Offer
+          </button>
+          <span id="offerSaveStatus" class="text-xs text-stone-500"></span>
+        </div>
+        <div id="adminOffersList" class="mt-4 space-y-2"></div>
+      </section>
+
+      <!-- ========================================================== -->
+      <!-- TAB SECTION: RECENT ORDERS & LOW INVENTORY (Split Grid)    -->
+      <!-- ========================================================== -->
+      <div id="section-overview-grid" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Recent Orders (2/3 width) -->
+        <section class="lg:col-span-2 card-surface rounded-2xl p-5 md:p-6">
+          <div class="flex justify-between items-center mb-5">
+            <h3 class="font-headline text-lg font-bold text-stone-900 flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary-container text-xl">receipt_long</span>
+              Recent Customer Orders
+            </h3>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-orange-100 text-primary">Live Tracking</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs md:text-sm">
+              <thead>
+                <tr class="border-b border-outline-variant/40 text-stone-500 font-label text-xs uppercase tracking-wider">
+                  <th class="pb-3 pr-3 font-semibold">Order ID</th>
+                  <th class="pb-3 pr-3 font-semibold">Customer</th>
+                  <th class="pb-3 pr-3 font-semibold">Items</th>
+                  <th class="pb-3 pr-3 font-semibold">Status</th>
+                  <th class="pb-3 font-semibold text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-outline-variant/20">
+                <tr class="hover:bg-orange-50/40 transition-colors">
+                  <td class="py-3.5 pr-3 text-primary-container font-bold">#ORD-9924</td>
+                  <td class="py-3.5 pr-3 font-medium text-stone-800">Rajesh Kumar</td>
+                  <td class="py-3.5 pr-3 text-stone-500">2x (Diwali Gift Box)</td>
+                  <td class="py-3.5 pr-3">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-label text-[11px] font-bold">Pending</span>
+                  </td>
+                  <td class="py-3.5 text-right">
+                    <button onclick="showToast('Order #ORD-9924 marked as Shipped!')" class="text-xs px-2.5 py-1 bg-stone-100 hover:bg-orange-100 text-stone-700 hover:text-primary rounded-lg font-semibold transition">
+                      Ship Order
+                    </button>
+                  </td>
+                </tr>
+                <tr class="hover:bg-orange-50/40 transition-colors">
+                  <td class="py-3.5 pr-3 text-primary-container font-bold">#ORD-9921</td>
+                  <td class="py-3.5 pr-3 font-medium text-stone-800">Sarah Jenkins</td>
+                  <td class="py-3.5 pr-3 text-stone-500">3x (1000 Wala Red Giant)</td>
+                  <td class="py-3.5 pr-3">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-800 font-label text-[11px] font-bold">Shipped</span>
+                  </td>
+                  <td class="py-3.5 text-right">
+                    <button onclick="showToast('Order #ORD-9921 marked as Delivered!')" class="text-xs px-2.5 py-1 bg-stone-100 hover:bg-emerald-100 text-stone-700 hover:text-emerald-800 rounded-lg font-semibold transition">
+                      Deliver
+                    </button>
+                  </td>
+                </tr>
+                <tr class="hover:bg-orange-50/40 transition-colors">
+                  <td class="py-3.5 pr-3 text-primary-container font-bold">#ORD-9920</td>
+                  <td class="py-3.5 pr-3 font-medium text-stone-800">Michael Chang</td>
+                  <td class="py-3.5 pr-3 text-stone-500">1x (Sky Dragon Shot)</td>
+                  <td class="py-3.5 pr-3">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-label text-[11px] font-bold">Delivered</span>
+                  </td>
+                  <td class="py-3.5 text-right">
+                    <span class="text-xs text-stone-400 font-medium">Completed</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Low Inventory Warning Card (1/3 width) -->
+        <section class="card-surface rounded-2xl p-5 md:p-6 flex flex-col">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="font-headline text-lg font-bold text-stone-900 flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-error text-xl">warning</span>
+              Low Inventory Alerts
+            </h3>
+            <span class="text-[11px] font-bold text-error bg-red-50 px-2 py-0.5 rounded">Action Needed</span>
+          </div>
+          <p class="text-xs text-stone-500 mb-4">Items that need restocking before festive sales peak.</p>
+
+          <div id="lowInventoryList" class="space-y-3 flex-1 overflow-y-auto max-h-[300px] pr-1">
+            <!-- Dynamically populated -->
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- Mobile Bottom Navigation Bar -->
+    <nav class="fixed bottom-0 left-0 w-full flex justify-around items-center h-16 px-4 md:hidden bg-white/95 backdrop-blur-xl border-t border-outline-variant/40 shadow-md z-40">
+      <button onclick="switchAdminTab('dashboard')" class="flex flex-col items-center justify-center text-primary-container">
+        <span class="material-symbols-outlined text-xl">dashboard</span>
+        <span class="font-label text-[10px]">Dashboard</span>
+      </button>
+      <button onclick="switchAdminTab('products')" class="flex flex-col items-center justify-center text-stone-500 hover:text-primary-container">
+        <span class="material-symbols-outlined text-xl">inventory_2</span>
+        <span class="font-label text-[10px]">Catalog</span>
+      </button>
+      <button onclick="openAddProductModal()" class="flex flex-col items-center justify-center text-stone-500 hover:text-primary-container">
+        <span class="material-symbols-outlined text-xl">add_circle</span>
+        <span class="font-label text-[10px]">Add Product</span>
+      </button>
+      <a href="shop.html" class="flex flex-col items-center justify-center text-stone-500 hover:text-primary-container">
+        <span class="material-symbols-outlined text-xl">store</span>
+        <span class="font-label text-[10px]">Store</span>
+      </a>
+      <button onclick="handleAdminLogout()" class="flex flex-col items-center justify-center text-stone-500 hover:text-red-500">
+        <span class="material-symbols-outlined text-xl">logout</span>
+        <span class="font-label text-[10px]">Logout</span>
+      </button>
+    </nav>
+  </div>
+
+
+  <!-- ========================================================================= -->
+  <!-- 3. ADD PRODUCT MODAL DIALOG                                               -->
+  <!-- ========================================================================= -->
+  <div id="addProductModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden p-4 animate-fadeIn">
+    <div class="bg-white rounded-2xl w-full max-w-xl shadow-2xl border border-outline-variant/60 overflow-hidden flex flex-col max-h-[92vh]">
+      
+      <!-- Modal Header -->
+      <div class="px-6 py-4 bg-orange-50/80 border-b border-outline-variant/40 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-orange-100 text-primary-container flex items-center justify-center">
+            <span class="material-symbols-outlined text-lg">add_shopping_cart</span>
+          </div>
+          <div>
+            <h3 id="productModalTitle" class="font-headline text-lg font-bold text-stone-900">Add New Firework Product</h3>
+            <p class="text-[11px] text-stone-500">Product will immediately appear in your online store and catalog.</p>
+          </div>
+        </div>
+        <button onclick="closeAddProductModal()" class="p-1.5 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-200/50 transition">
+          <span class="material-symbols-outlined text-xl">close</span>
+        </button>
+      </div>
+
+      <!-- Modal Body (Form) -->
+      <form id="addProductForm" onsubmit="handleSaveProduct(event)" class="p-6 space-y-4 overflow-y-auto flex-1">
+        <input type="hidden" id="editingProductId"/>
+        <!-- Product Name -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1" for="prodName">Product Name *</label>
+          <input type="text" id="prodName" required placeholder="e.g. 7&quot; PENCIL SINGLE BOX"
+            class="w-full px-3.5 py-2.5 rounded-xl border border-outline-variant/70 text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-stone-900"/>
+        </div>
+
+        <!-- Category & Stock Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1" for="prodCategory">Category *</label>
+            <select id="prodCategory" required
+              class="w-full px-3.5 py-2.5 rounded-xl border border-outline-variant/70 text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-stone-900 font-medium">
+              <option value="Pencils">Pencils</option>
+              <option value="Ground Chakker">Ground Chakker</option>
+              <option value="Flower Pots">Flower Pots</option>
+              <option value="Twinkling Star">Twinkling Star</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1" for="prodStock">Initial Stock Quantity *</label>
+            <input type="number" id="prodStock" required min="1" value="100"
+              class="w-full px-3.5 py-2.5 rounded-xl border border-outline-variant/70 text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-stone-900"/>
+          </div>
+        </div>
+
+        <!-- Pricing Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1" for="prodPrice">Selling Price (₹) *</label>
+            <div class="relative">
+              <span class="absolute left-3.5 top-2.5 text-stone-500 font-bold text-sm">₹</span>
+              <input type="number" id="prodPrice" required min="1" placeholder="899"
+                class="w-full pl-8 pr-3.5 py-2.5 rounded-xl border border-outline-variant/70 text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-stone-900 font-semibold"/>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1" for="prodOriginalPrice">Original MRP (₹)</label>
+            <div class="relative">
+              <span class="absolute left-3.5 top-2.5 text-stone-500 font-bold text-sm">₹</span>
+              <input type="number" id="prodOriginalPrice" min="1" placeholder="1199"
+                class="w-full pl-8 pr-3.5 py-2.5 rounded-xl border border-outline-variant/70 text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-stone-900"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- Image URL with Preset Pickers -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1" for="prodImage">Image URL</label>
+          <input type="url" id="prodImage" oninput="updateImagePreview(this.value)" placeholder="https://..."
+            value="https://lh3.googleusercontent.com/aida-public/AB6AXuBWx00X12Fmm_QPvB_J9Tluq3vf6rtzggOm_EKuLuelzTzoVVvmflkMr68b26FEaYEZX8cseX6WTS_HOEOoU6E3dCYFw1bl790Aty1dfmtc4sm7ILB37Rtrx1CQTxaNFELlpw5cNgHjNQTzFUNYsONsnWRnVwMKiJk3x8n-UxZfMZF62eR_7t9_Hs8n4I0K6J31CX7VVo8mz4esG684TDwcFTih5r1MixKm-sMrDfj5OULBRbWj_cx2qQ"
+            class="w-full px-3.5 py-2.5 rounded-xl border border-outline-variant/70 text-xs focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-stone-900"/>
+          
+          <!-- Image Presets -->
+          <div class="mt-2">
+            <span class="text-[11px] font-semibold text-stone-500 block mb-1">Quick Presets:</span>
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" onclick="selectImagePreset('cracker')" class="px-2.5 py-1 text-[11px] rounded-lg bg-stone-100 hover:bg-orange-100 text-stone-700 hover:text-primary font-medium transition">
+                ✏️ Pencils
+              </button>
+              <button type="button" onclick="selectImagePreset('aerial')" class="px-2.5 py-1 text-[11px] rounded-lg bg-stone-100 hover:bg-orange-100 text-stone-700 hover:text-primary font-medium transition">
+                🚀 Sky Shot
+              </button>
+              <button type="button" onclick="selectImagePreset('sparkler')" class="px-2.5 py-1 text-[11px] rounded-lg bg-stone-100 hover:bg-orange-100 text-stone-700 hover:text-primary font-medium transition">
+                ✨ Twinkling Star
+              </button>
+              <button type="button" onclick="selectImagePreset('giftbox')" class="px-2.5 py-1 text-[11px] rounded-lg bg-stone-100 hover:bg-orange-100 text-stone-700 hover:text-primary font-medium transition">
+                🎁 Gift Hamper
+              </button>
+            </div>
+          </div>
+
+          <!-- Preview -->
+          <div class="mt-3 flex items-center gap-3 p-2.5 rounded-xl bg-stone-50 border border-outline-variant/40">
+            <img id="prodImagePreview" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWx00X12Fmm_QPvB_J9Tluq3vf6rtzggOm_EKuLuelzTzoVVvmflkMr68b26FEaYEZX8cseX6WTS_HOEOoU6E3dCYFw1bl790Aty1dfmtc4sm7ILB37Rtrx1CQTxaNFELlpw5cNgHjNQTzFUNYsONsnWRnVwMKiJk3x8n-UxZfMZF62eR_7t9_Hs8n4I0K6J31CX7VVo8mz4esG684TDwcFTih5r1MixKm-sMrDfj5OULBRbWj_cx2qQ"
+              class="w-12 h-12 rounded-lg object-cover bg-stone-200 border border-stone-300" alt="Preview"/>
+            <span class="text-xs text-stone-500">Live preview thumbnail</span>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1" for="prodDesc">Description</label>
+          <textarea id="prodDesc" rows="2" placeholder="High decibel sound burst, certified safety standards, suitable for festive celebrations..."
+            class="w-full px-3.5 py-2.5 rounded-xl border border-outline-variant/70 text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-stone-900"></textarea>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="pt-3 border-t border-outline-variant/40 flex justify-end items-center gap-3">
+          <button type="button" onclick="closeAddProductModal()"
+            class="px-4 py-2.5 rounded-xl border border-outline-variant text-stone-600 hover:bg-stone-100 text-xs font-bold transition">
+            Cancel
+          </button>
+          <button type="submit" id="btnSaveProduct"
+            class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-primary-container to-orange-600 hover:from-orange-600 hover:to-primary text-white text-xs font-bold shadow-md transition flex items-center gap-1.5 active:scale-95">
+            <span class="material-symbols-outlined text-base">check</span>
+            Save Product to Store
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- Toast Notification Root -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-[9999] flex flex-col gap-2"></div>
+
+  <!-- Firebase Compatibility SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/app.js"></script>
+
+  <!-- Admin Controller Script -->
+  <script>
+    // Preset image URLs
+    const IMAGE_PRESETS = {
+      cracker: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBWx00X12Fmm_QPvB_J9Tluq3vf6rtzggOm_EKuLuelzTzoVVvmflkMr68b26FEaYEZX8cseX6WTS_HOEOoU6E3dCYFw1bl790Aty1dfmtc4sm7ILB37Rtrx1CQTxaNFELlpw5cNgHjNQTzFUNYsONsnWRnVwMKiJk3x8n-UxZfMZF62eR_7t9_Hs8n4I0K6J31CX7VVo8mz4esG684TDwcFTih5r1MixKm-sMrDfj5OULBRbWj_cx2qQ',
+      aerial: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAF29EF_JCRD2bd0EN93g_3yiYZAcQpDham_sfD6YLBwMuXY0-my5UeJWKPTKn3rzvbOXmvnmfyw2MQXyQGzsIrPdYaED1_vIDYet_S9SIWWJJL2PgcBd2weYqDgDaDjpMK8sHy6cBvIN2R4AUVeS6lNy1Y0VWxfC8Zd848LPzY6w35bqleAw-90RBIffxxqlhyDnFUP7xpVqKOkGG5yL_sHCi9pKZvZx1X1Hj3I0EKdx1B8m3M4NB1bQ',
+      sparkler: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBIvczS9eaqjT9wt9eZpisZ5FSj4ELTVxGp5aQrJkQbXittDSCU9IncfSA3-bS_4vlKOtazYwI4M6pOzevJUmLRaR8Z477dB5GJxL9xzmTLKy-Au5PUwz8CI6w1-YI-R_LXeJ3t6rav8Mru4duTordqAsPgaen_G9UwdZDiC7Ji_SMOiwYd45IW7_oXpKJuXmaYczMx1em6yjDohDcOQw33XDjXAU_d3uRzZ95e34RoZF1V5oW33ordnw',
+      giftbox: 'https://images.unsplash.com/photo-1607083206968-13611e3d76db?w=600&h=400&fit=crop'
+    };
+
+    let allLoadedProducts = [];
+
+    // Enable Admin mode directly without requiring login
+    AppState.isAdmin = true;
+
+    // Initialize Page
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Initialize admin dashboard and load store data
+      await checkAdminAuthentication();
+    });
+
+    async function checkAdminAuthentication() {
+      AppState.isAdmin = true;
+      const dashView = document.getElementById('admin-dashboard-view');
+      if (dashView) dashView.classList.remove('hidden');
+
+      // Update profile pill in sidebar
+      const emailEl = document.getElementById('adminEmailDisplay');
+      const nameEl = document.getElementById('adminDisplayName');
+      if (emailEl) emailEl.textContent = AppState.user?.email || '● Direct Access Mode';
+      if (nameEl) nameEl.textContent = AppState.user?.displayName || 'Store Administrator';
+
+      // Load data cleanly
+      await loadAndRenderAdminData();
+    }
+
+    // Exit handler to return to store
+    function handleAdminLogout() {
+      if (AppState.user && window.auth) {
+        Auth.logout();
+      }
+      showToast('Returning to store...');
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 300);
+    }
+
+    // Load products and populate table + metrics
+    async function loadAndRenderAdminData() {
+      try {
+        if (window.db) await AdminProducts.doubleAllPrices();
+        allLoadedProducts = await AdminProducts.getAll();
+      } catch (err) {
+        console.warn('Error loading products for admin:', err);
+        allLoadedProducts = AppState.products || [];
+      }
+
+      renderProductsTable(allLoadedProducts);
+      renderLowInventory(allLoadedProducts);
+      updateDashboardMetrics(allLoadedProducts);
+      await loadAdminOffers();
+      testFirebaseHealth();
+    }
+
+    // Render Products Table
+    function renderProductsTable(products) {
+      const tbody = document.getElementById('adminProductsTableBody');
+      if (!tbody) return;
+
+      if (!products || products.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="py-8 text-center text-stone-500">
+              <p class="font-bold">No products found</p>
+              <button onclick="openAddProductModal()" class="mt-2 text-xs text-primary font-bold hover:underline">
+                + Add your first firework product
+              </button>
+            </td>
+          </tr>`;
+        return;
+      }
+
+      tbody.innerHTML = products.map(p => {
+        const isLow = (p.stock ?? 50) < 20;
+        const isOutOfStock = (p.stock ?? 50) <= 0;
+        return `
+          <tr class="hover:bg-orange-50/40 transition-colors border-b border-outline-variant/20">
+            <td class="py-3 px-4">
+              <div class="flex items-center gap-3">
+                <img src="${p.image || IMAGE_PRESETS.cracker}" alt="${p.name}" class="w-10 h-10 rounded-lg object-cover border border-stone-200 shrink-0"/>
+                <div>
+                  <div class="font-bold text-stone-900">${p.name}</div>
+                  <div class="text-[11px] text-stone-400">ID: ${p.id}</div>
+                </div>
+              </div>
+            </td>
+            <td class="py-3 px-4">
+              <span class="px-2.5 py-1 rounded-md bg-stone-100 text-stone-700 text-xs font-semibold">
+                ${p.category || 'General'}
+              </span>
+            </td>
+            <td class="py-3 px-4 font-bold text-stone-900">
+              ${formatPrice(p.price)}
+              ${p.originalPrice ? `<span class="text-xs text-stone-400 line-through ml-1">${formatPrice(p.originalPrice)}</span>` : ''}
+            </td>
+            <td class="py-3 px-4">
+              <span class="font-bold ${isOutOfStock ? 'text-red-600' : isLow ? 'text-amber-600' : 'text-stone-800'}">
+                ${p.stock ?? '—'} units
+              </span>
+            </td>
+            <td class="py-3 px-4">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold ${
+                isOutOfStock ? 'bg-red-100 text-red-700' : isLow ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
+              }">
+                ${isOutOfStock ? 'Out of Stock' : isLow ? 'Low Stock' : 'Active'}
+              </span>
+            </td>
+            <td class="py-3 px-4 text-right whitespace-nowrap">
+              <div class="flex items-center justify-end gap-1.5">
+                <button onclick="handleQuickRestock('${p.id}')" title="Quick Restock +25"
+                  class="p-1.5 text-stone-500 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition" title="Add 25 to stock">
+                  <span class="material-symbols-outlined text-base">add_box</span>
+                </button>
+                <button onclick="openEditProductModal('${p.id}')" title="Edit product"
+                  class="p-1.5 text-stone-500 hover:text-primary-container hover:bg-orange-50 rounded-lg transition">
+                  <span class="material-symbols-outlined text-base">edit</span>
+                </button>
+                <a href="product.html?id=${p.id}" target="_blank" title="View product page"
+                  class="p-1.5 text-stone-500 hover:text-primary-container hover:bg-orange-50 rounded-lg transition">
+                  <span class="material-symbols-outlined text-base">visibility</span>
+                </a>
+                <button onclick="handleDeleteProduct('${p.id}')" title="Delete product"
+                  class="p-1.5 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
+                  <span class="material-symbols-outlined text-base">delete</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Render Low Inventory Panel
+    function renderLowInventory(products) {
+      const container = document.getElementById('lowInventoryList');
+      if (!container) return;
+
+      const lowItems = products.filter(p => (p.stock ?? 50) < 25);
+      if (lowItems.length === 0) {
+        container.innerHTML = `
+          <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-center">
+            <span class="material-symbols-outlined text-emerald-600 text-2xl">check_circle</span>
+            <p class="text-xs font-bold text-emerald-800 mt-1">Stock levels healthy!</p>
+            <p class="text-[11px] text-emerald-600">All items have ample festive inventory.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = lowItems.slice(0, 5).map(p => `
+        <div class="flex items-center justify-between p-3 rounded-xl bg-red-50/50 border border-red-200 hover:border-red-300 transition">
+          <div class="flex items-center gap-3 min-w-0">
+            <img src="${p.image || IMAGE_PRESETS.cracker}" class="w-10 h-10 rounded-lg object-cover shrink-0 border border-red-200"/>
+            <div class="min-w-0">
+              <h4 class="text-xs font-bold text-stone-900 truncate">${p.name}</h4>
+              <p class="text-[11px] font-bold text-error">Only ${p.stock ?? 0} left in stock</p>
+            </div>
+          </div>
+          <button onclick="handleQuickRestock('${p.id}')"
+            class="px-2.5 py-1 bg-white hover:bg-orange-50 border border-outline-variant/60 rounded-lg text-xs font-bold text-primary-container shadow-xs transition shrink-0">
+            + Restock
+          </button>
+        </div>
+      `).join('');
+    }
+
+    // Update Counters
+    function updateDashboardMetrics(products) {
+      const totalEl = document.getElementById('statTotalProducts');
+      const lowEl = document.getElementById('statLowStock');
+      const lowSubEl = document.getElementById('statLowStockSub');
+
+      if (totalEl) totalEl.textContent = products.length;
+      
+      const lowCount = products.filter(p => (p.stock ?? 50) < 20).length;
+      if (lowEl) lowEl.textContent = lowCount + ' Items';
+      if (lowSubEl) lowSubEl.textContent = lowCount > 0 ? `${lowCount} require restocking` : 'Inventory optimal';
+    }
+
+    // Search and Category Filter
+    function filterAdminProducts() {
+      const query = (document.getElementById('productSearchInput')?.value || '').toLowerCase();
+      const cat = document.getElementById('productCategoryFilter')?.value || 'all';
+
+      const filtered = allLoadedProducts.filter(p => {
+        const matchesQuery = p.name.toLowerCase().includes(query) || (p.category || '').toLowerCase().includes(query);
+        const matchesCat = cat === 'all' || (p.category || '').toLowerCase() === cat.toLowerCase();
+        return matchesQuery && matchesCat;
+      });
+
+      renderProductsTable(filtered);
+    }
+
+    // Tab Switching
+    function switchAdminTab(tab) {
+      const titleEl = document.getElementById('currentSectionTitle');
+      const secProducts = document.getElementById('section-products');
+      const secGrid = document.getElementById('section-overview-grid');
+
+      document.querySelectorAll('#nav-tab-dashboard, #nav-tab-products, #nav-tab-orders').forEach(btn => {
+        btn.classList.remove('bg-orange-50', 'text-primary-container', 'font-bold');
+        btn.classList.add('text-stone-600', 'font-medium');
+      });
+
+      const activeBtn = document.getElementById(`nav-tab-${tab}`);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-orange-50', 'text-primary-container', 'font-bold');
+        activeBtn.classList.remove('text-stone-600', 'font-medium');
+      }
+
+      if (tab === 'products') {
+        titleEl.textContent = 'Products Catalog & Inventory';
+        secProducts.classList.remove('hidden');
+        secGrid.classList.add('hidden');
+      } else if (tab === 'orders') {
+        titleEl.textContent = 'Customer Orders';
+        secProducts.classList.add('hidden');
+        secGrid.classList.remove('hidden');
+      } else {
+        titleEl.textContent = 'Dashboard Overview';
+        secProducts.classList.remove('hidden');
+        secGrid.classList.remove('hidden');
+      }
+    }
+
+    // Modal Controls
+    function openAddProductModal() {
+      document.getElementById('editingProductId').value = '';
+      document.getElementById('productModalTitle').textContent = 'Add New Firework Product';
+      document.getElementById('btnSaveProduct').innerHTML = '<span class="material-symbols-outlined text-base">check</span> Save Product to Store';
+      document.getElementById('addProductModal').classList.remove('hidden');
+      document.getElementById('prodName')?.focus();
+    }
+
+    function openEditProductModal(productId) {
+      const product = allLoadedProducts.find(item => item.id === productId);
+      if (!product) return;
+      document.getElementById('editingProductId').value = product.id;
+      document.getElementById('prodName').value = product.name || '';
+      document.getElementById('prodCategory').value = product.category || 'Pencils';
+      document.getElementById('prodStock').value = product.stock ?? 0;
+      document.getElementById('prodPrice').value = product.price ?? 0;
+      document.getElementById('prodOriginalPrice').value = product.originalPrice ?? '';
+      document.getElementById('prodImage').value = product.image || '';
+      document.getElementById('prodDesc').value = product.description || '';
+      updateImagePreview(product.image || IMAGE_PRESETS.cracker);
+      document.getElementById('productModalTitle').textContent = 'Edit Firework Product';
+      document.getElementById('btnSaveProduct').innerHTML = '<span class="material-symbols-outlined text-base">save</span> Update Product';
+      document.getElementById('addProductModal').classList.remove('hidden');
+    }
+
+    function closeAddProductModal() {
+      document.getElementById('addProductModal').classList.add('hidden');
+      document.getElementById('addProductForm')?.reset();
+      document.getElementById('editingProductId').value = '';
+    }
+
+    function updateImagePreview(url) {
+      const img = document.getElementById('prodImagePreview');
+      if (img && url) img.src = url;
+    }
+
+    function selectImagePreset(key) {
+      const url = IMAGE_PRESETS[key];
+      if (url) {
+        document.getElementById('prodImage').value = url;
+        updateImagePreview(url);
+      }
+    }
+
+    // Save Product
+    async function handleSaveProduct(e) {
+      e.preventDefault();
+      const saveBtn = document.getElementById('btnSaveProduct');
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-base">sync</span> Saving...';
+
+      const name = document.getElementById('prodName').value.trim();
+      const category = document.getElementById('prodCategory').value;
+      const price = Number(document.getElementById('prodPrice').value);
+      const originalPrice = document.getElementById('prodOriginalPrice').value ? Number(document.getElementById('prodOriginalPrice').value) : null;
+      const stock = parseInt(document.getElementById('prodStock').value) || 50;
+      const image = document.getElementById('prodImage').value.trim() || IMAGE_PRESETS.cracker;
+      const description = document.getElementById('prodDesc').value.trim() || 'Premium fireworks for Diwali & festival celebrations.';
+      const editingId = document.getElementById('editingProductId').value;
+
+      const newProdData = {
+        name,
+        category,
+        price,
+        originalPrice: originalPrice || Math.round(price * 1.25),
+        stock,
+        image,
+        description,
+        rating: 4.9,
+        active: true
+      };
+
+      try {
+        if (editingId) {
+          await AdminProducts.update(editingId, newProdData);
+          showToast(`"${name}" updated successfully!`);
+        } else {
+          await AdminProducts.add(newProdData);
+          showToast(`"${name}" added to catalog successfully!`);
+        }
+        closeAddProductModal();
+        await loadAndRenderAdminData();
+      } catch (err) {
+        console.error('Error adding product:', err);
+        showToast('Error saving product: ' + err.message, 'error');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<span class="material-symbols-outlined text-base">check</span> Save Product to Store';
+      }
+    }
+
+    // Quick Restock
+    async function handleQuickRestock(productId) {
+      const product = allLoadedProducts.find(p => p.id === productId);
+      if (!product) return;
+
+      const current = product.stock ?? 10;
+      const updated = current + 25;
+
+      await AdminProducts.updateStock(productId, updated);
+      showToast(`Restocked "${product.name}" (+25 units)`);
+      await loadAndRenderAdminData();
+    }
+
+    // Delete Product
+    async function handleDeleteProduct(productId) {
+      const product = allLoadedProducts.find(p => p.id === productId);
+      const name = product ? product.name : 'item';
+      if (!confirm(`Are you sure you want to remove "${name}" from the store catalog?`)) return;
+
+      await AdminProducts.delete(productId);
+      showToast(`Removed "${name}" from store`);
+      await loadAndRenderAdminData();
+    }
+
+    // Seed/Sync Sample Products to Cloud Firestore Database
+    async function handleSeedFirestore() {
+      const btn = document.getElementById('btnSeedFirestore');
+      if (!window.db) {
+        showToast('Firebase not initialized. Check internet connection or keys.', 'error');
+        return;
+      }
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">sync</span> Syncing...';
+      }
+      showToast('Connecting to Firestore (sukhifireworkes)...', 'info');
+
+      try {
+        const samples = getSampleProducts();
+        await AdminProducts.replaceCatalog(samples);
+        showToast(`🎉 Replaced the catalog with ${samples.length} price-list products!`);
+        await loadAndRenderAdminData();
+      } catch (err) {
+        console.error('Firestore sync error:', err);
+        showToast('Firestore note: ' + (err.message || 'Check Firestore security rules in Firebase Console'), 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<span class="material-symbols-outlined text-base text-amber-700">cloud_upload</span> Sync with Firebase';
+        }
+      }
+    }
+
+    async function handleDoublePrices() {
+      const btn = document.getElementById('btnDoublePrices');
+      if (!confirm('Multiply every current Firestore product price by 2? This should only be done once.')) return;
+      if (btn) btn.disabled = true;
+      try {
+        const count = await AdminProducts.doubleAllPrices();
+        showToast(`Updated ${count} product prices to 2x.`);
+        await loadAndRenderAdminData();
+      } catch (err) {
+        showToast('Price update failed: ' + err.message, 'error');
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    async function loadAdminOffers() {
+      const offers = await Offers.getAll();
+      const list = document.getElementById('adminOffersList');
+      if (!list) return;
+      list.innerHTML = offers.map(offer => `
+        <div class="flex items-center justify-between gap-3 p-3 rounded-xl border border-outline-variant/40 bg-stone-50">
+          <div class="min-w-0">
+            <p class="text-sm font-bold text-stone-900 truncate">${offer.text}</p>
+            <p class="text-[11px] ${offer.active ? 'text-emerald-700' : 'text-stone-500'}">${offer.active ? 'Active on Shop' : 'Inactive'}</p>
+          </div>
+          <button onclick="removeAdminOffer('${offer.id}')" class="shrink-0 p-1.5 text-stone-500 hover:text-red-600 rounded-lg" title="Remove offer">
+            <span class="material-symbols-outlined text-base">delete</span>
+          </button>
+        </div>`).join('');
+      const active = offers.find(offer => offer.active) || offers[0];
+      if (active) {
+        document.getElementById('offerText').value = active.text || '';
+        document.getElementById('offerImage').value = active.image || '';
+        document.getElementById('offerActive').checked = active.active !== false;
+      }
+    }
+
+    async function saveOfferFromAdmin() {
+      const text = document.getElementById('offerText').value.trim();
+      if (!text) return showToast('Enter an offer message first.', 'error');
+      try {
+        await Offers.save({ id: 'offer-active', text, image: document.getElementById('offerImage').value.trim(), active: document.getElementById('offerActive').checked });
+        document.getElementById('offerSaveStatus').textContent = 'Saved just now';
+        showToast('Offer updated on the Shop page.');
+        await loadAdminOffers();
+      } catch (err) {
+        showToast('Offer save failed: ' + err.message, 'error');
+      }
+    }
+
+    async function removeAdminOffer(id) {
+      try {
+        await Offers.remove(id);
+        showToast('Offer removed.');
+        await loadAdminOffers();
+      } catch (err) {
+        showToast('Offer removal failed: ' + err.message, 'error');
+      }
+    }
+
+    // Live Health Diagnostic
+    async function testFirebaseHealth() {
+      const pill = document.getElementById('firestoreStatusPill');
+      const box = document.getElementById('firebaseHealthStatus');
+      if (!pill || !box) return;
+
+      if (!window.db) {
+        pill.className = "inline-flex items-center gap-1 text-[11px] font-semibold text-red-700 bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200";
+        pill.innerHTML = '❌ Firebase SDK Not Loaded';
+        box.innerHTML = '<p class="text-xs text-red-600 font-bold">Firebase is not initialized. Please check internet connection or firebase-config.js.</p>';
+        return;
+      }
+
+      pill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span> Testing Rules...';
+
+      try {
+        // Attempt a read
+        await db.collection('products').limit(1).get();
+        pill.className = "inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200";
+        pill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Connected & Active';
+        box.innerHTML = '';
+      } catch (err) {
+        console.warn('Firestore Permission Check:', err);
+        pill.className = "inline-flex items-center gap-1 text-[11px] font-bold text-red-700 bg-red-100 px-2.5 py-0.5 rounded-full border border-red-300";
+        pill.innerHTML = '⚠️ Rules Blocking Data';
+
+        box.innerHTML = `
+          <div class="p-4 bg-red-50/90 border border-red-300 rounded-xl text-xs text-stone-800 space-y-2.5">
+            <div class="flex items-center gap-2 text-red-700 font-bold">
+              <span class="material-symbols-outlined text-lg">block</span>
+              <span>Reason Data Does Not Show: Security Rules are Blocking Access (PERMISSION_DENIED)</span>
+            </div>
+            <p class="text-stone-600 leading-relaxed">
+              Google Cloud Firestore by default starts with <code class="font-mono bg-white px-1 border rounded text-red-700">allow read, write: if false;</code> which rejects all data operations from your website.
+            </p>
+            <div>
+              <p class="font-bold text-stone-700 mb-1">To fix this in 30 seconds:</p>
+              <ol class="list-decimal pl-5 space-y-1 text-stone-600">
+                <li>Click the red button below to open your <strong>Firebase Console > Firestore > Rules</strong> tab.</li>
+                <li>Replace the contents with the rules snippet below.</li>
+                <li>Click the blue <strong>"Publish"</strong> button in Firebase Console.</li>
+              </ol>
+            </div>
+            <div class="p-2.5 bg-stone-900 text-stone-100 rounded-lg font-mono text-[11px] select-all overflow-x-auto">
+rules_version = '2';<br/>
+service cloud.firestore {<br/>
+&nbsp;&nbsp;match /databases/{database}/documents {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;match /{document=**} {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allow read, write: if true;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+&nbsp;&nbsp;}<br/>
+}
+            </div>
+            <div class="flex flex-wrap items-center gap-2 pt-1">
+              <a href="https://console.firebase.google.com/project/sukhifireworkes/firestore/rules" target="_blank"
+                class="px-3.5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold text-xs inline-flex items-center gap-1 shadow-sm">
+                <span class="material-symbols-outlined text-sm">open_in_new</span>
+                Open Rules in Firebase Console ↗
+              </a>
+              <button onclick="testFirebaseHealth()" class="px-3 py-2 bg-white hover:bg-stone-100 border border-stone-300 text-stone-700 rounded-lg font-bold text-xs flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm">refresh</span> Re-Check Connection
+              </button>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // Add Sample Customer Test
+    async function handleAddSampleCustomer() {
+      const btn = document.getElementById('btnTestAddCustomer');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">sync</span> Adding...';
+      }
+      try {
+        const customer = await Customers.add({
+          name: "Rajesh Sharma",
+          email: "rajesh.sharma@example.com",
+          phone: "+91 98765 43210",
+          street: "42 MG Road, Gandhi Nagar",
+          city: "Bengaluru",
+          state: "Karnataka",
+          pincode: "560001",
+          totalOrders: 1,
+          totalSpent: 2499
+        });
+        showToast(`✅ Customer "${customer.name}" added to Firestore!`);
+        const resBox = document.getElementById('customerTestResult');
+        if (resBox) {
+          resBox.classList.remove('hidden');
+          resBox.innerHTML = `
+            <div class="p-3 bg-emerald-50 border border-emerald-300 rounded-xl text-xs space-y-1.5 animate-fadeIn">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-emerald-800 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-base">check_circle</span>
+                  Customer Object Added to Firestore!
+                </span>
+                <span class="text-[11px] text-stone-500">Document ID: <strong class="font-mono text-stone-900">${customer.id}</strong></span>
+              </div>
+              <p class="text-stone-600">Details: Rajesh Sharma &bull; rajesh.sharma@example.com &bull; +91 98765 43210 &bull; Bengaluru</p>
+              <a href="https://console.firebase.google.com/project/sukhifireworkes/firestore/data/~2Fcustomers~2F${customer.id}" target="_blank"
+                class="inline-flex items-center gap-1 font-bold text-emerald-700 hover:text-emerald-900 underline mt-1">
+                View this customer in Firebase Console ↗
+              </a>
+            </div>
+          `;
+        }
+      } catch (err) {
+        console.error(err);
+        showToast(`Could not add customer: ${err.message}`, 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<span class="material-symbols-outlined text-sm text-emerald-600">person_add</span> + Add Customer';
+        }
+      }
+    }
+  </script>
+</body>
+</html>

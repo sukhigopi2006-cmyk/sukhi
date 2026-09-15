@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sukhi Pyrotechnics - Order Confirmation</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "surface-variant": "#e9e1dd",
+          "inverse-on-surface": "#f7efeb",
+          "primary-container": "#ff6a00",
+          "surface-container-high": "#eee7e3",
+          "inverse-primary": "#ffb694",
+          "primary-fixed": "#ffdbcc",
+          "secondary": "#306577",
+          "on-secondary-container": "#35697b",
+          "surface-container-low": "#faf2ee",
+          "surface-container-lowest": "#ffffff",
+          "on-secondary": "#ffffff",
+          "on-primary-fixed": "#351000",
+          "surface-container-highest": "#e9e1dd",
+          "error-container": "#ffdad6",
+          "on-background": "#1e1b19",
+          "outline-variant": "#e2bfb0",
+          "on-tertiary-fixed-variant": "#8f1100",
+          "on-error": "#ffffff",
+          "on-tertiary-fixed": "#3f0300",
+          "tertiary": "#b82007",
+          "surface-tint": "#a14000",
+          "on-tertiary-container": "#660900",
+          "on-primary-container": "#571f00",
+          "surface-dim": "#e0d8d5",
+          "tertiary-fixed": "#ffdad3",
+          "on-error-container": "#93000a",
+          "secondary-container": "#b3e8fc",
+          "tertiary-container": "#ff674c",
+          "on-secondary-fixed": "#001f28",
+          "error": "#ba1a1a",
+          "on-primary-fixed-variant": "#7b2f00",
+          "secondary-fixed-dim": "#9acee3",
+          "primary": "#a14000",
+          "tertiary-fixed-dim": "#ffb4a6",
+          "inverse-surface": "#33302d",
+          "primary-fixed-dim": "#ffb694",
+          "on-tertiary": "#ffffff",
+          "on-primary": "#ffffff",
+          "background": "#fff8f5",
+          "outline": "#8e7164",
+          "on-surface": "#1e1b19",
+          "surface-bright": "#fff8f5",
+          "secondary-fixed": "#b7eaff",
+          "on-surface-variant": "#5a4136",
+          "surface": "#fff8f5",
+          "surface-container": "#f4ece8",
+          "on-secondary-fixed-variant": "#114d5e"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "space-2xs": "0.25rem",
+          "space-sm": "0.75rem",
+          "gutter-desktop": "2rem",
+          "container-max": "80rem",
+          "space-4xl": "6rem",
+          "space-2xl": "3rem",
+          "space-md": "1rem",
+          "space-xl": "2rem",
+          "space-lg": "1.5rem",
+          "space-3xs": "0.125rem",
+          "space-xs": "0.5rem",
+          "space-3xl": "4rem",
+          "gutter-tablet": "1.5rem",
+          "gutter-mobile": "1rem",
+          "column-gap": "1.5rem"
+        },
+        "fontFamily": {
+          "body": ["Plus Jakarta Sans", "sans-serif"],
+          "label": ["Space Grotesk", "sans-serif"]
+        }
+      }
+    }
+  }
+</script>
+<style>
+        body {
+            background: radial-gradient(circle at 50% -10%, #ffeede 0%, #fff8f5 60%, #fdf5ef 100%);
+            color: #1e1b19;
+        }
+
+        .festive-card {
+            background-color: #ffffff;
+            border: 1px solid #f0eae4;
+            box-shadow: 0 10px 40px -10px rgba(161, 64, 0, 0.08), 0 20px 25px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .badge-glow {
+            position: relative;
+        }
+        
+        .badge-glow::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 9999px;
+            background: radial-gradient(circle, rgba(255, 106, 0, 0.25) 0%, rgba(255, 106, 0, 0) 70%);
+            z-index: -1;
+        }
+
+        /* Subtle celebratory confetti animation */
+        @keyframes confettiFall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 0.9; }
+            100% { transform: translateY(105vh) rotate(720deg); opacity: 0; }
+        }
+        
+        .confetti-piece {
+            position: fixed;
+            top: 0;
+            z-index: 5;
+            animation: confettiFall linear forwards;
+            pointer-events: none;
+        }
+    </style>
+<link rel="stylesheet" href="js/site-shell.css"/>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-between relative overflow-x-hidden font-body text-on-surface antialiased selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Festive Confetti Container -->
+<div class="absolute inset-0 pointer-events-none overflow-hidden" id="confetti-container"></div>
+<!-- Decorative ambient glow behind main content -->
+<div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[580px] h-[360px] bg-gradient-to-tr from-amber-100/60 via-orange-100/40 to-transparent blur-3xl pointer-events-none -z-10 rounded-full"></div>
+<!-- Top Branding Header -->
+<header class="w-full pt-8 pb-4 flex justify-center items-center z-10">
+<a href="index.html" class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-2xl" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="font-label font-bold tracking-widest text-on-surface uppercase text-sm">Sukhi Pyrotechnics</span>
+</a>
+</header>
+<!-- Main Content Canvas -->
+<main class="w-full max-w-2xl px-4 md:px-6 z-10 my-4 md:my-6 flex-1 flex flex-col justify-center">
+<div class="festive-card rounded-2xl p-6 md:p-10 flex flex-col items-center text-center">
+<!-- Success Icon Badge -->
+<div class="w-20 h-20 bg-gradient-to-br from-amber-50 to-orange-100 border border-orange-200/60 rounded-full flex items-center justify-center mb-5 relative badge-glow shadow-sm">
+<span class="material-symbols-outlined text-primary-container text-5xl" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<h1 class="font-body text-2xl md:text-3xl font-extrabold text-[#1c1917] mb-2 tracking-tight">Order Placed Successfully!</h1>
+<p class="font-body text-sm md:text-base text-on-surface-variant mb-8 max-w-md">Your spark is ignited. We're preparing your order for launch.</p>
+<!-- Order Details Bento -->
+<div class="w-full grid grid-cols-1 md:grid-cols-2 gap-3.5 mb-8 text-left">
+<div class="bg-[#faf2ee] rounded-xl p-4 border border-[#eee4dc] shadow-xs">
+<p class="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Order ID</p>
+<p class="font-body text-xl font-bold text-primary">#SKH-98234</p>
+</div>
+<div class="bg-[#faf2ee] rounded-xl p-4 border border-[#eee4dc] shadow-xs">
+<p class="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Estimated Delivery</p>
+<p class="font-body text-xl font-bold text-[#b82007]">2-3 Business Days</p>
+</div>
+<div class="bg-[#faf2ee] rounded-xl p-4 md:p-5 border border-[#eee4dc] md:col-span-2 flex flex-col md:flex-row justify-between items-start md:items-center gap-3 shadow-xs">
+<div>
+<p class="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Shipping To</p>
+<p class="font-body text-sm font-medium text-on-surface">123 Rocket Road, Launchpad City, TX 75001</p>
+</div>
+<div class="text-left md:text-right">
+<p class="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-0.5">Total Amount</p>
+<p class="font-body text-2xl font-extrabold text-[#1c1917]">₹1,249.99</p>
+</div>
+</div>
+</div>
+<!-- Secondary Actions -->
+<div class="w-full flex flex-col sm:flex-row gap-3 justify-center mb-4">
+<button onclick="showToast('Invoice download started', 'info')" class="flex-1 bg-white hover:bg-surface-container-low border border-outline-variant/70 text-on-surface font-label text-sm font-semibold py-3 px-5 rounded-lg flex items-center justify-center gap-2 transition-all shadow-xs hover:border-outline cursor-pointer">
+<span class="material-symbols-outlined text-primary text-[20px]">receipt_long</span>
+                Download Invoice
+            </button>
+<button onclick="showToast('Tracking updates will be sent via SMS', 'info')" class="flex-1 bg-white hover:bg-surface-container-low border border-outline-variant/70 text-on-surface font-label text-sm font-semibold py-3 px-5 rounded-lg flex items-center justify-center gap-2 transition-all shadow-xs hover:border-outline cursor-pointer">
+<span class="material-symbols-outlined text-primary text-[20px]">local_shipping</span>
+                Track Order
+            </button>
+</div>
+<!-- Primary CTA -->
+<a href="shop.html" class="w-full bg-primary-container hover:bg-[#eb6100] active:scale-[0.99] text-white font-label text-sm font-bold py-3.5 px-8 rounded-full transition-all shadow-md shadow-orange-500/25 flex items-center justify-center gap-2 mt-2">
+            Continue Shopping
+            <span class="material-symbols-outlined text-xl">arrow_forward</span>
+</a>
+</div>
+</main>
+<!-- Footer - Safety Disclaimer -->
+<footer class="w-full relative mt-auto border-t border-[#eedfd6] bg-[#faf2ee]/70 py-6 px-4 md:px-8 text-center backdrop-blur-xs">
+<div class="max-w-3xl mx-auto flex flex-col items-center">
+<div class="inline-flex items-center gap-1.5 text-error mb-1.5">
+<span class="material-symbols-outlined text-base">warning</span>
+<span class="font-label text-xs font-bold uppercase tracking-wider">Safety First</span>
+</div>
+<p class="font-body text-xs md:text-sm text-on-surface-variant max-w-xl leading-relaxed">Pyrotechnics require responsible handling. Please read our safety guidelines before operation. Sukhi is not liable for misuse. Light with caution.</p>
+<p class="font-label text-[11px] text-outline mt-3 uppercase tracking-widest font-semibold">© 2024 SUKHI PYROTECHNICS. ALL RIGHTS RESERVED.</p>
+</div>
+</footer>
+<script>
+    // Gentle Celebratory Confetti in festive warm palette
+    document.addEventListener('DOMContentLoaded', () => {
+        const container = document.getElementById('confetti-container');
+        const colors = ['#ff6a00', '#ffb694', '#306577', '#ffdad3', '#ffc107', '#ff8c00'];
+        const numConfetti = 40;
+
+        for (let i = 0; i < numConfetti; i++) {
+            const confetti = document.createElement('div');
+            confetti.classList.add('confetti-piece');
+            
+            const xPos = Math.random() * 100;
+            const delay = Math.random() * 2.5;
+            const duration = 3 + Math.random() * 3.5;
+            const size = 6 + Math.random() * 8;
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            
+            confetti.style.left = `${xPos}vw`;
+            confetti.style.animationDelay = `${delay}s`;
+            confetti.style.animationDuration = `${duration}s`;
+            confetti.style.width = `${size}px`;
+            confetti.style.height = `${size}px`;
+            confetti.style.backgroundColor = color;
+            confetti.style.opacity = '0.85';
+            
+            if (Math.random() > 0.4) {
+                confetti.style.borderRadius = '50%';
+            } else {
+                confetti.style.borderRadius = '2px';
+            }
+
+            container.appendChild(confetti);
+        }
+    });
+</script>
+
+<!-- Firebase SDK + App Logic -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/app.js"></script>
+<script src="js/site-shell.js"></script>
+<script>
+  // Fix navigation links on all pages
+  document.addEventListener('DOMContentLoaded', () => {
+    // Bottom nav
+    const bottomLinks = document.querySelectorAll('nav.fixed a, nav[class*="bottom"] a');
+    bottomLinks.forEach(a => {
+      const text = (a.textContent || '').toLowerCase();
+      if (text.includes('home')) a.href = 'index.html';
+      else if (text.includes('wishlist') || text.includes('favorite')) a.href = 'wishlist.html';
+      else if (text.includes('cart') || text.includes('bag')) a.href = 'cart.html';
+      else if (text.includes('profile') || text.includes('person')) a.href = 'login.html';
+    });
+  });
+</script>
+</body></html>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const order = JSON.parse(sessionStorage.getItem('sukhi_last_order') || '{}');
+  const id = getQueryParam('id') || order.id || 'ORD-XXXX';
+
+  // Update any order ID display
+  document.querySelectorAll('*').forEach(el => {
+    if (el.childNodes.length === 1 && el.textContent && el.textContent.includes('#')) {
+      el.textContent = el.textContent.replace(/#\w+/, '#' + id);
+    }
+  });
+
+  // Inject success details
+  const info = document.createElement('div');
+  info.className = 'max-w-md mx-auto mt-6 p-4 bg-emerald-50 rounded-xl text-center';
+  info.innerHTML = `
+    <p class="text-sm text-emerald-700">Order ID: <strong>${id}</strong></p>
+    ${order.total ? `<p class="text-lg font-bold text-emerald-800 mt-1">${formatPrice(order.total)}</p>` : ''}
+    <a href="shop.html" class="inline-block mt-4 text-primary font-semibold hover:underline">Continue Shopping →</a>
+  `;
+  const main = document.querySelector('main') || document.body;
+  main.appendChild(info);
+});
+</script>

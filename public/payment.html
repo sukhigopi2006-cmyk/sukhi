@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sukhi - Secure Checkout</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "surface-container-highest": "#e9e1dd",
+          "primary-fixed-dim": "#ffb694",
+          "error-container": "#ffdad6",
+          "on-secondary-fixed": "#001f28",
+          "primary-container": "#ff6a00",
+          "secondary-fixed-dim": "#9acee3",
+          "on-error-container": "#93000a",
+          "outline-variant": "#e2bfb0",
+          "on-primary": "#ffffff",
+          "outline": "#8e7164",
+          "background": "#fff8f5",
+          "on-surface": "#1e1b19",
+          "surface-container": "#f4ece8",
+          "tertiary-fixed": "#ffdad3",
+          "on-primary-container": "#571f00",
+          "on-secondary-fixed-variant": "#114d5e",
+          "on-secondary": "#ffffff",
+          "on-surface-variant": "#5a4136",
+          "on-error": "#ffffff",
+          "secondary-container": "#b3e8fc",
+          "on-primary-fixed-variant": "#7b2f00",
+          "surface-container-high": "#eee7e3",
+          "secondary-fixed": "#b7eaff",
+          "primary": "#a14000",
+          "secondary": "#306577",
+          "on-secondary-container": "#35697b",
+          "on-primary-fixed": "#351000",
+          "inverse-surface": "#33302d",
+          "on-tertiary-fixed": "#3f0300",
+          "surface-tint": "#a14000",
+          "surface-dim": "#e0d8d5",
+          "inverse-on-surface": "#f7efeb",
+          "surface-bright": "#fff8f5",
+          "error": "#ba1a1a",
+          "surface-container-lowest": "#ffffff",
+          "tertiary-container": "#ff674c",
+          "on-tertiary-fixed-variant": "#8f1100",
+          "surface-variant": "#e9e1dd",
+          "on-tertiary": "#ffffff",
+          "primary-fixed": "#ffdbcc",
+          "surface-container-low": "#faf2ee",
+          "surface": "#fff8f5",
+          "inverse-primary": "#ffb694",
+          "tertiary-fixed-dim": "#ffb4a6",
+          "on-background": "#1e1b19",
+          "tertiary": "#b82007"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "gutter-desktop": "2rem",
+          "space-2xl": "3xl",
+          "container-max": "80rem",
+          "space-3xl": "4rem",
+          "space-xs": "0.5rem",
+          "space-md": "1rem",
+          "space-sm": "0.75rem",
+          "space-xl": "2rem",
+          "column-gap": "1.5rem",
+          "gutter-mobile": "1rem",
+          "gutter-tablet": "1.5rem",
+          "space-4xl": "6rem",
+          "space-lg": "1.5rem",
+          "space-3xs": "0.125rem",
+          "space-2xs": "0.25rem",
+          "margin-mobile": "16px",
+          "margin-desktop": "48px",
+          "stack-sm": "8px",
+          "stack-md": "16px",
+          "stack-lg": "32px"
+        },
+        "fontFamily": {
+          "title-lg": ["Plus Jakarta Sans", "sans-serif"],
+          "headline-md": ["Plus Jakarta Sans", "sans-serif"],
+          "title-md": ["Plus Jakarta Sans", "sans-serif"],
+          "label-sm": ["Space Grotesk", "sans-serif"],
+          "body-md": ["Plus Jakarta Sans", "sans-serif"],
+          "label-lg": ["Space Grotesk", "sans-serif"],
+          "body-sm": ["Plus Jakarta Sans", "sans-serif"],
+          "headline-lg-mobile": ["Plus Jakarta Sans", "sans-serif"],
+          "headline-lg": ["Plus Jakarta Sans", "sans-serif"],
+          "display-md-mobile": ["Plus Jakarta Sans", "sans-serif"],
+          "headline-sm": ["Plus Jakarta Sans", "sans-serif"],
+          "display-lg": ["Plus Jakarta Sans", "sans-serif"],
+          "display-md": ["Plus Jakarta Sans", "sans-serif"],
+          "display-lg-mobile": ["Plus Jakarta Sans", "sans-serif"],
+          "body-lg": ["Plus Jakarta Sans", "sans-serif"],
+          "label-md": ["Space Grotesk", "sans-serif"],
+          "price-display": ["Plus Jakarta Sans", "sans-serif"]
+        },
+        "fontSize": {
+          "title-lg": ["18px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "600" }],
+          "headline-md": ["24px", { "lineHeight": "30px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+          "title-md": ["16px", { "lineHeight": "22px", "letterSpacing": "0em", "fontWeight": "600" }],
+          "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "700" }],
+          "body-md": ["15px", { "lineHeight": "22px", "letterSpacing": "0em", "fontWeight": "400" }],
+          "label-lg": ["14px", { "lineHeight": "18px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+          "body-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400" }],
+          "headline-lg-mobile": ["26px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+          "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+          "display-md-mobile": ["32px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+          "headline-sm": ["20px", { "lineHeight": "26px", "letterSpacing": "0em", "fontWeight": "600" }],
+          "display-lg": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+          "display-md": ["44px", { "lineHeight": "52px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+          "display-lg-mobile": ["38px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+          "body-lg": ["18px", { "lineHeight": "28px", "letterSpacing": "0em", "fontWeight": "400" }],
+          "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600" }],
+          "price-display": ["28px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "800" }]
+        }
+      }
+    }
+  }
+</script>
+<style>
+  /* Custom clean scrollbar for the light festive theme */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #e2bfb0; border-radius: 9999px; }
+  ::-webkit-scrollbar-thumb:hover { background: #ff6a00; }
+  
+  /* Radio button styling */
+  .payment-radio:checked + div {
+      border-color: #ff6a00;
+      background-color: #ffffff;
+      box-shadow: 0 4px 20px -2px rgba(255, 106, 0, 0.12), 0 0 0 1px #ff6a00;
+  }
+  .payment-radio:checked + div .radio-inner {
+      border-color: #ff6a00;
+  }
+  .payment-radio:checked + div .radio-inner .radio-dot {
+      background-color: #ff6a00;
+      transform: scale(1);
+  }
+  .payment-content {
+      display: none;
+  }
+  .payment-radio:checked ~ .payment-content {
+      display: block;
+      animation: slideDown 0.3s ease-out forwards;
+  }
+  
+  @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+<link rel="stylesheet" href="js/site-shell.css"/>
+</head>
+<body class="bg-[#fff8f5] text-on-surface min-h-screen font-body-md antialiased flex flex-col relative pb-32">
+<!-- Transactional Header: Navigation Shell Suppressed per Logic Rules -->
+<header class="flex justify-between items-center h-16 px-margin-mobile md:px-margin-desktop border-b border-outline-variant/40 bg-surface/90 backdrop-blur-xl sticky top-0 z-50 shadow-sm">
+<button onclick="location.href='checkout.html'" aria-label="Go Back" class="text-on-surface-variant hover:text-primary-container transition-colors flex items-center justify-center p-2 -ml-2 rounded-full hover:bg-surface-container cursor-pointer">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+</button>
+<a href="index.html" class="font-headline-md text-headline-md text-primary-container font-extrabold tracking-tight">Sukhi</a>
+<div class="flex items-center text-secondary gap-1 bg-secondary-container/30 px-3 py-1 rounded-full border border-secondary/20">
+<span class="material-symbols-outlined text-sm text-secondary" style="font-variation-settings: 'FILL' 1;">lock</span>
+<span class="font-label-lg text-[12px] uppercase tracking-wider font-bold text-secondary">Secure</span>
+</div>
+</header>
+<main class="flex-1 w-full max-w-[600px] mx-auto px-margin-mobile md:px-0 py-stack-lg flex flex-col gap-stack-lg">
+<!-- Header & Total Summary -->
+<section class="flex flex-col gap-stack-sm">
+<h1 class="font-display-lg-mobile md:font-display-md text-display-lg-mobile md:text-display-md text-on-surface font-extrabold">Choose Payment Method</h1>
+<div class="mt-stack-sm bg-white rounded-xl p-stack-md border border-outline-variant/60 flex justify-between items-center shadow-[0_4px_20px_rgba(161,64,0,0.06)]">
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-on-surface-variant">Order Total</span>
+<span class="font-body-md text-sm text-on-surface-variant/80 mt-0.5">Includes all taxes &amp; shipping</span>
+</div>
+<div class="font-price-display text-price-display text-primary-container flex items-end gap-1 font-extrabold">
+<span class="text-xl pb-1 text-primary-container/80">₹</span>1,249<span class="text-xl pb-1">.99</span>
+</div>
+</div>
+</section>
+<!-- Payment Options List -->
+<section class="flex flex-col gap-stack-md">
+<!-- UPI Option -->
+<label class="cursor-pointer relative group">
+<input checked="" class="payment-radio sr-only" name="payment_method" type="radio"/>
+<div class="w-full bg-white border border-outline-variant/60 rounded-xl p-stack-md transition-all duration-300 hover:border-primary-container/60 flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-stack-md">
+<div class="w-5 h-5 rounded-full border-2 border-outline-variant flex items-center justify-center radio-inner transition-colors">
+<div class="w-2.5 h-2.5 rounded-full bg-transparent radio-dot transition-transform"></div>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-body-lg text-on-surface font-bold">UPI / QR Code</span>
+<span class="font-body-md text-sm text-on-surface-variant mt-0.5">Google Pay, PhonePe, Paytm</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary-container text-3xl">qr_code_scanner</span>
+</div>
+<!-- Expanded Content for UPI -->
+<div class="payment-content mt-2 bg-surface-container-low rounded-xl border border-outline-variant/50 p-stack-md overflow-hidden relative shadow-inner">
+<div class="relative z-10 flex flex-col items-center justify-center gap-stack-md py-4">
+<p class="font-body-md text-on-surface-variant text-center max-w-xs font-medium">Scan this QR code with any UPI app to complete your secure payment.</p>
+<!-- Simulated QR Code Container -->
+<div class="w-48 h-48 bg-white rounded-xl p-3 shadow-md border border-primary-container/20 relative transition-all duration-500">
+<div class="bg-cover bg-center w-full h-full rounded-lg" data-alt="A clean, modern QR code for digital payment" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCUK7g3uRxQkgWTQOmZOvkaSOf45NpVs8lCFnJ9Inl0Y3WgaN9EV4hFkkHS95adCBDcqJK-xGhu_gJZ9wgaIEhjPyKKVU9wQHWRaSgRYi7GlwvoSXUil35QnWD_43HQvkUhyAnaU--v2_4BOiIsGF5NH2blcB47sW6bzL4I1RCPJhZpBw7dGAD6Vh9mav6T-_sWCIlAQ5v7118UBthawZxIvTeSTuVzW14sTCF60baZaVkQpNtozW_5ng')"></div>
+<!-- Scanner line animation -->
+<div class="absolute top-0 left-0 w-full h-0.5 bg-primary-container shadow-[0_0_8px_#ff6a00] animate-[scan_2s_ease-in-out_infinite]"></div>
+</div>
+<div class="flex gap-3 mt-2">
+<span class="px-3.5 py-1.5 bg-white border border-outline-variant/60 rounded-lg text-xs font-label-lg text-on-surface font-semibold shadow-xs">GPay</span>
+<span class="px-3.5 py-1.5 bg-white border border-outline-variant/60 rounded-lg text-xs font-label-lg text-on-surface font-semibold shadow-xs">PhonePe</span>
+<span class="px-3.5 py-1.5 bg-white border border-outline-variant/60 rounded-lg text-xs font-label-lg text-on-surface font-semibold shadow-xs">Paytm</span>
+</div>
+</div>
+</div>
+</label>
+<!-- Net Banking Option -->
+<label class="cursor-pointer relative group">
+<input class="payment-radio sr-only" name="payment_method" type="radio"/>
+<div class="w-full bg-white border border-outline-variant/60 rounded-xl p-stack-md transition-all duration-300 hover:border-primary-container/60 flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-stack-md">
+<div class="w-5 h-5 rounded-full border-2 border-outline-variant flex items-center justify-center radio-inner transition-colors">
+<div class="w-2.5 h-2.5 rounded-full bg-transparent radio-dot transition-transform"></div>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-body-lg text-on-surface font-bold">Net Banking</span>
+<span class="font-body-md text-sm text-on-surface-variant mt-0.5">All major Indian banks supported</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline text-3xl">account_balance</span>
+</div>
+<!-- Expanded Content for Net Banking -->
+<div class="payment-content mt-2 bg-surface-container-low rounded-xl border border-outline-variant/50 p-stack-md">
+<p class="font-body-md text-on-surface-variant mb-3 font-medium">Select your bank from the list below:</p>
+<select class="w-full bg-white border border-outline-variant rounded-lg p-3 text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none font-body-md shadow-xs">
+<option>HDFC Bank</option>
+<option>State Bank of India</option>
+<option>ICICI Bank</option>
+<option>Axis Bank</option>
+<option>Kotak Mahindra Bank</option>
+</select>
+</div>
+</label>
+<!-- COD Option -->
+<label class="cursor-pointer relative group">
+<input class="payment-radio sr-only" name="payment_method" type="radio"/>
+<div class="w-full bg-white border border-outline-variant/60 rounded-xl p-stack-md transition-all duration-300 hover:border-primary-container/60 flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-stack-md">
+<div class="w-5 h-5 rounded-full border-2 border-outline-variant flex items-center justify-center radio-inner transition-colors">
+<div class="w-2.5 h-2.5 rounded-full bg-transparent radio-dot transition-transform"></div>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-body-lg text-on-surface flex items-center gap-2 font-bold">
+    Cash on Delivery
+    <span class="bg-secondary-container text-on-secondary-container text-[11px] uppercase font-bold px-2 py-0.5 rounded">Fees Apply</span>
+</span>
+<span class="font-body-md text-sm text-on-surface-variant mt-0.5">Pay at your doorstep</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline text-3xl">local_shipping</span>
+</div>
+<!-- Expanded Content for COD -->
+<div class="payment-content mt-2 bg-surface-container-low rounded-xl border border-outline-variant/50 p-stack-md">
+<div class="flex items-start gap-3 bg-white p-3.5 rounded-lg border border-outline-variant/60 shadow-xs">
+<span class="material-symbols-outlined text-primary-container text-xl mt-0.5">info</span>
+<p class="font-body-md text-sm text-on-surface-variant leading-relaxed">An additional handling fee of ₹15.00 will be applied to COD orders. We recommend digital payments for faster processing of pyrotechnic materials.</p>
+</div>
+</div>
+</label>
+</section>
+<!-- Trust Badges -->
+<section class="flex justify-center gap-8 mt-stack-md pt-stack-md border-t border-outline-variant/40">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span class="font-label-lg text-xs tracking-wider uppercase font-semibold text-on-surface-variant">SSL Secure</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+<span class="font-label-lg text-xs tracking-wider uppercase font-semibold text-on-surface-variant">Verified Merchant</span>
+</div>
+</section>
+</main>
+<!-- Sticky Bottom Action Bar -->
+<div class="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-xl border-t border-outline-variant/40 p-margin-mobile pb-safe z-40 shadow-[0_-8px_24px_rgba(0,0,0,0.06)]">
+<div class="max-w-[600px] mx-auto flex items-center justify-between gap-4">
+<div class="hidden md:flex flex-col">
+<span class="font-label-lg text-on-surface-variant text-xs font-semibold uppercase tracking-wider">Total</span>
+<span class="font-price-display text-xl text-on-surface font-extrabold">₹1,249.99</span>
+</div>
+<button class="flex-1 md:flex-none md:w-2/3 bg-primary-container text-white font-label-lg text-lg py-3.5 px-8 rounded-xl hover:bg-[#e05e00] hover:shadow-lg active:scale-[0.98] transition-all duration-200 shadow-[0_6px_20px_rgba(255,106,0,0.35)] flex items-center justify-center gap-2 font-bold tracking-wide">
+<span class="material-symbols-outlined">bolt</span>
+Pay Now
+</button>
+</div>
+</div>
+<!-- Additional required CSS for scanner animation -->
+<style>
+  @keyframes scan {
+      0% { top: 0%; opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+  }
+</style>
+
+<!-- Firebase SDK + App Logic -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/app.js"></script>
+<script src="js/site-shell.js"></script>
+<script>
+  // Fix navigation links on all pages
+  document.addEventListener('DOMContentLoaded', () => {
+    // Bottom nav
+    const bottomLinks = document.querySelectorAll('nav.fixed a, nav[class*="bottom"] a');
+    bottomLinks.forEach(a => {
+      const text = (a.textContent || '').toLowerCase();
+      if (text.includes('home')) a.href = 'index.html';
+      else if (text.includes('wishlist') || text.includes('favorite')) a.href = 'wishlist.html';
+      else if (text.includes('cart') || text.includes('bag')) a.href = 'cart.html';
+      else if (text.includes('profile') || text.includes('person')) a.href = 'login.html';
+    });
+  });
+</script>
+</body></html>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const cart = Cart.load();
+  if (!cart.length) {
+    location.href = 'shop.html';
+    return;
+  }
+
+  document.querySelectorAll('button').forEach(btn => {
+    const t = (btn.textContent || '').toLowerCase();
+    if (t.includes('pay') || t.includes('confirm') || t.includes('place order') || t.includes('complete')) {
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        btn.disabled = true;
+        btn.textContent = 'Processing...';
+
+        try {
+          const delivery = JSON.parse(sessionStorage.getItem('sukhi_delivery') || '{}');
+          const order = await Orders.create({
+            delivery,
+            paymentMethod: 'UPI / Card / COD',
+            email: AppState.user?.email || delivery.email || 'guest@sukhi.com'
+          });
+          sessionStorage.setItem('sukhi_last_order', JSON.stringify({ id: order.id, total: order.total }));
+          showToast('Order placed successfully!');
+          setTimeout(() => location.href = 'order-success.html?id=' + order.id, 1000);
+        } catch (err) {
+          console.error(err);
+          btn.disabled = false;
+          btn.textContent = 'Pay Now';
+          showToast(err.message || 'Order could not be placed. Please sign in and try again.', 'error');
+        }
+      });
+    }
+  });
+});
+</script>

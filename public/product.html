@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>IgnitePro - Sky Dragon Aerial Shot</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "on-primary": "#ffffff",
+          "tertiary-container": "#ff674c",
+          "on-secondary-container": "#35697b",
+          "on-primary-fixed": "#351000",
+          "outline": "#8e7164",
+          "on-tertiary": "#ffffff",
+          "surface": "#fff8f5",
+          "error-container": "#ffdad6",
+          "on-background": "#1c1917",
+          "tertiary-fixed-dim": "#ffb4a6",
+          "on-tertiary-container": "#660900",
+          "on-surface-variant": "#44403c",
+          "on-secondary-fixed-variant": "#114d5e",
+          "inverse-primary": "#ffb694",
+          "tertiary": "#b82007",
+          "on-tertiary-fixed-variant": "#8f1100",
+          "primary": "#ff6a00",
+          "error": "#ba1a1a",
+          "surface-bright": "#ffffff",
+          "background": "#faf8f5",
+          "surface-container-high": "#eee7e3",
+          "secondary-fixed": "#b7eaff",
+          "on-primary-fixed-variant": "#7b2f00",
+          "surface-container-lowest": "#ffffff",
+          "secondary-fixed-dim": "#9acee3",
+          "surface-container-low": "#faf2ee",
+          "on-surface": "#1c1917",
+          "inverse-surface": "#33302d",
+          "tertiary-fixed": "#ffdad3",
+          "surface-container": "#f3efe9",
+          "surface-tint": "#ff6a00",
+          "primary-fixed": "#ffdbcc",
+          "inverse-on-surface": "#f7efeb",
+          "on-secondary-fixed": "#001f28",
+          "on-error-container": "#93000a",
+          "on-error": "#ffffff",
+          "secondary": "#306577",
+          "surface-variant": "#e9e1dd",
+          "on-primary-container": "#571f00",
+          "surface-container-highest": "#e9e1dd",
+          "primary-container": "#ff6a00",
+          "primary-fixed-dim": "#ffb694",
+          "on-secondary": "#ffffff",
+          "secondary-container": "#b3e8fc",
+          "outline-variant": "#e7dfd8",
+          "on-tertiary-fixed": "#3f0300",
+          "surface-dim": "#e0d8d5"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "stack-sm": "8px",
+          "margin-mobile": "16px",
+          "gutter": "24px",
+          "stack-lg": "32px",
+          "margin-desktop": "48px",
+          "container-max-width": "1280px",
+          "unit": "4px",
+          "stack-md": "16px"
+        },
+        "fontFamily": {
+          "display-lg-mobile": ["Montserrat", "Plus Jakarta Sans", "sans-serif"],
+          "body-lg": ["Inter", "Plus Jakarta Sans", "sans-serif"],
+          "headline-md": ["Montserrat", "Plus Jakarta Sans", "sans-serif"],
+          "price-display": ["Montserrat", "Plus Jakarta Sans", "sans-serif"],
+          "headline-lg": ["Montserrat", "Plus Jakarta Sans", "sans-serif"],
+          "label-lg": ["Inter", "Space Grotesk", "sans-serif"],
+          "display-lg": ["Montserrat", "Plus Jakarta Sans", "sans-serif"],
+          "body-md": ["Inter", "Plus Jakarta Sans", "sans-serif"]
+        },
+        "fontSize": {
+          "display-lg-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "800" }],
+          "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+          "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+          "price-display": ["32px", { "lineHeight": "36px", "fontWeight": "800" }],
+          "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+          "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.03em", "fontWeight": "600" }],
+          "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+          "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+        }
+      }
+    }
+  }
+</script>
+<style>
+  .light-panel {
+    background: #ffffff;
+    border: 1px solid #e7dfd8;
+    box-shadow: 0 4px 20px -2px rgba(28, 25, 23, 0.05);
+  }
+  .spec-chip {
+    background: #ffffff;
+    border: 1px solid #e7dfd8;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .spec-chip:hover {
+    border-color: #ff6a00;
+  }
+</style>
+<link rel="stylesheet" href="js/site-shell.css"/>
+</head>
+<body class="bg-[#faf8f5] text-[#1c1917] font-body-md min-h-screen flex flex-col pt-16 pb-24 md:pb-0 antialiased selection:bg-primary/20 selection:text-primary">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 border-b border-outline-variant/80 bg-[#ffffff]/90 backdrop-blur-xl shadow-xs">
+<div class="flex justify-between items-center h-16 px-margin-mobile md:px-margin-desktop max-w-container-max-width mx-auto">
+<button aria-label="Go Back" onclick="if(window.history.length > 1) window.history.back(); else window.location.href='shop.html';" class="text-primary hover:bg-primary/10 transition-all duration-300 rounded-full p-2 cursor-pointer">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<a href="index.html" class="font-display-lg text-display-lg-mobile text-primary tracking-tight font-extrabold">Sukhi</a>
+<div class="flex gap-2 sm:gap-3 text-primary items-center">
+<a href="wishlist.html" aria-label="Wishlist" class="hover:bg-primary/10 transition-all duration-300 rounded-full p-2 relative">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">favorite</span>
+<span data-wishlist-count class="absolute top-0 right-0 w-4 h-4 bg-primary text-white text-[9px] font-bold rounded-full items-center justify-center hidden">0</span>
+</a>
+<a href="cart.html" aria-label="Shopping Cart" class="hover:bg-primary/10 transition-all duration-300 rounded-full p-2 relative">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">shopping_cart</span>
+<span data-cart-count class="absolute top-0 right-0 w-4 h-4 bg-primary text-white text-[9px] font-bold rounded-full items-center justify-center hidden">0</span>
+</a>
+</div>
+</div>
+</header>
+<main class="flex-grow max-w-container-max-width mx-auto w-full px-margin-mobile md:px-margin-desktop pt-stack-lg pb-12">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter items-start">
+<!-- Product Gallery -->
+<section class="md:col-span-7 flex flex-col gap-stack-md">
+<div class="light-panel rounded-2xl overflow-hidden aspect-square md:aspect-video relative group border border-outline-variant shadow-sm bg-white">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A high-resolution, dramatic studio shot of a pyrotechnic device named 'Sky Dragon Aerial Shot'. The sleek, cylindrical firework sits on a dark slate surface, illuminated by a moody, cinematic lighting setup that emphasizes its premium, explosive potential. The background is a deep midnight navy, with subtle streaks of electric purple and vibrant orange simulating spark trails in the distance. The overall aesthetic is high-octane, festive, and luxurious, typical of a top-tier e-commerce product display." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCS51XCMdwBW-UO7co5OOZVtXysnqRvi2N4J2CVTHKWWBW24Gm2tGinlOeELVzPrCZxJxBiEUOYEoXLXTlqYLK0GGyMTB6EZH5rPFhWcNk_NwLxVnbFsJ3FlJbt72qHTqIO9KeV51V1dVHBTHwuizaSzdJX_A2zLNzuyec7UE0AYgVTWE_iZOCmNXJnEA0YQvStapZJtBuciqBuPP0NPXrchd97VjxlCcq6itekfPM6gIGPuUkw30hByA"/>
+<div class="absolute top-4 left-4 bg-primary text-white font-bold px-3.5 py-1.5 rounded-full font-label-lg text-xs tracking-wider uppercase shadow-md flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm">flight_takeoff</span>
+High Altitude
+</div>
+</div>
+<div class="grid grid-cols-3 gap-stack-sm h-28 md:h-32">
+<div class="light-panel rounded-xl overflow-hidden relative cursor-pointer border-2 border-primary/20 hover:border-primary transition-colors">
+<img class="w-full h-full object-cover" data-alt="A detailed close-up shot of the packaging details of the 'Sky Dragon Aerial Shot' firework. The focus is on the premium textured cardboard and the metallic gold and orange typography. The lighting is sharp, casting deep shadows on a dark slate background, creating a high-contrast, premium e-commerce feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbX4tfTUTuSA7jWRfYcJ8-LgoBwuujc1uG7JP3RUo4igjXm71rIc1x2sNOdxvBWWN2c_vgPUOz0fTk0JVhOdSiyTT9foTOeIZxU5re203MuI6cJH7UuunepwMmLWMg5G7CxEgChIB9bSqgekRq9_EULcxyegFB2BlFLhndwLwXcI54Cmfn8RrjhUu19pt7ukvLp7hTMvtAz8vyPPoGeq1kUlRUa7Qvc01C2MOaJ2RBx25ivGWCozDdVQ"/>
+</div>
+<div class="light-panel rounded-xl overflow-hidden relative cursor-pointer border-2 border-primary shadow-md">
+<img class="w-full h-full object-cover" data-alt="An action shot of the 'Sky Dragon Aerial Shot' firework exploding in the night sky. The image captures a massive, vibrant multicolor starburst effect, with bright orange and gold sparks contrasting violently against a pitch-black midnight background. The scene is energetic and highly dynamic, representing the thrill of pyrotechnics." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYLMkHGaFjm0RzeaSCTQXJkxWCuhITtZjVObpyrXBI4F8xQ7XZSjAWX6Y89BtUUnXV2tnFa50BOQnosnJJpswDG8j_w4DiISsUa1QO3jFqAhM_Jy6GlYN1T8tTXW8fu1i2O5Q7ImbtvbHirkiZPeJxZBeh66FpCJ4j0Y5m1_EQ5Icw9QXS4Dug5dXvDTdNZTEvZW1aG4SpdCDvree_QaKYgVzMXEgtyeElh-804dAIKVKTYGMSgnMHOQ"/>
+</div>
+<div class="light-panel rounded-xl overflow-hidden relative cursor-pointer hover:border-primary transition-all flex items-center justify-center bg-[#f3efe9] group">
+<span class="material-symbols-outlined text-4xl text-primary group-hover:scale-110 transition-transform">play_circle</span>
+</div>
+</div>
+</section>
+<!-- Product Details -->
+<section class="md:col-span-5 flex flex-col gap-stack-lg">
+<div>
+<h1 class="font-headline-lg text-2xl md:text-3xl lg:text-4xl text-[#1c1917] font-bold tracking-tight mb-2">Sky Dragon Aerial Shot</h1>
+<div class="flex items-baseline gap-3 mb-5">
+<span class="font-price-display text-3xl md:text-4xl font-extrabold text-primary">₹129.99</span>
+<span class="font-body-md text-base text-[#78716c] line-through font-medium">₹159.99</span>
+<span class="inline-flex items-center text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">Save 19%</span>
+</div>
+<p class="font-body-lg text-[#44403c] leading-relaxed">
+  Unleash a breathtaking spectacle with the Sky Dragon. Engineered for maximum impact, this premium aerial shell delivers a massive, vibrant burst that commands the night sky.
+</p>
+</div>
+<!-- Specs Chips -->
+<div class="flex flex-wrap gap-2.5">
+<div class="spec-chip px-3.5 py-2 rounded-full flex items-center gap-2 border border-outline-variant hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-primary text-base">rocket_launch</span>
+<span class="font-label-lg text-xs md:text-sm font-semibold text-[#1c1917]">25 Shots</span>
+</div>
+<div class="spec-chip px-3.5 py-2 rounded-full flex items-center gap-2 border border-outline-variant hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-amber-600 text-base">height</span>
+<span class="font-label-lg text-xs md:text-sm font-semibold text-[#1c1917]">80ft Altitude</span>
+</div>
+<div class="spec-chip px-3.5 py-2 rounded-full flex items-center gap-2 border border-outline-variant hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-primary text-base">auto_awesome</span>
+<span class="font-label-lg text-xs md:text-sm font-semibold text-[#1c1917]">Multicolor Starburst</span>
+</div>
+<div class="spec-chip px-3.5 py-2 rounded-full flex items-center gap-2 border border-outline-variant hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-[#78716c] text-base">inventory_2</span>
+<span class="font-label-lg text-xs md:text-sm font-semibold text-[#44403c]">5 Pieces / Box</span>
+</div>
+</div>
+<!-- Safety Info -->
+<div class="rounded-xl p-5 border border-amber-200/80 bg-[#fffbf2] shadow-xs relative overflow-hidden">
+<div class="absolute top-1 right-2 p-2 opacity-10 pointer-events-none">
+<span class="material-symbols-outlined text-7xl text-amber-600">warning</span>
+</div>
+<h3 class="font-headline-md text-base md:text-lg font-bold text-[#1c1917] flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-amber-600 text-xl">gavel</span>
+Safety Instructions
+</h3>
+<ul class="space-y-2.5 font-body-md text-sm md:text-base text-[#44403c] list-none">
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-base mt-0.5 shrink-0">check_circle</span>
+<span>Strictly outdoor use only. Ensure a clear 150ft radius.</span>
+</li>
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-base mt-0.5 shrink-0">check_circle</span>
+<span>Secure base on flat, hard ground before ignition.</span>
+</li>
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-base mt-0.5 shrink-0">check_circle</span>
+<span>Light fuse and retreat immediately. Do not hold in hand.</span>
+</li>
+</ul>
+</div>
+<!-- Action Bar (Sticky on Mobile, standard in flow on Desktop) -->
+<div class="fixed bottom-0 left-0 w-full md:relative md:w-auto bg-white/95 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none p-margin-mobile md:p-0 border-t md:border-none border-outline-variant shadow-lg md:shadow-none z-40 flex flex-col gap-3">
+<div class="flex gap-3 items-center">
+<!-- Quantity -->
+<div class="flex items-center bg-[#f3efe9] rounded-xl border border-outline-variant overflow-hidden h-12">
+<button id="btn-qty-dec" aria-label="Decrease quantity" class="px-3.5 text-[#44403c] hover:text-primary hover:bg-[#eae3dc] transition-colors h-full flex items-center cursor-pointer">
+<span class="material-symbols-outlined text-base">remove</span>
+</button>
+<span id="qty-val" class="font-label-lg text-sm font-bold text-[#1c1917] w-8 text-center">1</span>
+<button id="btn-qty-inc" aria-label="Increase quantity" class="px-3.5 text-[#44403c] hover:text-primary hover:bg-[#eae3dc] transition-colors h-full flex items-center cursor-pointer">
+<span class="material-symbols-outlined text-base">add</span>
+</button>
+</div>
+<!-- Add to Cart -->
+<button id="btn-add-cart" class="flex-1 h-12 bg-white hover:bg-orange-50/60 rounded-xl font-label-lg text-sm font-bold text-primary border-2 border-primary transition-all active:scale-[0.98] shadow-xs flex items-center justify-center gap-2 cursor-pointer">
+<span class="material-symbols-outlined text-lg">shopping_cart</span>
+Add to Cart
+</button>
+</div>
+<!-- Buy Now -->
+<button id="btn-buy-now" class="w-full h-13 py-3.5 bg-gradient-to-r from-[#ff6a00] to-[#ff8c00] hover:from-[#f06300] hover:to-[#ff8000] text-white rounded-xl font-headline-md text-base font-bold shadow-[0_4px_16px_rgba(255,106,0,0.35)] hover:shadow-[0_6px_22px_rgba(255,106,0,0.45)] transition-all active:scale-[0.98] flex items-center justify-center gap-2 relative overflow-hidden group cursor-pointer">
+<div class="absolute inset-0 bg-white/15 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+<span class="material-symbols-outlined text-xl">bolt</span>
+<span class="relative z-10 tracking-wide">Buy Now</span>
+</button>
+</div>
+</section>
+</div>
+</main>
+
+<!-- Footer -->
+<footer class="relative w-full border-t border-outline-variant bg-[#ffffff] mt-stack-lg pb-24 md:pb-8">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop py-stack-lg max-w-container-max-width mx-auto items-center">
+<div class="col-span-1">
+<a href="index.html" class="font-display-lg text-2xl font-extrabold text-primary mb-1 tracking-tight">Sukhi</a>
+<p class="font-body-md text-xs md:text-sm text-[#78716c]">© 2026 Sukhi Fireworks. Light with caution.</p>
+</div>
+<div class="col-span-1 md:col-span-3 flex flex-wrap gap-x-8 gap-y-3 items-center md:justify-end">
+<a class="font-label-lg text-sm font-semibold text-[#44403c] hover:text-primary transition-colors" href="index.html">Home</a>
+<a class="font-label-lg text-sm font-semibold text-[#44403c] hover:text-primary transition-colors" href="shop.html">Shop</a>
+<a class="font-label-lg text-sm font-semibold text-[#44403c] hover:text-primary transition-colors" href="wishlist.html">Wishlist</a>
+<a class="font-label-lg text-sm font-semibold text-[#44403c] hover:text-primary transition-colors" href="cart.html">Cart</a>
+</div>
+</div>
+</footer>
+
+<!-- BottomNavBar (Mobile) -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center h-20 pb-safe px-4 md:hidden z-50 border-t border-stone-200 bg-white/95 backdrop-blur-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.06)] rounded-t-2xl">
+<a class="flex flex-col items-center justify-center text-stone-500 hover:text-primary transition-transform duration-200" href="index.html">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[11px] mt-0.5 font-medium">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary bg-orange-50 rounded-xl px-4 py-1.5 transition-transform duration-200" href="shop.html">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">storefront</span>
+<span class="text-[11px] mt-0.5 font-bold">Shop</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 hover:text-primary transition-transform duration-200 relative" href="wishlist.html">
+<span class="material-symbols-outlined">favorite</span>
+<span data-wishlist-count class="absolute top-1 right-3 w-4 h-4 bg-primary text-white text-[9px] font-bold rounded-full items-center justify-center hidden">0</span>
+<span class="text-[11px] mt-0.5 font-medium">Wishlist</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 hover:text-primary transition-transform duration-200 relative" href="cart.html">
+<span class="material-symbols-outlined">shopping_bag</span>
+<span data-cart-count class="absolute top-1 right-3 w-4 h-4 bg-primary text-white text-[9px] font-bold rounded-full items-center justify-center hidden">0</span>
+<span class="text-[11px] mt-0.5 font-medium">Cart</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 hover:text-primary transition-transform duration-200" href="login.html">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[11px] mt-0.5 font-medium">Profile</span>
+</a>
+</nav>
+
+<!-- Firebase SDK + App Logic -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/app.js"></script>
+<script src="js/site-shell.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  await Products.load();
+  const id = getQueryParam('id') || 'p2';
+  const product = Products.getById(id) || getSampleProducts().find(p => p.id === id) || getSampleProducts()[1];
+
+  let selectedQty = 1;
+  const qtyVal = document.getElementById('qty-val');
+  const decBtn = document.getElementById('btn-qty-dec');
+  const incBtn = document.getElementById('btn-qty-inc');
+  const addCartBtn = document.getElementById('btn-add-cart');
+  const buyNowBtn = document.getElementById('btn-buy-now');
+
+  if (decBtn && incBtn && qtyVal) {
+    decBtn.addEventListener('click', () => {
+      if (selectedQty > 1) {
+        selectedQty--;
+        qtyVal.textContent = selectedQty;
+      }
+    });
+    incBtn.addEventListener('click', () => {
+      selectedQty++;
+      qtyVal.textContent = selectedQty;
+    });
+  }
+
+  if (addCartBtn) {
+    addCartBtn.addEventListener('click', () => {
+      Cart.add(product, selectedQty);
+    });
+  }
+
+  if (buyNowBtn) {
+    buyNowBtn.addEventListener('click', () => {
+      Cart.add(product, selectedQty);
+      window.location.href = 'checkout.html';
+    });
+  }
+
+  // Update page content with product data
+  document.title = product.name + ' - Sukhi Fireworks';
+  const titleEls = document.querySelectorAll('h1');
+  if (titleEls[0]) titleEls[0].textContent = product.name;
+
+  const priceEl = document.querySelector('.font-price-display');
+  if (priceEl) priceEl.textContent = formatPrice(product.price);
+
+  const mainImg = document.querySelector('section img');
+  if (mainImg && product.image) mainImg.src = product.image;
+
+  const descEl = document.querySelector('.font-body-lg.text-\\[\\#44403c\\]');
+  if (descEl && product.description) descEl.textContent = product.description;
+});
+</script>
+</body></html>
