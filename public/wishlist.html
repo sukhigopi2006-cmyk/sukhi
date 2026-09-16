@@ -117,10 +117,7 @@
 
         .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
 </style>
-<<<<<<< HEAD
-=======
 <link rel="stylesheet" href="js/site-shell.css"/>
->>>>>>> 73b8b01 (updated project files)
 </head>
 <body class="bg-background text-on-surface min-h-screen flex flex-col font-body-md overflow-x-hidden selection:bg-primary-fixed selection:text-on-primary-fixed">
 <!-- TopNavBar -->
@@ -164,11 +161,7 @@
 <!-- Main Content Canvas -->
 <main class="flex-grow pt-24 pb-28 md:pb-12 px-4 md:px-12 max-w-7xl mx-auto w-full">
 <!-- Header -->
-<<<<<<< HEAD
-<header class="mb-8 flex items-center justify-between">
-=======
 <header class="hidden" aria-hidden="true">
->>>>>>> 73b8b01 (updated project files)
 <div>
 <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary-fixed/50 text-on-primary-fixed-variant text-xs font-label-md uppercase tracking-wider mb-2 font-semibold">
   Saved Sparks
@@ -183,11 +176,7 @@
 </div>
 </header>
 <!-- Wishlist Grid -->
-<<<<<<< HEAD
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-=======
 <div class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" aria-hidden="true">
->>>>>>> 73b8b01 (updated project files)
 <!-- Item 1 -->
 <article class="product-card rounded-2xl overflow-hidden flex flex-col group relative">
 <!-- Remove Button overlay -->
@@ -332,10 +321,7 @@ Move to Cart
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
 <script src="js/firebase-config.js"></script>
 <script src="js/app.js"></script>
-<<<<<<< HEAD
-=======
 <script src="js/site-shell.js"></script>
->>>>>>> 73b8b01 (updated project files)
 <script>
   // Fix navigation links on all pages
   document.addEventListener('DOMContentLoaded', () => {
@@ -354,8 +340,6 @@ Move to Cart
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
   await Products.load();
-<<<<<<< HEAD
-=======
   const saved = Wishlist.load();
   const currentProducts = new Map(AppState.products.map(product => [product.id, product]));
   AppState.wishlist = saved
@@ -368,16 +352,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       image: product.image || ''
     }));
   Storage.set('sukhi_wishlist', AppState.wishlist);
->>>>>>> 73b8b01 (updated project files)
   renderWishlist();
 });
 
 function renderWishlist() {
-<<<<<<< HEAD
-  const list = Wishlist.load();
-=======
   const list = AppState.wishlist;
->>>>>>> 73b8b01 (updated project files)
   let area = document.getElementById('wishlist-dynamic');
   if (!area) {
     area = document.createElement('div');
@@ -399,12 +378,8 @@ function renderWishlist() {
   }
 
   area.innerHTML = `
-<<<<<<< HEAD
-    <h1 class="text-2xl font-bold mb-6">My Favorites (${list.length})</h1>
-=======
     <h1 class="text-2xl font-bold mb-2">Your Favorites</h1>
     <p class="text-stone-500 mb-6">${list.length} item${list.length === 1 ? '' : 's'} saved for celebrations and festivals.</p>
->>>>>>> 73b8b01 (updated project files)
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       ${list.map(p => `
         <div class="bg-white border border-stone-100 rounded-2xl p-4 shadow-sm">

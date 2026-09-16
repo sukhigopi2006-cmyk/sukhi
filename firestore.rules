@@ -32,11 +32,7 @@ service cloud.firestore {
 
     // Orders - user can create & read own, admin can read/update all
     match /orders/{orderId} {
-<<<<<<< HEAD
-      allow create: if isSignedIn() || true; // allow guest orders
-=======
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
->>>>>>> 73b8b01 (updated project files)
       allow read: if isSignedIn() && 
         (resource.data.userId == request.auth.uid || isAdmin());
       allow update: if isAdmin();
@@ -45,10 +41,6 @@ service cloud.firestore {
 
     // Customers - allow create on checkout/register, admin read/manage
     match /customers/{customerId} {
-<<<<<<< HEAD
-      allow create: if true;
-      allow read, update, delete: if isSignedIn() || isAdmin();
-=======
       allow create: if isAdmin() || (isSignedIn() && customerId == request.auth.uid && request.resource.data.userId == request.auth.uid);
       allow read, update, delete: if isAdmin() || (isSignedIn() && customerId == request.auth.uid);
     }
@@ -57,7 +49,6 @@ service cloud.firestore {
     match /offers/{offerId} {
       allow read: if true;
       allow create, update, delete: if isAdmin();
->>>>>>> 73b8b01 (updated project files)
     }
   }
 }

@@ -32,9 +32,6 @@
   .light-card { background: #fff; border: 1px solid #e9e1dd; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
   .glow-hover:hover { box-shadow: 0 8px 30px rgba(255,106,0,0.12); transform: translateY(-2px); }
   .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-<<<<<<< HEAD
-</style>
-=======
   .offer-track { display: flex; width: max-content; animation: offer-marquee 24s linear infinite; }
   .offer-slide { display: flex; align-items: center; gap: 10px; min-width: 360px; padding: 15px 28px; color: #fff; font-size: 13px; }
   .offer-slide img { width: 34px; height: 34px; object-fit: cover; border-radius: 8px; }
@@ -42,7 +39,6 @@
   @media (prefers-reduced-motion: reduce) { .offer-track { animation: none; } }
 </style>
 <link rel="stylesheet" href="js/site-shell.css"/>
->>>>>>> 73b8b01 (updated project files)
 </head>
 <body class="bg-white text-stone-900 min-h-screen">
 <!-- Header -->
@@ -57,12 +53,6 @@
         <a href="index.html" class="hover:text-primary transition">Home</a>
         <a href="shop.html" class="text-primary font-semibold">Shop</a>
         <a href="wishlist.html" class="hover:text-primary transition">Wishlist</a>
-<<<<<<< HEAD
-        <a href="admin.html" class="hover:text-primary transition flex items-center gap-1 font-semibold text-stone-700">
-          <span class="material-symbols-outlined text-[18px] text-primary">admin_panel_settings</span>Admin
-        </a>
-=======
->>>>>>> 73b8b01 (updated project files)
       </nav>
       <div class="flex items-center gap-3">
         <a href="wishlist.html" class="relative p-2 rounded-full hover:bg-stone-100 transition">
@@ -84,23 +74,6 @@
 </header>
 
 <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-<<<<<<< HEAD
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-    <div>
-      <h1 class="text-3xl font-display font-bold text-stone-900">All Fireworks</h1>
-      <p class="text-stone-500 mt-1">Premium festive crackers & aerials</p>
-    </div>
-    <div class="flex flex-wrap gap-2" id="category-filters">
-      <button data-cat="all" class="cat-btn px-4 py-2 rounded-full bg-primary text-white text-sm font-semibold">All</button>
-      <button data-cat="Crackers" class="cat-btn px-4 py-2 rounded-full bg-stone-100 text-stone-700 text-sm font-medium hover:bg-orange-50">Crackers</button>
-      <button data-cat="Aerial" class="cat-btn px-4 py-2 rounded-full bg-stone-100 text-stone-700 text-sm font-medium hover:bg-orange-50">Aerial</button>
-      <button data-cat="Sparklers" class="cat-btn px-4 py-2 rounded-full bg-stone-100 text-stone-700 text-sm font-medium hover:bg-orange-50">Sparklers</button>
-      <button data-cat="Fountains" class="cat-btn px-4 py-2 rounded-full bg-stone-100 text-stone-700 text-sm font-medium hover:bg-orange-50">Fountains</button>
-      <button data-cat="Gift Boxes" class="cat-btn px-4 py-2 rounded-full bg-stone-100 text-stone-700 text-sm font-medium hover:bg-orange-50">Gift Boxes</button>
-      <button data-cat="Rockets" class="cat-btn px-4 py-2 rounded-full bg-stone-100 text-stone-700 text-sm font-medium hover:bg-orange-50">Rockets</button>
-      <button data-cat="Bombs" class="cat-btn px-4 py-2 rounded-full bg-stone-100 text-stone-700 text-sm font-medium hover:bg-orange-50">Bombs</button>
-      <button data-cat="Ground" class="cat-btn px-4 py-2 rounded-full bg-stone-100 text-stone-700 text-sm font-medium hover:bg-orange-50">Ground</button>
-=======
   <section id="offer-banner" class="mb-7 hidden overflow-hidden rounded-2xl bg-stone-950 text-white shadow-lg" aria-label="Current offers"></section>
   <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
     <div>
@@ -112,7 +85,6 @@
       <button data-cat="Ground Chakker" class="cat-btn px-4 py-2 rounded-full bg-stone-100 text-stone-700 text-sm font-medium hover:bg-orange-50">Ground Chakker</button>
       <button data-cat="Flower Pots" class="cat-btn px-4 py-2 rounded-full bg-stone-100 text-stone-700 text-sm font-medium hover:bg-orange-50">Flower Pots</button>
       <button data-cat="Twinkling Star" class="cat-btn px-4 py-2 rounded-full bg-stone-100 text-stone-700 text-sm font-medium hover:bg-orange-50">Twinkling Star</button>
->>>>>>> 73b8b01 (updated project files)
     </div>
   </div>
 
@@ -160,15 +132,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
 <script src="js/firebase-config.js"></script>
 <script src="js/app.js"></script>
-<<<<<<< HEAD
-<script>
-  let currentCat = 'all';
-=======
 <script src="js/site-shell.js"></script>
 <script>
   let currentCat = 'all';
   let currentSearch = '';
->>>>>>> 73b8b01 (updated project files)
 
   function renderProducts(list) {
     const grid = document.getElementById('products-grid');
@@ -221,9 +188,6 @@
       b.classList.toggle('text-stone-700', !match);
       b.classList.toggle('font-medium', !match);
     });
-<<<<<<< HEAD
-    renderProducts(Products.getByCategory(currentCat));
-=======
     renderProducts(getFilteredProducts());
   }
 
@@ -232,7 +196,6 @@
       const haystack = `${product.name} ${product.category} ${product.description || ''}`.toLowerCase();
       return !currentSearch || haystack.includes(currentSearch);
     });
->>>>>>> 73b8b01 (updated project files)
   }
 
   document.querySelectorAll('.cat-btn').forEach(btn => {
@@ -243,14 +206,6 @@
 
   Products.load().then(() => {
     const catParam = getQueryParam('cat');
-<<<<<<< HEAD
-    if (catParam) {
-      setCategory(catParam);
-    } else {
-      renderProducts(Products.getByCategory('all'));
-    }
-  });
-=======
     currentSearch = (getQueryParam('search') || '').trim().toLowerCase();
     if (catParam) {
       setCategory(catParam);
@@ -271,7 +226,6 @@
         <strong>${offer.text}</strong>
       </div>`).join('')}</div>`;
   });
->>>>>>> 73b8b01 (updated project files)
 </script>
 </body>
 </html>

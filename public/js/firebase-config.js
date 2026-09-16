@@ -11,14 +11,6 @@ const firebaseConfig = {
   measurementId: "G-15BQL1V860"
 };
 
-<<<<<<< HEAD
-// Initialize Firebase (compat mode for simpler multi-page usage)
-if (typeof firebase !== 'undefined') {
-  firebase.initializeApp(firebaseConfig);
-  window.auth = firebase.auth();
-  window.db = firebase.firestore();
-  window.storage = firebase.storage();
-=======
 const firebaseConfigErrors = [];
 if (window.location.protocol === 'file:') {
   firebaseConfigErrors.push('Open the site through a local web server or Firebase Hosting, not a file:// URL.');
@@ -49,7 +41,6 @@ if (window.firebaseConfigStatus.ready) {
     };
     console.error('Firebase initialization failed:', error);
   }
->>>>>>> 73b8b01 (updated project files)
 }
 
 // Export for module usage if needed

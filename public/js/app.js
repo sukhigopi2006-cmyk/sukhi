@@ -11,18 +11,11 @@ const AppState = {
   cart: [],
   wishlist: [],
   products: [],
-<<<<<<< HEAD
-  isAdmin: false
-};
-
-const ADMIN_EMAILS = ['admin@sukhi.com', 'owner@sukhi.com']; // Add your admin emails
-=======
   isAdmin: typeof window !== 'undefined' && window.location.pathname.includes('admin.html')
 };
 
 const ADMIN_EMAILS = ['admin@sukhi.com', 'owner@sukhi.com']; // Add your admin emails
 const PRICE_MULTIPLIER = 2;
->>>>>>> 73b8b01 (updated project files)
 
 // ============================================
 // LOCAL STORAGE HELPERS
@@ -221,16 +214,10 @@ const Products = {
 
     const custom = Storage.get('sukhi_custom_products', []);
     const deleted = Storage.get('sukhi_deleted_products', []);
-<<<<<<< HEAD
-
-    if (!list.length) {
-      const samples = getSampleProducts();
-=======
     const samples = getSampleProducts();
     const hasCurrentPriceList = list.length > 0 && list.every(product => product.singlePieceRate != null);
 
     if (!list.length || !hasCurrentPriceList) {
->>>>>>> 73b8b01 (updated project files)
       list = [...custom, ...samples];
     } else {
       const existingIds = new Set(list.map(p => p.id));
@@ -241,15 +228,12 @@ const Products = {
 
     // Filter out deleted and inactive products
     AppState.products = list.filter(p => !deleted.includes(p.id) && p.active !== false);
-<<<<<<< HEAD
-=======
     const currentPrices = new Map(AppState.products.map(product => [product.id, product]));
     AppState.cart = AppState.cart.map(item => {
       const product = currentPrices.get(item.id);
       return product ? { ...item, name: product.name, price: product.price, image: product.image || item.image } : item;
     });
     Storage.set('sukhi_cart', AppState.cart);
->>>>>>> 73b8b01 (updated project files)
     return AppState.products;
   },
 
@@ -267,113 +251,6 @@ function getSampleProducts() {
   return [
     {
       id: 'p1',
-<<<<<<< HEAD
-      name: '1000 Wala Red Giant',
-      price: 899,
-      originalPrice: 1125,
-      category: 'Crackers',
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBWx00X12Fmm_QPvB_J9Tluq3vf6rtzggOm_EKuLuelzTzoVVvmflkMr68b26FEaYEZX8cseX6WTS_HOEOoU6E3dCYFw1bl790Aty1dfmtc4sm7ILB37Rtrx1CQTxaNFELlpw5cNgHjNQTzFUNYsONsnWRnVwMKiJk3x8n-UxZfMZF62eR_7t9_Hs8n4I0K6J31CX7VVo8mz4esG684TDwcFTih5r1MixKm-sMrDfj5OULBRbWj_cx2qQ',
-      description: 'Premium 1000-shot red giant cracker with bold red and gold packaging. Delivers powerful sequential bursts perfect for celebrations.',
-      stock: 150,
-      active: true,
-      rating: 4.8,
-      tags: ['bestseller', 'sale']
-    },
-    {
-      id: 'p2',
-      name: 'Sky Dragon Aerial Shot',
-      price: 1499,
-      originalPrice: 1899,
-      category: 'Aerial',
-      image: 'https://images.unsplash.com/photo-1467810563316-b5412438a3b7?w=600&h=400&fit=crop',
-      description: 'Spectacular multi-color aerial firework that paints the sky with dragon-like trails and brilliant bursts. Height: 80-100ft.',
-      stock: 80,
-      active: true,
-      rating: 4.9,
-      tags: ['premium', 'aerial']
-    },
-    {
-      id: 'p3',
-      name: 'Golden Sparkler Pack (50pcs)',
-      price: 249,
-      originalPrice: 299,
-      category: 'Sparklers',
-      image: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?w=600&h=400&fit=crop',
-      description: 'Safe, long-burning golden sparklers ideal for kids and family celebrations. 30-second burn time each.',
-      stock: 500,
-      active: true,
-      rating: 4.7,
-      tags: ['kids-safe', 'family']
-    },
-    {
-      id: 'p4',
-      name: 'Color Fountain Combo',
-      price: 599,
-      originalPrice: 749,
-      category: 'Fountains',
-      image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&h=400&fit=crop',
-      description: 'Set of 6 colorful fountains producing vibrant sprays of sparks in red, green, blue and gold.',
-      stock: 200,
-      active: true,
-      rating: 4.6,
-      tags: ['combo', 'colorful']
-    },
-    {
-      id: 'p5',
-      name: 'Thunder King Atom Bomb',
-      price: 199,
-      originalPrice: 249,
-      category: 'Bombs',
-      image: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=600&h=400&fit=crop',
-      description: 'Classic loud atom bomb with earth-shaking sound. Use with caution. Pack of 10.',
-      stock: 300,
-      active: true,
-      rating: 4.5,
-      tags: ['loud', 'classic']
-    },
-    {
-      id: 'p6',
-      name: 'Diwali Deluxe Gift Box',
-      price: 2499,
-      originalPrice: 3299,
-      category: 'Gift Boxes',
-      image: 'https://images.unsplash.com/photo-1607083206968-13611e3d76db?w=600&h=400&fit=crop',
-      description: 'Premium curated gift box with mix of aerials, crackers, sparklers and fountains. Perfect festive hamper.',
-      stock: 50,
-      active: true,
-      rating: 4.9,
-      tags: ['gift', 'premium', 'bestseller']
-    },
-    {
-      id: 'p7',
-      name: 'Rainbow Rocket Pack',
-      price: 799,
-      originalPrice: 999,
-      category: 'Rockets',
-      image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&h=400&fit=crop',
-      description: 'Pack of 12 multi-color rockets that soar high and explode into rainbow bursts.',
-      stock: 120,
-      active: true,
-      rating: 4.7,
-      tags: ['rockets', 'colorful']
-    },
-    {
-      id: 'p8',
-      name: 'Chakri Spinner Set',
-      price: 349,
-      originalPrice: 449,
-      category: 'Ground',
-      image: 'https://images.unsplash.com/photo-1481162853117-e6a2c4e0a2e5?w=600&h=400&fit=crop',
-      description: 'Classic ground spinners (chakri) that spin and emit colorful sparks. Pack of 20.',
-      stock: 250,
-      active: true,
-      rating: 4.4,
-      tags: ['classic', 'ground']
-    }
-  ];
-}
-
-=======
       name: '7" PENCIL SINGLE BOX',
       price: 67.5,
       category: 'Pencils',
@@ -447,22 +324,12 @@ const Offers = {
   }
 };
 
->>>>>>> 73b8b01 (updated project files)
 // ============================================
 // AUTH
 // ============================================
 const Auth = {
   init() {
-<<<<<<< HEAD
-    // Check local admin session for instant lag-free load
-    const savedAdmin = Storage.get('sukhi_admin_session', null);
-    if (savedAdmin) {
-      AppState.user = savedAdmin;
-      AppState.isAdmin = true;
-    }
-=======
     Storage.remove('sukhi_admin_session');
->>>>>>> 73b8b01 (updated project files)
 
     if (!window.auth) {
       this.updateUI();
@@ -473,17 +340,6 @@ const Auth = {
       auth.onAuthStateChanged(async (user) => {
         if (user) {
           AppState.user = user;
-<<<<<<< HEAD
-          AppState.isAdmin = ADMIN_EMAILS.includes(user.email);
-          if (AppState.isAdmin) {
-            Storage.set('sukhi_admin_session', { email: user.email, displayName: user.displayName || 'Admin' });
-          }
-        } else if (!savedAdmin) {
-          AppState.user = null;
-          AppState.isAdmin = false;
-        }
-        this.updateUI();
-=======
           AppState.isAdmin = ADMIN_EMAILS.includes((user.email || '').toLowerCase()) || (typeof window !== 'undefined' && window.location.pathname.includes('admin.html'));
           if (AppState.isAdmin) {
             Storage.set('sukhi_admin_session', { email: user.email, displayName: user.displayName || 'Admin' });
@@ -494,7 +350,6 @@ const Auth = {
         }
         this.updateUI();
         if (typeof window.checkAdminAuthentication === 'function') window.checkAdminAuthentication();
->>>>>>> 73b8b01 (updated project files)
         if (user) {
           await Cart.loadFromFirestore();
           await Wishlist.syncToFirestore();
@@ -507,55 +362,6 @@ const Auth = {
   },
 
   async login(email, password) {
-<<<<<<< HEAD
-    if (window.auth) {
-      try {
-        const cred = await auth.signInWithEmailAndPassword(email, password);
-        AppState.user = cred.user;
-        AppState.isAdmin = ADMIN_EMAILS.includes(cred.user.email);
-        if (AppState.isAdmin) {
-          Storage.set('sukhi_admin_session', { email: cred.user.email, displayName: cred.user.displayName || 'Admin' });
-        }
-        this.updateUI();
-        return cred.user;
-      } catch (err) {
-        if (ADMIN_EMAILS.includes(email.toLowerCase()) || email.toLowerCase().includes('admin')) {
-          console.warn('Firebase login failed, falling back to admin session:', err);
-          return this.loginAdminDemo(email);
-        }
-        throw err;
-      }
-    } else {
-      if (ADMIN_EMAILS.includes(email.toLowerCase()) || email.toLowerCase().includes('admin')) {
-        return this.loginAdminDemo(email);
-      }
-      throw new Error('Auth service unavailable');
-    }
-  },
-
-  loginAdminDemo(email = 'admin@sukhi.com') {
-    const adminUser = {
-      email: email,
-      displayName: 'Sukhi Admin',
-      uid: 'admin_local'
-    };
-    AppState.user = adminUser;
-    AppState.isAdmin = true;
-    Storage.set('sukhi_admin_session', adminUser);
-    this.updateUI();
-    return adminUser;
-  },
-
-  async register(email, password, name) {
-    if (!window.auth) throw new Error('Firebase Auth not available');
-    const cred = await auth.createUserWithEmailAndPassword(email, password);
-    await cred.user.updateProfile({ displayName: name });
-    if (window.db) {
-      try {
-        await db.collection('users').doc(cred.user.uid).set({
-          email,
-          name,
-=======
     if (!window.firebaseConfigStatus?.ready) throw new Error(window.firebaseConfigStatus?.message || 'Firebase customer login is not configured.');
     const normalizedEmail = (email || '').trim().toLowerCase();
 
@@ -589,7 +395,6 @@ const Auth = {
           email: normalizedEmail,
           name: name.trim() || 'Customer',
           role: 'customer',
->>>>>>> 73b8b01 (updated project files)
           createdAt: firebase.firestore.FieldValue.serverTimestamp(),
           cart: [],
           wishlist: []
@@ -601,15 +406,12 @@ const Auth = {
     return cred.user;
   },
 
-<<<<<<< HEAD
-=======
   async sendPasswordReset(email) {
     if (!window.firebaseConfigStatus?.ready) throw new Error(window.firebaseConfigStatus?.message || 'Firebase customer login is not configured.');
     if (!window.auth) throw new Error('Authentication service is unavailable. Please try again later.');
     await auth.sendPasswordResetEmail(email.trim().toLowerCase());
   },
 
->>>>>>> 73b8b01 (updated project files)
   async logout() {
     Storage.remove('sukhi_admin_session');
     if (window.auth) {
@@ -620,11 +422,7 @@ const Auth = {
       }
     }
     AppState.user = null;
-<<<<<<< HEAD
-    AppState.isAdmin = false;
-=======
     AppState.isAdmin = typeof window !== 'undefined' && window.location.pathname.includes('admin.html');
->>>>>>> 73b8b01 (updated project files)
     this.updateUI();
   },
 
@@ -653,12 +451,6 @@ const Auth = {
 const Orders = {
   async create(orderData) {
     if (!window.db) throw new Error('Database not ready');
-<<<<<<< HEAD
-    const order = {
-      ...orderData,
-      userId: AppState.user?.uid || 'guest',
-      userEmail: AppState.user?.email || orderData.email,
-=======
     if (!AppState.user) throw new Error('Please sign in before placing an order.');
 
     const customer = await Customers.upsert(orderData.delivery || {});
@@ -667,7 +459,6 @@ const Orders = {
       userId: AppState.user.uid,
       userEmail: AppState.user.email,
       customerId: customer.id,
->>>>>>> 73b8b01 (updated project files)
       status: 'pending',
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       items: AppState.cart,
@@ -755,8 +546,6 @@ const Customers = {
     }
   },
 
-<<<<<<< HEAD
-=======
   async upsert(details = {}) {
     if (!AppState.user || !window.db) throw new Error('A signed-in customer is required.');
     const customerData = {
@@ -783,7 +572,6 @@ const Customers = {
     return { id: ref.id, ...customerData };
   },
 
->>>>>>> 73b8b01 (updated project files)
   async getAll() {
     if (window.db) {
       try {
@@ -809,10 +597,7 @@ const AdminProducts = {
       id: newId,
       name: product.name || 'Firework Item',
       price: Number(product.price) || 0,
-<<<<<<< HEAD
-=======
       priceVersion: 2,
->>>>>>> 73b8b01 (updated project files)
       originalPrice: product.originalPrice ? Number(product.originalPrice) : Math.round((Number(product.price) || 100) * 1.3),
       category: product.category || 'Crackers',
       image: product.image || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBWx00X12Fmm_QPvB_J9Tluq3vf6rtzggOm_EKuLuelzTzoVVvmflkMr68b26FEaYEZX8cseX6WTS_HOEOoU6E3dCYFw1bl790Aty1dfmtc4sm7ILB37Rtrx1CQTxaNFELlpw5cNgHjNQTzFUNYsONsnWRnVwMKiJk3x8n-UxZfMZF62eR_7t9_Hs8n4I0K6J31CX7VVo8mz4esG684TDwcFTih5r1MixKm-sMrDfj5OULBRbWj_cx2qQ',
@@ -841,22 +626,8 @@ const AdminProducts = {
 
     // 4. Try Firestore sync if available
     if (window.db) {
-<<<<<<< HEAD
-      try {
-        const ref = await db.collection('products').add({
-          ...newProduct,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        if (ref && ref.id) {
-          newProduct.id = ref.id;
-        }
-      } catch (e) {
-        console.warn('Firestore add product sync failed (saved locally):', e);
-      }
-=======
       const ref = db.collection('products').doc(newId);
       await ref.set({ ...newProduct, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
->>>>>>> 73b8b01 (updated project files)
     }
     return newProduct;
   },
@@ -876,21 +647,10 @@ const AdminProducts = {
     }
 
     if (window.db) {
-<<<<<<< HEAD
-      try {
-        await db.collection('products').doc(id).update({
-          ...data,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-      } catch (e) {
-        console.warn('Firestore update failed:', e);
-      }
-=======
       await db.collection('products').doc(id).set({
         ...data,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       }, { merge: true });
->>>>>>> 73b8b01 (updated project files)
     }
   },
 
@@ -898,8 +658,6 @@ const AdminProducts = {
     await this.update(id, { stock: Math.max(0, parseInt(newStock) || 0) });
   },
 
-<<<<<<< HEAD
-=======
   async doubleAllPrices() {
     if (!window.db) throw new Error('Firestore is not available.');
     const snapshot = await db.collection('products').get();
@@ -929,7 +687,6 @@ const AdminProducts = {
     return snapshot.size;
   },
 
->>>>>>> 73b8b01 (updated project files)
   async delete(id) {
     // Add to deleted products list
     const deleted = Storage.get('sukhi_deleted_products', []);
@@ -947,18 +704,10 @@ const AdminProducts = {
     AppState.products = AppState.products.filter(p => p.id !== id);
 
     if (window.db) {
-<<<<<<< HEAD
-      try {
-        await db.collection('products').doc(id).update({ active: false });
-      } catch (e) {
-        console.warn('Firestore product delete failed:', e);
-      }
-=======
       await db.collection('products').doc(id).set({
         active: false,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       }, { merge: true });
->>>>>>> 73b8b01 (updated project files)
     }
   },
 
@@ -967,8 +716,6 @@ const AdminProducts = {
       await Products.load();
     }
     return AppState.products;
-<<<<<<< HEAD
-=======
   },
 
   async replaceCatalog(products) {
@@ -1004,7 +751,6 @@ const AdminProducts = {
       }
     }
     if (operationCount > 0) await batch.commit();
->>>>>>> 73b8b01 (updated project files)
   }
 };
 
@@ -1095,7 +841,4 @@ window.showToast = showToast;
 window.formatPrice = formatPrice;
 window.getQueryParam = getQueryParam;
 window.getSampleProducts = getSampleProducts;
-<<<<<<< HEAD
-=======
 window.Offers = Offers;
->>>>>>> 73b8b01 (updated project files)

@@ -46,6 +46,9 @@
           <span class="material-symbols-outlined">favorite</span>
           <span data-wishlist-count class="site-count hidden">0</span>
         </a>
+        <a href="admin.html" class="site-icon-link" title="Admin Portal" aria-label="Admin Portal">
+          <span class="material-symbols-outlined">admin_panel_settings</span>
+        </a>
         <a href="login.html" data-auth-login class="site-login-button">Customer Login</a>
         <div data-auth-user class="site-user-menu hidden">
           <span data-user-name></span>

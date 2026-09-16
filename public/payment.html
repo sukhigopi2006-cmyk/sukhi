@@ -169,10 +169,7 @@
       to { opacity: 1; transform: translateY(0); }
   }
 </style>
-<<<<<<< HEAD
-=======
 <link rel="stylesheet" href="js/site-shell.css"/>
->>>>>>> 73b8b01 (updated project files)
 </head>
 <body class="bg-[#fff8f5] text-on-surface min-h-screen font-body-md antialiased flex flex-col relative pb-32">
 <!-- Transactional Header: Navigation Shell Suppressed per Logic Rules -->
@@ -331,10 +328,7 @@ Pay Now
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
 <script src="js/firebase-config.js"></script>
 <script src="js/app.js"></script>
-<<<<<<< HEAD
-=======
 <script src="js/site-shell.js"></script>
->>>>>>> 73b8b01 (updated project files)
 <script>
   // Fix navigation links on all pages
   document.addEventListener('DOMContentLoaded', () => {
@@ -368,12 +362,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
           const delivery = JSON.parse(sessionStorage.getItem('sukhi_delivery') || '{}');
-<<<<<<< HEAD
-          if (window.Customers && (delivery.name || delivery.email || delivery.phone)) {
-            Customers.add(delivery).catch(e => console.warn('Customer record sync note:', e));
-          }
-=======
->>>>>>> 73b8b01 (updated project files)
           const order = await Orders.create({
             delivery,
             paymentMethod: 'UPI / Card / COD',
@@ -384,18 +372,9 @@ document.addEventListener('DOMContentLoaded', () => {
           setTimeout(() => location.href = 'order-success.html?id=' + order.id, 1000);
         } catch (err) {
           console.error(err);
-<<<<<<< HEAD
-          // Even without Firebase, simulate success for demo
-          const fakeId = 'ORD' + Date.now().toString().slice(-8);
-          sessionStorage.setItem('sukhi_last_order', JSON.stringify({ id: fakeId, total: Cart.getTotal() }));
-          Cart.clear();
-          showToast('Order placed (demo mode)');
-          setTimeout(() => location.href = 'order-success.html?id=' + fakeId, 1000);
-=======
           btn.disabled = false;
           btn.textContent = 'Pay Now';
           showToast(err.message || 'Order could not be placed. Please sign in and try again.', 'error');
->>>>>>> 73b8b01 (updated project files)
         }
       });
     }
