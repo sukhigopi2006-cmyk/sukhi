@@ -1,9 +1,11 @@
 // Firebase Configuration for Sukhi Fireworks E-Commerce
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyCnF44y4V1HI___FBoOkPMlFSUawu27Fss",
   authDomain: "sukhifireworkes.firebaseapp.com",
+  databaseURL: "https://sukhifireworkes-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "sukhifireworkes",
   storageBucket: "sukhifireworkes.firebasestorage.app",
   messagingSenderId: "23623889504",
@@ -15,7 +17,7 @@ const firebaseConfigErrors = [];
 if (window.location.protocol === 'file:') {
   firebaseConfigErrors.push('Open the site through a local web server or Firebase Hosting, not a file:// URL.');
 }
-if (!firebaseConfig.apiKey || !firebaseConfig.projectId || !firebaseConfig.authDomain || firebaseConfig.apiKey.includes('REPLACE') || firebaseConfig.apiKey.includes('___')) {
+if (!firebaseConfig.apiKey || !firebaseConfig.projectId || !firebaseConfig.authDomain || !firebaseConfig.databaseURL || firebaseConfig.apiKey.includes('REPLACE')) {
   firebaseConfigErrors.push('Replace public/js/firebase-config.js with the Web app configuration from the active Firebase project.');
 }
 if (typeof firebase === 'undefined') {
@@ -34,6 +36,9 @@ if (window.firebaseConfigStatus.ready) {
     window.auth = firebase.auth();
     window.db = firebase.firestore();
     window.storage = firebase.storage();
+    if (firebase.database) {
+      window.rtdb = firebase.database();
+    }
   } catch (error) {
     window.firebaseConfigStatus = {
       ready: false,

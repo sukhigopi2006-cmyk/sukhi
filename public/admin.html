@@ -145,6 +145,13 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-2.5">
+          <a href="https://console.firebase.google.com/project/sukhifireworkes/firestore/data" target="_blank" rel="noreferrer" title="Database Management" aria-label="Open Database Management" class="w-10 h-10 rounded-xl border border-outline-variant/80 bg-white text-stone-700 hover:text-primary hover:bg-orange-50 shadow-sm flex items-center justify-center transition-colors">
+            <span class="material-symbols-outlined text-base">database</span>
+          </a>
+          <div id="databaseConnectionPill" class="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-amber-200 bg-amber-50 text-amber-700 text-[10px] font-bold uppercase tracking-wide">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+            <span>Checking DB…</span>
+          </div>
           <a href="shop.html" class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-outline-variant/80 text-stone-700 hover:text-primary hover:bg-orange-50 font-bold text-xs transition-colors">
             <span class="material-symbols-outlined text-base">open_in_new</span>
             Live Store
@@ -564,6 +571,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
   <script src="js/firebase-config.js"></script>
   <script src="js/app.js"></script>
@@ -587,6 +595,7 @@
     document.addEventListener('DOMContentLoaded', async () => {
       // Initialize admin dashboard and load store data
       await checkAdminAuthentication();
+      watchDatabaseConnection();
     });
 
     async function checkAdminAuthentication() {
@@ -963,6 +972,46 @@
       }
     }
 
+    function setDatabaseConnectionStatus(status, message) {
+      const pill = document.getElementById('databaseConnectionPill');
+      if (!pill) return;
+
+      const isConnected = status === 'connected';
+      pill.className = isConnected
+        ? 'inline-flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-wide'
+        : 'inline-flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-red-200 bg-red-50 text-red-700 text-[10px] font-bold uppercase tracking-wide';
+
+      pill.innerHTML = `
+        <span class="w-2 h-2 rounded-full ${isConnected ? 'bg-emerald-500' : 'bg-red-500'} ${isConnected ? 'animate-pulse' : ''}"></span>
+        <span>${isConnected ? 'CONNECTED' : 'DISCONNECTED'}</span>
+      `;
+      pill.title = message || 'Database connection status';
+    }
+
+    function watchDatabaseConnection() {
+      if (window.location.protocol === 'file:') {
+        setDatabaseConnectionStatus('disconnected', 'Open the page through a local web server or Firebase Hosting, not file://.');
+        return;
+      }
+
+      if (!window.rtdb || !window.rtdb.ref) {
+        setDatabaseConnectionStatus('disconnected', 'Realtime Database SDK is not initialized.');
+        return;
+      }
+
+      try {
+        window.rtdb.ref('.info/connected').on('value', (snapshot) => {
+          const connected = !!snapshot.val();
+          setDatabaseConnectionStatus(
+            connected ? 'connected' : 'disconnected',
+            connected ? 'Realtime database connection is active.' : 'Realtime database connection is lost.'
+          );
+        });
+      } catch (err) {
+        setDatabaseConnectionStatus('disconnected', 'Realtime database connection check failed: ' + (err.message || err));
+      }
+    }
+
     async function loadAdminOffers() {
       const offers = await Offers.getAll();
       const list = document.getElementById('adminOffersList');
@@ -1012,67 +1061,88 @@
     async function testFirebaseHealth() {
       const pill = document.getElementById('firestoreStatusPill');
       const box = document.getElementById('firebaseHealthStatus');
-      if (!pill || !box) return;
 
-      if (!window.db) {
-        pill.className = "inline-flex items-center gap-1 text-[11px] font-semibold text-red-700 bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200";
-        pill.innerHTML = '❌ Firebase SDK Not Loaded';
-        box.innerHTML = '<p class="text-xs text-red-600 font-bold">Firebase is not initialized. Please check internet connection or firebase-config.js.</p>';
+      if (window.location.protocol === 'file:') {
+        setDatabaseConnectionStatus('disconnected', 'Open the page through a local web server or Firebase Hosting, not file://.');
+        if (pill && box) {
+          pill.className = "inline-flex items-center gap-1 text-[11px] font-semibold text-red-700 bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200";
+          pill.innerHTML = '❌ Local Server Required';
+          box.innerHTML = '<p class="text-xs text-red-600 font-bold">Open this site via http://localhost or Firebase Hosting. Firebase does not initialize from a file:// URL.</p>';
+        }
         return;
       }
 
-      pill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span> Testing Rules...';
+      if (!window.db) {
+        setDatabaseConnectionStatus('disconnected', 'Firebase SDK is not initialized.');
+        if (pill && box) {
+          pill.className = "inline-flex items-center gap-1 text-[11px] font-semibold text-red-700 bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200";
+          pill.innerHTML = '❌ Firebase SDK Not Loaded';
+          box.innerHTML = '<p class="text-xs text-red-600 font-bold">Firebase is not initialized. Please check internet connection or firebase-config.js.</p>';
+        }
+        return;
+      }
+
+      if (pill) {
+        pill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span> Testing Rules...';
+      }
 
       try {
-        // Attempt a read
         await db.collection('products').limit(1).get();
-        pill.className = "inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200";
-        pill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Connected & Active';
-        box.innerHTML = '';
+        setDatabaseConnectionStatus('connected', 'Firestore can read data and the realtime database is active.');
+        if (pill) {
+          pill.className = "inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200";
+          pill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Connected & Active';
+        }
+        if (box) box.innerHTML = '';
       } catch (err) {
         console.warn('Firestore Permission Check:', err);
-        pill.className = "inline-flex items-center gap-1 text-[11px] font-bold text-red-700 bg-red-100 px-2.5 py-0.5 rounded-full border border-red-300";
-        pill.innerHTML = '⚠️ Rules Blocking Data';
+        setDatabaseConnectionStatus('disconnected', 'Firestore read failed or the database is unavailable.');
+        if (pill) {
+          pill.className = "inline-flex items-center gap-1 text-[11px] font-bold text-red-700 bg-red-100 px-2.5 py-0.5 rounded-full border border-red-300";
+          pill.innerHTML = '⚠️ Rules Blocking Data';
+        }
 
-        box.innerHTML = `
-          <div class="p-4 bg-red-50/90 border border-red-300 rounded-xl text-xs text-stone-800 space-y-2.5">
-            <div class="flex items-center gap-2 text-red-700 font-bold">
-              <span class="material-symbols-outlined text-lg">block</span>
-              <span>Reason Data Does Not Show: Security Rules are Blocking Access (PERMISSION_DENIED)</span>
+        if (box) {
+          box.innerHTML = `
+            <div class="p-4 bg-red-50/90 border border-red-300 rounded-xl text-xs text-stone-800 space-y-2.5">
+              <div class="flex items-center gap-2 text-red-700 font-bold">
+                <span class="material-symbols-outlined text-lg">block</span>
+                <span>Reason Data Does Not Show: Security Rules are Blocking Access (PERMISSION_DENIED)</span>
+              </div>
+              <p class="text-stone-600 leading-relaxed">
+                Google Cloud Firestore by default starts with <code class="font-mono bg-white px-1 border rounded text-red-700">allow read, write: if false;</code> which rejects all data operations from your website.
+              </p>
+              <div>
+                <p class="font-bold text-stone-700 mb-1">To fix this in 30 seconds:</p>
+                <ol class="list-decimal pl-5 space-y-1 text-stone-600">
+                  <li>Click the red button below to open your <strong>Firebase Console > Firestore > Rules</strong> tab.</li>
+                  <li>Replace the contents with the rules snippet below.</li>
+                  <li>Click the blue <strong>"Publish"</strong> button in Firebase Console.</li>
+                </ol>
+              </div>
+              <div class="p-2.5 bg-stone-900 text-stone-100 rounded-lg font-mono text-[11px] select-all overflow-x-auto">
+  rules_version = '2';<br/>
+  service cloud.firestore {<br/>
+  &nbsp;&nbsp;match /databases/{database}/documents {<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;match /{document=**} {<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allow read, write: if true;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+  &nbsp;&nbsp;}<br/>
+  }
+              </div>
+              <div class="flex flex-wrap items-center gap-2 pt-1">
+                <a href="https://console.firebase.google.com/project/sukhifireworkes/firestore/rules" target="_blank"
+                  class="px-3.5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold text-xs inline-flex items-center gap-1 shadow-sm">
+                  <span class="material-symbols-outlined text-sm">open_in_new</span>
+                  Open Rules in Firebase Console ↗
+                </a>
+                <button onclick="testFirebaseHealth()" class="px-3 py-2 bg-white hover:bg-stone-100 border border-stone-300 text-stone-700 rounded-lg font-bold text-xs flex items-center gap-1">
+                  <span class="material-symbols-outlined text-sm">refresh</span> Re-Check Connection
+                </button>
+              </div>
             </div>
-            <p class="text-stone-600 leading-relaxed">
-              Google Cloud Firestore by default starts with <code class="font-mono bg-white px-1 border rounded text-red-700">allow read, write: if false;</code> which rejects all data operations from your website.
-            </p>
-            <div>
-              <p class="font-bold text-stone-700 mb-1">To fix this in 30 seconds:</p>
-              <ol class="list-decimal pl-5 space-y-1 text-stone-600">
-                <li>Click the red button below to open your <strong>Firebase Console > Firestore > Rules</strong> tab.</li>
-                <li>Replace the contents with the rules snippet below.</li>
-                <li>Click the blue <strong>"Publish"</strong> button in Firebase Console.</li>
-              </ol>
-            </div>
-            <div class="p-2.5 bg-stone-900 text-stone-100 rounded-lg font-mono text-[11px] select-all overflow-x-auto">
-rules_version = '2';<br/>
-service cloud.firestore {<br/>
-&nbsp;&nbsp;match /databases/{database}/documents {<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;match /{document=**} {<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allow read, write: if true;<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
-&nbsp;&nbsp;}<br/>
-}
-            </div>
-            <div class="flex flex-wrap items-center gap-2 pt-1">
-              <a href="https://console.firebase.google.com/project/sukhifireworkes/firestore/rules" target="_blank"
-                class="px-3.5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold text-xs inline-flex items-center gap-1 shadow-sm">
-                <span class="material-symbols-outlined text-sm">open_in_new</span>
-                Open Rules in Firebase Console ↗
-              </a>
-              <button onclick="testFirebaseHealth()" class="px-3 py-2 bg-white hover:bg-stone-100 border border-stone-300 text-stone-700 rounded-lg font-bold text-xs flex items-center gap-1">
-                <span class="material-symbols-outlined text-sm">refresh</span> Re-Check Connection
-              </button>
-            </div>
-          </div>
-        `;
+          `;
+        }
       }
     }
 
