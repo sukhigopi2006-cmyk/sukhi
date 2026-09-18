@@ -69,96 +69,30 @@
 <h1 class="text-2xl md:text-3xl font-extrabold text-charcoal tracking-tight">Shopping Cart</h1>
 <p class="text-sm text-charcoal-subtle mt-1 font-medium">Review your items and proceed to secure checkout</p>
 </div>
-<span class="text-sm font-semibold bg-primary/10 text-primary px-3 py-1 rounded-full">2 Items</span>
+<span class="text-sm font-semibold bg-primary/10 text-primary px-3 py-1 rounded-full">0 Items</span>
 </div>
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-<!-- Product List -->
-<div class="lg:col-span-8 flex flex-col gap-4">
-<!-- Cart Item 1 -->
-<div class="bg-card-bg border border-border-subtle rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row gap-5 items-start sm:items-center relative hover:shadow-md hover:border-primary/30 transition-all duration-300">
-<div class="w-24 h-24 rounded-xl overflow-hidden shrink-0 border border-border-subtle shadow-sm bg-white">
-<img class="w-full h-full object-cover" data-alt="A high-quality, dramatic product shot of a premium firework cake named 'Midnight Thunder'." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVEuqLYwCG-Gkex-ZWkkYkvK8s1iP0QsojmflRcqy8R_pNoD41B-9ECYUNPk2OU2AX5wpxjfqeyXmBSfSRRerBbaH0LQQb94frJowE051LrY5D4FVst8kD6aBzuGIQAiAoaUm-wxadk5HK9sFTzGX_GRdcuwGWeeA1Ct78jbb8FGci9DdQBUlaot-T6w4e7cx4ZUzpglgZEMZpmJvVibSAkvxP3j6NSStdhaaGnBytcuO_HjeHi9Xi6g"/>
+<div class="lg:col-span-8">
+  <div class="bg-card-bg border border-dashed border-border-subtle rounded-2xl p-10 text-center shadow-sm">
+    <div class="flex justify-center mb-4"><span class="material-symbols-outlined text-5xl text-charcoal-subtle">shopping_cart</span></div>
+    <h2 class="text-xl font-extrabold text-charcoal">Your cart is empty</h2>
+    <p class="mt-2 text-sm text-charcoal-subtle">Add products from the shop to continue with your order.</p>
+    <a href="shop.html" class="mt-5 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-white shadow-md shadow-primary/20 transition hover:bg-primary-dark">Browse products <span class="material-symbols-outlined text-base">arrow_forward</span></a>
+  </div>
 </div>
-<div class="flex-grow flex flex-col gap-1.5">
-<div class="flex items-center gap-2">
-<h3 class="font-bold text-lg text-charcoal">Midnight Thunder</h3>
-</div>
-<span class="inline-flex items-center w-fit text-xs font-semibold text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded-md">High Altitude</span>
-<div class="text-sm text-charcoal-subtle font-medium">₹45.00 / unit</div>
-</div>
-<div class="flex items-center gap-2 bg-white rounded-xl p-1.5 border border-border-subtle shadow-sm">
-<button aria-label="Decrease quantity" class="text-charcoal-muted hover:text-primary hover:bg-card-bg rounded-lg transition-colors p-1 flex items-center justify-center">
-<span class="material-symbols-outlined text-base">remove</span>
-</button>
-<span class="font-bold text-sm text-charcoal w-7 text-center font-mono">2</span>
-<button aria-label="Increase quantity" class="text-charcoal-muted hover:text-primary hover:bg-card-bg rounded-lg transition-colors p-1 flex items-center justify-center">
-<span class="material-symbols-outlined text-base">add</span>
-</button>
-</div>
-<div class="text-xl font-extrabold text-charcoal sm:ml-auto font-mono">₹90.00</div>
-<button aria-label="Remove item" class="absolute top-4 right-4 text-charcoal-subtle hover:text-red-600 transition-colors p-1 rounded-full hover:bg-red-50">
-<span class="material-symbols-outlined text-lg">close</span>
-</button>
-</div>
-<!-- Cart Item 2 -->
-<div class="bg-card-bg border border-border-subtle rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row gap-5 items-start sm:items-center relative hover:shadow-md hover:border-primary/30 transition-all duration-300">
-<div class="w-24 h-24 rounded-xl overflow-hidden shrink-0 border border-border-subtle shadow-sm bg-white">
-<img class="w-full h-full object-cover" data-alt="A macro shot of a pack of 'Neon Sparklers'." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkRo1qXVYmuyVAnQeXOdcegwvrqtdHpxg-g_jCUQYTeifdvH33S-UC3036wWuWD2A1j_qJshn6WbB2WKaD6qZG1vMvRmNQeMsuQ-_0ttsT7Smzbw8pO5iK6Nzo_3ARpy7FWxHA46XgUaBEfhlMoMJGsyd5wqE03zT-hs9fBPe7t4a0y-ackDli_32cw0f-F5x1IeNpyE324thO5vUT0Q7ZYB4Bp0vBKeeDDidzo1z2L-oRAt9MEoeuRQ"/>
-</div>
-<div class="flex-grow flex flex-col gap-1.5">
-<div class="flex items-center gap-2">
-<h3 class="font-bold text-lg text-charcoal">Neon Sparklers (6-Pack)</h3>
-</div>
-<span class="inline-flex items-center w-fit text-xs font-semibold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-md">Loud</span>
-<div class="text-sm text-charcoal-subtle font-medium">₹15.00 / unit</div>
-</div>
-<div class="flex items-center gap-2 bg-white rounded-xl p-1.5 border border-border-subtle shadow-sm">
-<button aria-label="Decrease quantity" class="text-charcoal-muted hover:text-primary hover:bg-card-bg rounded-lg transition-colors p-1 flex items-center justify-center">
-<span class="material-symbols-outlined text-base">remove</span>
-</button>
-<span class="font-bold text-sm text-charcoal w-7 text-center font-mono">1</span>
-<button aria-label="Increase quantity" class="text-charcoal-muted hover:text-primary hover:bg-card-bg rounded-lg transition-colors p-1 flex items-center justify-center">
-<span class="material-symbols-outlined text-base">add</span>
-</button>
-</div>
-<div class="text-xl font-extrabold text-charcoal sm:ml-auto font-mono">₹15.00</div>
-<button aria-label="Remove item" class="absolute top-4 right-4 text-charcoal-subtle hover:text-red-600 transition-colors p-1 rounded-full hover:bg-red-50">
-<span class="material-symbols-outlined text-lg">close</span>
-</button>
-</div>
-</div>
-<!-- Order Summary Sidebar -->
 <div class="lg:col-span-4 mt-2 lg:mt-0">
 <div class="bg-card-bg border border-border-subtle rounded-2xl p-6 sticky top-24 shadow-sm">
 <h2 class="text-xl font-extrabold text-charcoal mb-5 pb-3 border-b border-border-subtle">Order Summary</h2>
 <div class="flex flex-col gap-3.5 border-b border-border-subtle pb-5 mb-5 text-sm">
-<div class="flex justify-between items-center">
-<span class="text-charcoal-muted">Subtotal</span>
-<span class="font-semibold text-charcoal font-mono">₹105.00</span>
+<div class="flex justify-between items-center"><span class="text-charcoal-muted">Subtotal</span><span class="font-semibold text-charcoal font-mono">₹0.00</span></div>
+<div class="flex justify-between items-center"><span class="text-charcoal-muted">Shipping</span><span class="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded text-xs">FREE</span></div>
+<div class="flex justify-between items-center"><span class="text-charcoal-muted">Tax</span><span class="font-semibold text-charcoal font-mono">₹0.00</span></div>
 </div>
-<div class="flex justify-between items-center">
-<span class="text-charcoal-muted">Shipping</span>
-<span class="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded text-xs">FREE</span>
-</div>
-<div class="flex justify-between items-center">
-<span class="text-charcoal-muted">Tax</span>
-<span class="font-semibold text-charcoal font-mono">₹8.40</span>
-</div>
-</div>
-<div class="flex justify-between items-baseline mb-6">
-<span class="text-base font-bold text-charcoal">Total</span>
-<span class="text-2xl font-extrabold text-charcoal font-mono">₹113.40</span>
-</div>
-<a href="checkout.html" class="w-full bg-primary hover:bg-primary-dark text-white font-bold text-sm py-4 rounded-xl flex items-center justify-center gap-2 shadow-md shadow-primary/25 hover:shadow-lg hover:shadow-primary/35 transition-all duration-300 active:scale-[0.99]">
-    Proceed to Order
+<div class="flex justify-between items-baseline mb-6"><span class="text-base font-bold text-charcoal">Total</span><span class="text-2xl font-extrabold text-charcoal font-mono">₹0.00</span></div>
+<a href="shop.html" class="w-full bg-primary hover:bg-primary-dark text-white font-bold text-sm py-4 rounded-xl flex items-center justify-center gap-2 shadow-md shadow-primary/25 hover:shadow-lg hover:shadow-primary/35 transition-all duration-300 active:scale-[0.99]">
+    Continue Shopping
     <span class="material-symbols-outlined text-base">arrow_forward</span>
 </a>
-<div class="mt-4 p-3 bg-card-highlight rounded-xl text-center border border-border-subtle/60">
-<span class="text-xs font-semibold text-emerald-700 flex items-center justify-center gap-1.5">
-<span class="material-symbols-outlined text-base">local_shipping</span>
-    Free delivery unlocked!
-</span>
-</div>
 </div>
 </div>
 </div>

@@ -466,7 +466,10 @@
           await Auth.login(email.value, password.value);
           setMessage('Signed in successfully. Redirecting…', 'success');
         }
-        window.setTimeout(() => { window.location.href = 'index.html'; }, 700);
+        const params = new URLSearchParams(window.location.search);
+        const redirect = params.get('redirect');
+        const target = redirect || 'index.html';
+        window.setTimeout(() => { window.location.href = target; }, 700);
       } catch (error) {
         setMessage(friendlyError(error));
       } finally {

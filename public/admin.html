@@ -57,10 +57,33 @@
 </head>
 <body class="bg-background text-on-surface font-body min-h-screen antialiased flex flex-col">
 
+  <div id="admin-auth-screen" class="min-h-screen flex items-center justify-center bg-background px-4 py-8">
+    <div class="w-full max-w-md rounded-3xl border border-outline-variant/50 bg-white p-7 shadow-[0_18px_50px_rgba(161,64,0,0.08)]">
+      <div class="text-center mb-6">
+        <div class="text-3xl font-headline font-extrabold text-primary-container tracking-tight">Sukhi</div>
+        <h1 class="mt-3 text-2xl font-bold text-stone-900">Admin Login</h1>
+        <p class="mt-2 text-sm text-stone-500">Use your admin credentials to access the dashboard.</p>
+      </div>
+
+      <form id="admin-login-form" class="space-y-4">
+        <div class="space-y-1.5">
+          <label for="admin-username" class="text-xs font-bold uppercase tracking-[0.16em] text-stone-500">Username</label>
+          <input id="admin-username" type="text" autocomplete="username" required class="w-full rounded-xl border border-outline-variant bg-surface-container-low px-3.5 py-3 text-sm text-stone-900 focus:border-primary-container focus:ring-2 focus:ring-orange-200" placeholder="sukhigopi" />
+        </div>
+        <div class="space-y-1.5">
+          <label for="admin-password" class="text-xs font-bold uppercase tracking-[0.16em] text-stone-500">Password</label>
+          <input id="admin-password" type="password" autocomplete="current-password" required class="w-full rounded-xl border border-outline-variant bg-surface-container-low px-3.5 py-3 text-sm text-stone-900 focus:border-primary-container focus:ring-2 focus:ring-orange-200" placeholder="Enter admin password" />
+        </div>
+        <button type="submit" class="w-full rounded-xl bg-gradient-to-r from-primary-container to-orange-600 px-4 py-3 text-sm font-bold text-white shadow-md shadow-orange-500/20 transition hover:brightness-105">Sign in to admin</button>
+        <p id="admin-login-error" class="hidden rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"></p>
+      </form>
+    </div>
+  </div>
+
   <!-- ========================================================================= -->
-  <!-- ADMIN DASHBOARD VIEW (Direct Access Without Login)                        -->
+  <!-- ADMIN DASHBOARD VIEW                                                       -->
   <!-- ========================================================================= -->
-  <div id="admin-dashboard-view" class="min-h-screen flex flex-col md:flex-row">
+  <div id="admin-dashboard-view" class="hidden min-h-screen flex-col md:flex-row">
     
     <!-- Mobile Header -->
     <header class="md:hidden fixed top-0 w-full z-40 bg-white/95 backdrop-blur-md border-b border-outline-variant/40 px-4 h-16 flex items-center justify-between shadow-sm">
@@ -578,7 +601,8 @@
 
   <!-- Admin Controller Script -->
   <script>
-    // Preset image URLs
+    const ADMIN_LOGIN_CREDENTIALS = { username: 'sukhigopi', password: 'sukhigopi20068866' };
+
     const IMAGE_PRESETS = {
       cracker: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBWx00X12Fmm_QPvB_J9Tluq3vf6rtzggOm_EKuLuelzTzoVVvmflkMr68b26FEaYEZX8cseX6WTS_HOEOoU6E3dCYFw1bl790Aty1dfmtc4sm7ILB37Rtrx1CQTxaNFELlpw5cNgHjNQTzFUNYsONsnWRnVwMKiJk3x8n-UxZfMZF62eR_7t9_Hs8n4I0K6J31CX7VVo8mz4esG684TDwcFTih5r1MixKm-sMrDfj5OULBRbWj_cx2qQ',
       aerial: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAF29EF_JCRD2bd0EN93g_3yiYZAcQpDham_sfD6YLBwMuXY0-my5UeJWKPTKn3rzvbOXmvnmfyw2MQXyQGzsIrPdYaED1_vIDYet_S9SIWWJJL2PgcBd2weYqDgDaDjpMK8sHy6cBvIN2R4AUVeS6lNy1Y0VWxfC8Zd848LPzY6w35bqleAw-90RBIffxxqlhyDnFUP7xpVqKOkGG5yL_sHCi9pKZvZx1X1Hj3I0EKdx1B8m3M4NB1bQ',
@@ -588,40 +612,76 @@
 
     let allLoadedProducts = [];
 
-    // Enable Admin mode directly without requiring login
-    AppState.isAdmin = true;
+    function isAdminSessionActive() {
+      const raw = Storage.get('sukhi_admin_session');
+      return !!raw && raw.username === ADMIN_LOGIN_CREDENTIALS.username && raw.password === ADMIN_LOGIN_CREDENTIALS.password;
+    }
 
-    // Initialize Page
+    function showAdminAuthScreen(show) {
+      const authScreen = document.getElementById('admin-auth-screen');
+      const dashView = document.getElementById('admin-dashboard-view');
+      if (authScreen) authScreen.classList.toggle('hidden', !show);
+      if (dashView) dashView.classList.toggle('hidden', show);
+    }
+
+    function saveAdminSession() {
+      Storage.set('sukhi_admin_session', {
+        username: ADMIN_LOGIN_CREDENTIALS.username,
+        password: ADMIN_LOGIN_CREDENTIALS.password,
+        loggedInAt: Date.now()
+      });
+    }
+
     document.addEventListener('DOMContentLoaded', async () => {
-      // Initialize admin dashboard and load store data
+      const form = document.getElementById('admin-login-form');
+      const errorBox = document.getElementById('admin-login-error');
+
+      if (form) {
+        form.addEventListener('submit', (event) => {
+          event.preventDefault();
+          const username = document.getElementById('admin-username').value.trim();
+          const password = document.getElementById('admin-password').value;
+          if (username === ADMIN_LOGIN_CREDENTIALS.username && password === ADMIN_LOGIN_CREDENTIALS.password) {
+            saveAdminSession();
+            if (errorBox) {
+              errorBox.classList.add('hidden');
+              errorBox.textContent = '';
+            }
+            showAdminAuthScreen(false);
+            checkAdminAuthentication();
+            return;
+          }
+          if (errorBox) {
+            errorBox.textContent = 'Invalid admin username or password.';
+            errorBox.classList.remove('hidden');
+          }
+        });
+      }
+
       await checkAdminAuthentication();
       watchDatabaseConnection();
     });
 
     async function checkAdminAuthentication() {
-      AppState.isAdmin = true;
-      const dashView = document.getElementById('admin-dashboard-view');
-      if (dashView) dashView.classList.remove('hidden');
+      const hasValidSession = isAdminSessionActive();
+      AppState.isAdmin = hasValidSession;
+      showAdminAuthScreen(!hasValidSession);
 
-      // Update profile pill in sidebar
+      if (!hasValidSession) return;
+
       const emailEl = document.getElementById('adminEmailDisplay');
       const nameEl = document.getElementById('adminDisplayName');
-      if (emailEl) emailEl.textContent = AppState.user?.email || '● Direct Access Mode';
-      if (nameEl) nameEl.textContent = AppState.user?.displayName || 'Store Administrator';
+      if (emailEl) emailEl.textContent = `${ADMIN_LOGIN_CREDENTIALS.username}@sukhi.local`;
+      if (nameEl) nameEl.textContent = 'Store Administrator';
 
-      // Load data cleanly
       await loadAndRenderAdminData();
     }
 
-    // Exit handler to return to store
     function handleAdminLogout() {
-      if (AppState.user && window.auth) {
-        Auth.logout();
-      }
-      showToast('Returning to store...');
-      setTimeout(() => {
-        window.location.href = 'index.html';
-      }, 300);
+      Storage.remove('sukhi_admin_session');
+      AppState.isAdmin = false;
+      showAdminAuthScreen(true);
+      showToast('Signed out and returned to the login screen.');
     }
 
     // Load products and populate table + metrics

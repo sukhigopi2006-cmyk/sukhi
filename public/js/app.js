@@ -215,19 +215,14 @@ const Products = {
     const custom = Storage.get('sukhi_custom_products', []);
     const deleted = Storage.get('sukhi_deleted_products', []);
     const samples = getSampleProducts();
-    const hasCurrentPriceList = list.length > 0 && list.every(product => product.singlePieceRate != null);
+    const merged = new Map();
 
-    if (!list.length || !hasCurrentPriceList) {
-      list = [...custom, ...samples];
-    } else {
-      const existingIds = new Set(list.map(p => p.id));
-      custom.forEach(p => {
-        if (!existingIds.has(p.id)) list.unshift(p);
-      });
-    }
+    [...list, ...custom, ...samples].forEach(product => {
+      if (!product || deleted.includes(product.id) || product.active === false) return;
+      merged.set(product.id, { ...product });
+    });
 
-    // Filter out deleted and inactive products
-    AppState.products = list.filter(p => !deleted.includes(p.id) && p.active !== false);
+    AppState.products = Array.from(merged.values());
     const currentPrices = new Map(AppState.products.map(product => [product.id, product]));
     AppState.cart = AppState.cart.map(item => {
       const product = currentPrices.get(item.id);
@@ -329,8 +324,6 @@ const Offers = {
 // ============================================
 const Auth = {
   init() {
-    Storage.remove('sukhi_admin_session');
-
     if (!window.auth) {
       this.updateUI();
       return;
@@ -448,6 +441,14 @@ const Auth = {
 // ============================================
 // ORDERS
 // ============================================
+function requireSignedIn(message = 'Please sign in to continue.') {
+  if (AppState.user) return true;
+  showToast(message, 'info');
+  const redirect = encodeURIComponent((window.location.pathname || 'index.html') + window.location.search);
+  window.location.href = `login.html?redirect=${redirect}`;
+  return false;
+}
+
 const Orders = {
   async create(orderData) {
     if (!window.db) throw new Error('Database not ready');
@@ -795,10 +796,24 @@ document.addEventListener('DOMContentLoaded', () => {
   Wishlist.load();
   Auth.init();
 
-  // Global click handlers for cart/wishlist buttons
   document.body.addEventListener('click', (e) => {
+    const cartLink = e.target.closest('a[href="cart.html"]');
+    if (cartLink && !AppState.user) {
+      e.preventDefault();
+      requireSignedIn('Please sign in to view your cart.');
+      return;
+    }
+
+    const wishlistLink = e.target.closest('a[href="wishlist.html"]');
+    if (wishlistLink && !AppState.user) {
+      e.preventDefault();
+      requireSignedIn('Please sign in to view your wishlist.');
+      return;
+    }
+
     const addBtn = e.target.closest('[data-add-cart]');
     if (addBtn) {
+      if (!requireSignedIn('Please sign in to add products to the cart.')) return;
       const id = addBtn.dataset.addCart;
       const product = Products.getById(id) || {
         id,
@@ -811,6 +826,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const wishBtn = e.target.closest('[data-toggle-wishlist]');
     if (wishBtn) {
+      if (!requireSignedIn('Please sign in to save products to your wishlist.')) return;
       const id = wishBtn.dataset.toggleWishlist;
       const product = Products.getById(id) || {
         id,

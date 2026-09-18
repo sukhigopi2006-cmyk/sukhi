@@ -30,7 +30,7 @@
     <div class="site-header-inner">
       <a href="index.html" class="site-brand" aria-label="Sukhi Fireworks home">
         <span class="material-symbols-outlined">local_fire_department</span>
-        <span>SKYRA</span>
+        <span>Sukhi</span>
       </a>
       <nav class="site-desktop-nav" aria-label="Main navigation">${desktopLinks}</nav>
       <div class="site-header-actions">
@@ -46,9 +46,6 @@
           <span class="material-symbols-outlined">favorite</span>
           <span data-wishlist-count class="site-count hidden">0</span>
         </a>
-        <a href="admin.html" class="site-icon-link" title="Admin Portal" aria-label="Admin Portal">
-          <span class="material-symbols-outlined">admin_panel_settings</span>
-        </a>
         <a href="login.html" data-auth-login class="site-login-button">Customer Login</a>
         <div data-auth-user class="site-user-menu hidden">
           <span data-user-name></span>
@@ -63,7 +60,7 @@
   footer.innerHTML = `
     <div class="site-footer-inner">
       <div>
-        <a href="index.html" class="site-footer-brand">SKYRA Fireworks</a>
+        <a href="index.html" class="site-footer-brand">Sukhi Fireworks</a>
         <p>Celebrations, designed in light. Premium fireworks from the heart of Sivakasi.</p>
         <p class="site-copyright">© 2026 Sukhi Fireworks. Light with caution.</p>
       </div>
