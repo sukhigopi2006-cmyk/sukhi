@@ -160,15 +160,19 @@
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 <div class="flex flex-col gap-2 md:col-span-2">
 <label class="font-label-lg text-sm font-semibold text-[#1c1917]">Full Name *</label>
-<input class="input-field rounded-lg px-4 py-3 text-[#1c1917] placeholder:text-[#a8a29e] w-full" placeholder="John Doe" type="text"/>
+<input name="name" class="input-field rounded-lg px-4 py-3 text-[#1c1917] placeholder:text-[#a8a29e] w-full" placeholder="John Doe" type="text" required/>
 </div>
 <div class="flex flex-col gap-2">
 <label class="font-label-lg text-sm font-semibold text-[#1c1917]">Phone Number *</label>
-<input class="input-field rounded-lg px-4 py-3 text-[#1c1917] placeholder:text-[#a8a29e] w-full" placeholder="+1 (555) 000-0000" type="tel"/>
+<input name="phone" class="input-field rounded-lg px-4 py-3 text-[#1c1917] placeholder:text-[#a8a29e] w-full" placeholder="+91 98765 43210" type="tel" required/>
 </div>
 <div class="flex flex-col gap-2">
 <label class="font-label-lg text-sm font-semibold text-[#1c1917]">Alternate Phone</label>
-<input class="input-field rounded-lg px-4 py-3 text-[#1c1917] placeholder:text-[#a8a29e] w-full" placeholder="Optional" type="tel"/>
+<input name="alternatePhone" class="input-field rounded-lg px-4 py-3 text-[#1c1917] placeholder:text-[#a8a29e] w-full" placeholder="Optional" type="tel"/>
+</div>
+<div class="flex flex-col gap-2 md:col-span-2">
+<label class="font-label-lg text-sm font-semibold text-[#1c1917]">Email *</label>
+<input name="email" class="input-field rounded-lg px-4 py-3 text-[#1c1917] placeholder:text-[#a8a29e] w-full" placeholder="you@example.com" type="email" required/>
 </div>
 </div>
 </section>
@@ -181,33 +185,74 @@
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 <div class="flex flex-col gap-2">
 <label class="font-label-lg text-sm font-semibold text-[#1c1917]">Door / Flat No. *</label>
-<input class="input-field rounded-lg px-4 py-3 text-[#1c1917] placeholder:text-[#a8a29e] w-full" placeholder="Apt 4B" type="text"/>
+<input name="unit" class="input-field rounded-lg px-4 py-3 text-[#1c1917] placeholder:text-[#a8a29e] w-full" placeholder="A-102" type="text" required/>
 </div>
 <div class="flex flex-col gap-2">
-<label class="font-label-lg text-sm font-semibold text-[#1c1917]">Street Address *</label>
-<input class="input-field rounded-lg px-4 py-3 text-[#1c1917] placeholder:text-[#a8a29e] w-full" placeholder="123 Rocket Road" type="text"/>
+<label class="font-label-lg text-sm font-semibold text-[#1c1917]">Street / Area *</label>
+<input name="street" class="input-field rounded-lg px-4 py-3 text-[#1c1917] placeholder:text-[#a8a29e] w-full" placeholder="123 Market Road" type="text" required/>
 </div>
 <div class="flex flex-col gap-2 md:col-span-2">
-<label class="font-label-lg text-sm font-semibold text-[#1c1917]">Landmark</label>
-<input class="input-field rounded-lg px-4 py-3 text-[#1c1917] placeholder:text-[#a8a29e] w-full" placeholder="Near Central Park" type="text"/>
+<label class="font-label-lg text-sm font-semibold text-[#1c1917]">Address *</label>
+<input name="address" class="input-field rounded-lg px-4 py-3 text-[#1c1917] placeholder:text-[#a8a29e] w-full" placeholder="Full address for delivery" type="text" required/>
 </div>
 <div class="flex flex-col gap-2">
-<label class="font-label-lg text-sm font-semibold text-[#1c1917]">City *</label>
-<input class="input-field rounded-lg px-4 py-3 text-[#1c1917] placeholder:text-[#a8a29e] w-full" placeholder="Metropolis" type="text"/>
+<label class="font-label-lg text-sm font-semibold text-[#1c1917]">District *</label>
+<input name="district" class="input-field rounded-lg px-4 py-3 text-[#1c1917] placeholder:text-[#a8a29e] w-full" placeholder="Madurai" type="text" required/>
 </div>
 <div class="flex flex-col gap-2">
-<label class="font-label-lg text-sm font-semibold text-[#1c1917]">State / Province *</label>
-<select class="input-field rounded-lg px-4 py-3 text-[#1c1917] w-full appearance-none bg-no-repeat">
-<option disabled="" selected="" value="">Select State</option>
-<option value="NY">New York</option>
-<option value="CA">California</option>
-<option value="TX">Texas</option>
+<label class="font-label-lg text-sm font-semibold text-[#1c1917]">City / Town *</label>
+<input name="city" class="input-field rounded-lg px-4 py-3 text-[#1c1917] placeholder:text-[#a8a29e] w-full" placeholder="Madurai" type="text" required/>
+</div>
+<div class="flex flex-col gap-2 md:col-span-2">
+<label class="font-label-lg text-sm font-semibold text-[#1c1917]">State / Union Territory *</label>
+<select name="state" class="input-field rounded-lg px-4 py-3 text-[#1c1917] w-full appearance-none bg-no-repeat" required>
+<option disabled="" selected="" value="">Select State / UT</option>
+<option value="Andhra Pradesh">Andhra Pradesh</option>
+<option value="Arunachal Pradesh">Arunachal Pradesh</option>
+<option value="Assam">Assam</option>
+<option value="Bihar">Bihar</option>
+<option value="Chhattisgarh">Chhattisgarh</option>
+<option value="Goa">Goa</option>
+<option value="Gujarat">Gujarat</option>
+<option value="Haryana">Haryana</option>
+<option value="Himachal Pradesh">Himachal Pradesh</option>
+<option value="Jharkhand">Jharkhand</option>
+<option value="Karnataka">Karnataka</option>
+<option value="Kerala">Kerala</option>
+<option value="Madhya Pradesh">Madhya Pradesh</option>
+<option value="Maharashtra">Maharashtra</option>
+<option value="Manipur">Manipur</option>
+<option value="Meghalaya">Meghalaya</option>
+<option value="Mizoram">Mizoram</option>
+<option value="Nagaland">Nagaland</option>
+<option value="Odisha">Odisha</option>
+<option value="Punjab">Punjab</option>
+<option value="Rajasthan">Rajasthan</option>
+<option value="Sikkim">Sikkim</option>
+<option value="Tamil Nadu">Tamil Nadu</option>
+<option value="Telangana">Telangana</option>
+<option value="Tripura">Tripura</option>
+<option value="Uttar Pradesh">Uttar Pradesh</option>
+<option value="Uttarakhand">Uttarakhand</option>
+<option value="West Bengal">West Bengal</option>
+<option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+<option value="Chandigarh">Chandigarh</option>
+<option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu</option>
+<option value="Delhi">Delhi</option>
+<option value="Jammu and Kashmir">Jammu and Kashmir</option>
+<option value="Ladakh">Ladakh</option>
+<option value="Lakshadweep">Lakshadweep</option>
+<option value="Puducherry">Puducherry</option>
 </select>
 </div>
 <div class="flex flex-col gap-2 relative">
-<label class="font-label-lg text-sm font-semibold text-[#1c1917]">Pincode / Zip *</label>
-<input class="input-field rounded-lg px-4 py-3 text-[#1c1917] w-full pr-10 border-[#ff6a00] focus:ring-2 focus:ring-[#ff6a00]" placeholder="10001" type="text" value="10001"/>
+<label class="font-label-lg text-sm font-semibold text-[#1c1917]">Pincode *</label>
+<input name="pincode" class="input-field rounded-lg px-4 py-3 text-[#1c1917] w-full pr-10 border-[#ff6a00] focus:ring-2 focus:ring-[#ff6a00]" placeholder="626001" type="text" required/>
 <span class="material-symbols-outlined text-[#ff6a00] absolute right-3 bottom-3" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="flex flex-col gap-2 md:col-span-2">
+<label class="font-label-lg text-sm font-semibold text-[#1c1917]">Landmark</label>
+<input name="landmark" class="input-field rounded-lg px-4 py-3 text-[#1c1917] placeholder:text-[#a8a29e] w-full" placeholder="Near bus stand / market" type="text"/>
 </div>
 </div>
 </section>

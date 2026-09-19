@@ -199,92 +199,20 @@
 </section>
 <!-- Payment Options List -->
 <section class="flex flex-col gap-stack-md">
-<!-- UPI Option -->
-<label class="cursor-pointer relative group">
-<input checked="" class="payment-radio sr-only" name="payment_method" type="radio"/>
-<div class="w-full bg-white border border-outline-variant/60 rounded-xl p-stack-md transition-all duration-300 hover:border-primary-container/60 flex items-center justify-between shadow-sm">
-<div class="flex items-center gap-stack-md">
-<div class="w-5 h-5 rounded-full border-2 border-outline-variant flex items-center justify-center radio-inner transition-colors">
-<div class="w-2.5 h-2.5 rounded-full bg-transparent radio-dot transition-transform"></div>
-</div>
-<div class="flex flex-col">
-<span class="font-headline-md text-body-lg text-on-surface font-bold">UPI / QR Code</span>
-<span class="font-body-md text-sm text-on-surface-variant mt-0.5">Google Pay, PhonePe, Paytm</span>
-</div>
-</div>
-<span class="material-symbols-outlined text-primary-container text-3xl">qr_code_scanner</span>
-</div>
-<!-- Expanded Content for UPI -->
-<div class="payment-content mt-2 bg-surface-container-low rounded-xl border border-outline-variant/50 p-stack-md overflow-hidden relative shadow-inner">
-<div class="relative z-10 flex flex-col items-center justify-center gap-stack-md py-4">
-<p class="font-body-md text-on-surface-variant text-center max-w-xs font-medium">Scan this QR code with any UPI app to complete your secure payment.</p>
-<!-- Simulated QR Code Container -->
-<div class="w-48 h-48 bg-white rounded-xl p-3 shadow-md border border-primary-container/20 relative transition-all duration-500">
-<div class="bg-cover bg-center w-full h-full rounded-lg" data-alt="A clean, modern QR code for digital payment" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCUK7g3uRxQkgWTQOmZOvkaSOf45NpVs8lCFnJ9Inl0Y3WgaN9EV4hFkkHS95adCBDcqJK-xGhu_gJZ9wgaIEhjPyKKVU9wQHWRaSgRYi7GlwvoSXUil35QnWD_43HQvkUhyAnaU--v2_4BOiIsGF5NH2blcB47sW6bzL4I1RCPJhZpBw7dGAD6Vh9mav6T-_sWCIlAQ5v7118UBthawZxIvTeSTuVzW14sTCF60baZaVkQpNtozW_5ng')"></div>
-<!-- Scanner line animation -->
-<div class="absolute top-0 left-0 w-full h-0.5 bg-primary-container shadow-[0_0_8px_#ff6a00] animate-[scan_2s_ease-in-out_infinite]"></div>
-</div>
-<div class="flex gap-3 mt-2">
-<span class="px-3.5 py-1.5 bg-white border border-outline-variant/60 rounded-lg text-xs font-label-lg text-on-surface font-semibold shadow-xs">GPay</span>
-<span class="px-3.5 py-1.5 bg-white border border-outline-variant/60 rounded-lg text-xs font-label-lg text-on-surface font-semibold shadow-xs">PhonePe</span>
-<span class="px-3.5 py-1.5 bg-white border border-outline-variant/60 rounded-lg text-xs font-label-lg text-on-surface font-semibold shadow-xs">Paytm</span>
-</div>
-</div>
-</div>
-</label>
-<!-- Net Banking Option -->
-<label class="cursor-pointer relative group">
-<input class="payment-radio sr-only" name="payment_method" type="radio"/>
-<div class="w-full bg-white border border-outline-variant/60 rounded-xl p-stack-md transition-all duration-300 hover:border-primary-container/60 flex items-center justify-between shadow-sm">
-<div class="flex items-center gap-stack-md">
-<div class="w-5 h-5 rounded-full border-2 border-outline-variant flex items-center justify-center radio-inner transition-colors">
-<div class="w-2.5 h-2.5 rounded-full bg-transparent radio-dot transition-transform"></div>
-</div>
-<div class="flex flex-col">
-<span class="font-headline-md text-body-lg text-on-surface font-bold">Net Banking</span>
-<span class="font-body-md text-sm text-on-surface-variant mt-0.5">All major Indian banks supported</span>
-</div>
-</div>
-<span class="material-symbols-outlined text-outline text-3xl">account_balance</span>
-</div>
-<!-- Expanded Content for Net Banking -->
-<div class="payment-content mt-2 bg-surface-container-low rounded-xl border border-outline-variant/50 p-stack-md">
-<p class="font-body-md text-on-surface-variant mb-3 font-medium">Select your bank from the list below:</p>
-<select class="w-full bg-white border border-outline-variant rounded-lg p-3 text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none font-body-md shadow-xs">
-<option>HDFC Bank</option>
-<option>State Bank of India</option>
-<option>ICICI Bank</option>
-<option>Axis Bank</option>
-<option>Kotak Mahindra Bank</option>
-</select>
-</div>
-</label>
-<!-- COD Option -->
-<label class="cursor-pointer relative group">
-<input class="payment-radio sr-only" name="payment_method" type="radio"/>
-<div class="w-full bg-white border border-outline-variant/60 rounded-xl p-stack-md transition-all duration-300 hover:border-primary-container/60 flex items-center justify-between shadow-sm">
-<div class="flex items-center gap-stack-md">
-<div class="w-5 h-5 rounded-full border-2 border-outline-variant flex items-center justify-center radio-inner transition-colors">
-<div class="w-2.5 h-2.5 rounded-full bg-transparent radio-dot transition-transform"></div>
-</div>
-<div class="flex flex-col">
-<span class="font-headline-md text-body-lg text-on-surface flex items-center gap-2 font-bold">
-    Cash on Delivery
-    <span class="bg-secondary-container text-on-secondary-container text-[11px] uppercase font-bold px-2 py-0.5 rounded">Fees Apply</span>
-</span>
-<span class="font-body-md text-sm text-on-surface-variant mt-0.5">Pay at your doorstep</span>
-</div>
-</div>
-<span class="material-symbols-outlined text-outline text-3xl">local_shipping</span>
-</div>
-<!-- Expanded Content for COD -->
-<div class="payment-content mt-2 bg-surface-container-low rounded-xl border border-outline-variant/50 p-stack-md">
-<div class="flex items-start gap-3 bg-white p-3.5 rounded-lg border border-outline-variant/60 shadow-xs">
-<span class="material-symbols-outlined text-primary-container text-xl mt-0.5">info</span>
-<p class="font-body-md text-sm text-on-surface-variant leading-relaxed">An additional handling fee of ₹15.00 will be applied to COD orders. We recommend digital payments for faster processing of pyrotechnic materials.</p>
-</div>
-</div>
-</label>
+  <div class="bg-white border border-outline-variant/60 rounded-xl p-stack-md shadow-sm">
+    <div class="flex items-center gap-stack-md">
+      <div class="w-5 h-5 rounded-full border-2 border-[#ff6a00] flex items-center justify-center">
+        <div class="w-2.5 h-2.5 rounded-full bg-[#ff6a00]"></div>
+      </div>
+      <div class="flex flex-col">
+        <span class="font-headline-md text-body-lg text-on-surface font-bold">Request Order</span>
+        <span class="font-body-md text-sm text-on-surface-variant mt-0.5">Submit your order request without online payment</span>
+      </div>
+    </div>
+    <div class="mt-4 rounded-lg border border-dashed border-outline-variant bg-surface-container-low p-3 text-sm text-on-surface-variant">
+      Send your order request, download the invoice, and we will review and confirm the order with the final payment arrangement.
+    </div>
+  </div>
 </section>
 <!-- Trust Badges -->
 <section class="flex justify-center gap-8 mt-stack-md pt-stack-md border-t border-outline-variant/40">
@@ -303,11 +231,11 @@
 <div class="max-w-[600px] mx-auto flex items-center justify-between gap-4">
 <div class="hidden md:flex flex-col">
 <span class="font-label-lg text-on-surface-variant text-xs font-semibold uppercase tracking-wider">Total</span>
-<span class="font-price-display text-xl text-on-surface font-extrabold">₹1,249.99</span>
+<span id="payment-total" class="font-price-display text-xl text-on-surface font-extrabold">₹0.00</span>
 </div>
-<button class="flex-1 md:flex-none md:w-2/3 bg-primary-container text-white font-label-lg text-lg py-3.5 px-8 rounded-xl hover:bg-[#e05e00] hover:shadow-lg active:scale-[0.98] transition-all duration-200 shadow-[0_6px_20px_rgba(255,106,0,0.35)] flex items-center justify-center gap-2 font-bold tracking-wide">
-<span class="material-symbols-outlined">bolt</span>
-Pay Now
+<button id="sendRequestBtn" class="flex-1 md:flex-none md:w-2/3 bg-primary-container text-white font-label-lg text-lg py-3.5 px-8 rounded-xl hover:bg-[#e05e00] hover:shadow-lg active:scale-[0.98] transition-all duration-200 shadow-[0_6px_20px_rgba(255,106,0,0.35)] flex items-center justify-center gap-2 font-bold tracking-wide">
+<span class="material-symbols-outlined">send</span>
+Send Request
 </button>
 </div>
 </div>
@@ -345,39 +273,239 @@ Pay Now
 </script>
 </body></html>
 <script>
+const INDIAN_STATES = [
+  'Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Goa','Gujarat','Haryana','Himachal Pradesh','Jharkhand',
+  'Karnataka','Kerala','Madhya Pradesh','Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab','Rajasthan',
+  'Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh','Uttarakhand','West Bengal',
+  'Andaman and Nicobar Islands','Chandigarh','Dadra and Nagar Haveli and Daman and Diu','Delhi','Jammu and Kashmir','Ladakh',
+  'Lakshadweep','Puducherry'
+];
+
+const ADMIN_EMAIL = 'hello@sukhifireworks.in';
+
+function formatCurrency(value) {
+  return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 2 }).format(value);
+}
+
+function getCartItems() {
+  return Array.isArray(Cart.load()) ? Cart.load() : [];
+}
+
+function calculateGST(subtotal, stateName) {
+  const safeState = (stateName || '').trim();
+  const domestic = INDIAN_STATES.includes(safeState);
+
+  if (!domestic) {
+    return {
+      isDomestic: false,
+      cgst: 0,
+      sgst: 0,
+      igst: 0,
+      taxRate: 0,
+      taxTotal: 0,
+      taxableAmount: subtotal,
+      finalTotal: subtotal
+    };
+  }
+
+  const taxRate = safeState === 'Tamil Nadu' ? 0.18 : 0.18;
+  const taxTotal = subtotal * taxRate;
+
+  if (safeState === 'Tamil Nadu') {
+    const cgst = subtotal * 0.09;
+    const sgst = subtotal * 0.09;
+    return {
+      isDomestic: true,
+      cgst,
+      sgst,
+      igst: 0,
+      taxRate: 0.18,
+      taxTotal: cgst + sgst,
+      taxableAmount: subtotal,
+      finalTotal: subtotal + cgst + sgst
+    };
+  }
+
+  const igst = subtotal * 0.18;
+  return {
+    isDomestic: true,
+    cgst: 0,
+    sgst: 0,
+    igst,
+    taxRate: 0.18,
+    taxTotal: igst,
+    taxableAmount: subtotal,
+    finalTotal: subtotal + igst
+  };
+}
+
+function downloadInvoice(invoiceText, invoiceName) {
+  const blob = new Blob([invoiceText], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = invoiceName;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function getDeliveryDetails() {
+  const raw = JSON.parse(sessionStorage.getItem('sukhi_delivery') || '{}');
+  const stateName = raw.state || 'Tamil Nadu';
+  return {
+    name: raw.name || AppState.user?.displayName || 'Customer',
+    email: raw.email || AppState.user?.email || 'guest@sukhi.com',
+    phone: raw.phone || '',
+    address: raw.address || raw.street || '',
+    unit: raw.unit || '',
+    city: raw.city || '',
+    district: raw.district || '',
+    state: stateName,
+    pincode: raw.pincode || '',
+    landmark: raw.landmark || ''
+  };
+}
+
+function buildInvoiceHtml() {
+  const items = getCartItems();
+  const delivery = getDeliveryDetails();
+  const subtotal = items.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 1), 0);
+  const gst = calculateGST(subtotal, delivery.state);
+  const total = subtotal + gst.taxTotal;
+  const invoiceNumber = 'SK-' + Date.now();
+
+  const itemRows = items.map(item => `
+    <tr>
+      <td>${item.name || 'Product'}</td>
+      <td>${item.qty || 1}</td>
+      <td>${formatCurrency(Number(item.price || 0))}</td>
+      <td>${formatCurrency((Number(item.price || 0) * Number(item.qty || 1)))}</td>
+    </tr>
+  `).join('');
+
+  return `
+    <html>
+      <head>
+        <meta charset="UTF-8" />
+        <title>Invoice ${invoiceNumber}</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 24px; color: #111; }
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+          th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+          th { background: #f5f5f5; }
+          .total-row td { font-weight: bold; }
+          .header { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div>
+            <h2>Sukhi Fireworks</h2>
+            <p>Invoice #${invoiceNumber}</p>
+          </div>
+          <div>
+            <p>Admin Email: ${ADMIN_EMAIL}</p>
+            <p>Date: ${new Date().toLocaleString('en-IN')}</p>
+          </div>
+        </div>
+
+        <h3>Customer Details</h3>
+        <p><strong>Name:</strong> ${delivery.name}</p>
+        <p><strong>Email:</strong> ${delivery.email}</p>
+        <p><strong>Phone:</strong> ${delivery.phone || 'N/A'}</p>
+        <p><strong>Address:</strong> ${delivery.unit ? delivery.unit + ', ' : ''}${delivery.address || ''}${delivery.city ? ', ' + delivery.city : ''}${delivery.district ? ', ' + delivery.district : ''}${delivery.state ? ', ' + delivery.state : ''}${delivery.pincode ? ' - ' + delivery.pincode : ''}</p>
+
+        <h3>Order Summary</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Qty</th>
+              <th>Price</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${itemRows || '<tr><td colspan="4">No items</td></tr>'}
+          </tbody>
+        </table>
+
+        <table style="margin-top: 20px;">
+          <tr><td>Subtotal</td><td>${formatCurrency(subtotal)}</td></tr>
+          <tr><td>CGST (9%)</td><td>${formatCurrency(gst.cgst)}</td></tr>
+          <tr><td>SGST (9%)</td><td>${formatCurrency(gst.sgst)}</td></tr>
+          <tr><td>IGST (18%)</td><td>${formatCurrency(gst.igst)}</td></tr>
+          <tr class="total-row"><td>Grand Total</td><td>${formatCurrency(total)}</td></tr>
+        </table>
+      </body>
+    </html>
+  `;
+}
+
+function buildInvoiceText() {
+  const items = getCartItems();
+  const delivery = getDeliveryDetails();
+  const subtotal = items.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 1), 0);
+  const gst = calculateGST(subtotal, delivery.state);
+  const total = subtotal + gst.taxTotal;
+  const invoiceNumber = 'SK-' + Date.now();
+
+  const itemLines = items.map(item => `- ${item.name || 'Product'} x ${item.qty || 1} @ ${formatCurrency(Number(item.price || 0))} = ${formatCurrency((Number(item.price || 0) * Number(item.qty || 1)))}`).join('\n');
+
+  return `Sukhi Fireworks\nInvoice #${invoiceNumber}\n\nCustomer: ${delivery.name}\nEmail: ${delivery.email}\nPhone: ${delivery.phone || 'N/A'}\nAddress: ${delivery.unit ? delivery.unit + ', ' : ''}${delivery.address || ''}${delivery.city ? ', ' + delivery.city : ''}${delivery.district ? ', ' + delivery.district : ''}${delivery.state ? ', ' + delivery.state : ''}${delivery.pincode ? ' - ' + delivery.pincode : ''}\n\nItems:\n${itemLines || 'No items'}\n\nSubtotal: ${formatCurrency(subtotal)}\nCGST (9%): ${formatCurrency(gst.cgst)}\nSGST (9%): ${formatCurrency(gst.sgst)}\nIGST (18%): ${formatCurrency(gst.igst)}\nGrand Total: ${formatCurrency(total)}\n\nAdmin Email: ${ADMIN_EMAIL}`;
+}
+
+function sendRequestWithInvoice() {
+  const items = getCartItems();
+  if (!items.length) {
+    showToast('Your cart is empty. Please add products before sending the request.', 'error');
+    return;
+  }
+
+  const delivery = getDeliveryDetails();
+  const subtotal = items.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 1), 0);
+  const gst = calculateGST(subtotal, delivery.state);
+  const total = subtotal + gst.taxTotal;
+  const invoiceText = buildInvoiceText();
+  const invoiceHtml = buildInvoiceHtml();
+  const invoiceName = `sukhi_invoice_${Date.now()}.html`;
+
+  const adminEmail = ADMIN_EMAIL;
+  const customerEmail = delivery.email || AppState.user?.email || '';
+  const subject = encodeURIComponent(`Sukhi Fireworks Order Request - Invoice`);
+  const body = encodeURIComponent(`${invoiceText}\n\nPlease review the attached invoice and confirm the order.`);
+
+  downloadInvoice(invoiceHtml, invoiceName);
+
+  const mailTo = `mailto:${adminEmail}?cc=${encodeURIComponent(customerEmail)}&subject=${subject}&body=${body}`;
+  window.location.href = mailTo;
+
+  document.getElementById('payment-total').textContent = formatCurrency(total);
+  showToast('Invoice downloaded and request email opened.', 'success');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  const cart = Cart.load();
+  const cart = getCartItems();
   if (!cart.length) {
     location.href = 'shop.html';
     return;
   }
 
-  document.querySelectorAll('button').forEach(btn => {
-    const t = (btn.textContent || '').toLowerCase();
-    if (t.includes('pay') || t.includes('confirm') || t.includes('place order') || t.includes('complete')) {
-      btn.addEventListener('click', async (e) => {
-        e.preventDefault();
-        btn.disabled = true;
-        btn.textContent = 'Processing...';
+  const delivery = getDeliveryDetails();
+  const subtotal = cart.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 1), 0);
+  const gst = calculateGST(subtotal, delivery.state);
+  const total = subtotal + gst.taxTotal;
 
-        try {
-          const delivery = JSON.parse(sessionStorage.getItem('sukhi_delivery') || '{}');
-          const order = await Orders.create({
-            delivery,
-            paymentMethod: 'UPI / Card / COD',
-            email: AppState.user?.email || delivery.email || 'guest@sukhi.com'
-          });
-          sessionStorage.setItem('sukhi_last_order', JSON.stringify({ id: order.id, total: order.total }));
-          showToast('Order placed successfully!');
-          setTimeout(() => location.href = 'order-success.html?id=' + order.id, 1000);
-        } catch (err) {
-          console.error(err);
-          btn.disabled = false;
-          btn.textContent = 'Pay Now';
-          showToast(err.message || 'Order could not be placed. Please sign in and try again.', 'error');
-        }
-      });
-    }
-  });
+  document.getElementById('payment-total').textContent = formatCurrency(total);
+
+  const sendBtn = document.getElementById('sendRequestBtn');
+  if (sendBtn) {
+    sendBtn.addEventListener('click', (event) => {
+      event.preventDefault();
+      sendRequestWithInvoice();
+    });
+  }
 });
 </script>

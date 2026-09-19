@@ -22,9 +22,51 @@
 .site-header.is-scrolled { background: rgba(251, 252, 255, .96); box-shadow: 0 10px 30px rgba(17, 29, 58, .08); }
 .site-header-inner { width: min(1240px, calc(100% - 44px)); height: 82px; margin: auto; display: flex; align-items: center; gap: 34px; }
 .site-brand, .site-footer-brand { color: var(--site-navy); text-decoration: none; font: 800 24px/1.1 'Space Grotesk', sans-serif; letter-spacing: -.05em; white-space: nowrap; }
-.site-brand { display: inline-flex; align-items: center; gap: 8px; }
-.site-brand::after { content: 'FIREWORKS'; color: var(--site-primary); font: 700 8px/1 'Plus Jakarta Sans', sans-serif; letter-spacing: .14em; align-self: flex-end; margin: 0 0 2px -4px; }
-.site-brand .material-symbols-outlined { display: grid; place-items: center; width: 29px; height: 29px; border-radius: 9px; font-size: 18px; color: var(--site-navy); background: linear-gradient(145deg, var(--site-champagne), #ffe9b6); }
+.site-brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  line-height: 1;
+}
+.site-brand-mark {
+  display: block;
+  width: auto;
+  height: 34px;
+  max-width: 54px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.site-brand-company {
+  color: #111827;
+  font: 800 22px/1 'Space Grotesk', sans-serif;
+  letter-spacing: -.06em;
+  text-transform: none;
+  display: inline-flex;
+  align-items: center;
+}
+.site-brand::after { content: none; }
+.brand-intro-art .trade-mark-badge {
+  width: 330px;
+  height: 330px;
+  transform: rotate(-2deg);
+}
+.brand-intro-art .trade-mark-text-top {
+  font-size: 104px;
+}
+.brand-intro-art .trade-mark-text-bottom {
+  font-size: 35px;
+  bottom: 28px;
+}
+.brand-intro-art .trade-mark-star {
+  font-size: 42px;
+}
+.brand-intro-art .trade-mark-star-left { left: 34px; top: 92px; }
+.brand-intro-art .trade-mark-star-right { right: 34px; top: 92px; }
+.brand-intro-art .trade-mark-pencil {
+  width: 235px;
+  height: 42px;
+}
 .site-desktop-nav { display: flex; align-items: center; gap: 25px; margin-right: auto; }
 .site-nav-link { color: var(--site-muted); text-decoration: none; font: 600 12px/1 'Plus Jakarta Sans', sans-serif; padding: 12px 0; border-bottom: 2px solid transparent; transition: color .2s, border-color .2s; }
 .site-nav-link:hover, .site-nav-link.is-active { color: var(--site-primary); border-color: var(--site-primary); }
@@ -43,7 +85,7 @@
 .site-footer { margin-top: 72px; padding: 56px 0 30px; background: var(--site-navy-deep); color: #f6f7fb; position: relative; overflow: hidden; }
 .site-footer::before { content: ''; position: absolute; width: 360px; height: 360px; border-radius: 50%; right: -120px; top: -160px; background: rgba(240, 90, 71, .18); filter: blur(2px); }
 .site-footer-inner { position: relative; z-index: 1; width: min(1240px, calc(100% - 44px)); margin: auto; display: grid; grid-template-columns: 1.5fr 1fr 1fr auto; gap: 34px; align-items: start; }
-.site-footer-brand { color: #fff; }
+.site-footer-brand { color: #fff; font-size: 15px; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
 .site-footer p, .site-footer address { margin: 12px 0 0; color: #b5bfd4; font: 400 13px/1.8 'Plus Jakarta Sans', sans-serif; font-style: normal; }
 .site-footer h2 { margin: 0; color: var(--site-champagne); font: 700 11px/1 'Space Grotesk', sans-serif; text-transform: uppercase; letter-spacing: .14em; }
 .site-copyright { font-size: 11px !important; color: #7d89a5 !important; }

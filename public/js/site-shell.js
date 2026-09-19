@@ -29,8 +29,8 @@
   header.innerHTML = `
     <div class="site-header-inner">
       <a href="index.html" class="site-brand" aria-label="Sukhi Fireworks home">
-        <span class="material-symbols-outlined">local_fire_department</span>
-        <span>Sukhi</span>
+        <img class="site-brand-mark" src="../pics/pencil_trademark_transparent.png" alt="Pencil Trademark" />
+        <span class="site-brand-company">Sukhi</span>
       </a>
       <nav class="site-desktop-nav" aria-label="Main navigation">${desktopLinks}</nav>
       <div class="site-header-actions">
@@ -60,7 +60,7 @@
   footer.innerHTML = `
     <div class="site-footer-inner">
       <div>
-        <a href="index.html" class="site-footer-brand">Sukhi Fireworks</a>
+        <a href="index.html" class="site-footer-brand">PENCIL TRADEMARK</a>
         <p>Celebrations, designed in light. Premium fireworks from the heart of Sivakasi.</p>
         <p class="site-copyright">© 2026 Sukhi Fireworks. Light with caution.</p>
       </div>
