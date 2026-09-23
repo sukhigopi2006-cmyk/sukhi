@@ -68,14 +68,18 @@
       <form id="admin-login-form" class="space-y-4">
         <div class="space-y-1.5">
           <label for="admin-username" class="text-xs font-bold uppercase tracking-[0.16em] text-stone-500">Username</label>
-          <input id="admin-username" type="text" autocomplete="username" required class="w-full rounded-xl border border-outline-variant bg-surface-container-low px-3.5 py-3 text-sm text-stone-900 focus:border-primary-container focus:ring-2 focus:ring-orange-200" placeholder="sukhigopi" />
+          <input id="admin-username" type="text" autocomplete="username" required class="w-full rounded-xl border border-outline-variant bg-surface-container-low px-3.5 py-3 text-sm text-stone-900 focus:border-primary-container focus:ring-2 focus:ring-orange-200" placeholder="admin or sukhigopi" />
         </div>
         <div class="space-y-1.5">
           <label for="admin-password" class="text-xs font-bold uppercase tracking-[0.16em] text-stone-500">Password</label>
-          <input id="admin-password" type="password" autocomplete="current-password" required class="w-full rounded-xl border border-outline-variant bg-surface-container-low px-3.5 py-3 text-sm text-stone-900 focus:border-primary-container focus:ring-2 focus:ring-orange-200" placeholder="Enter admin password" />
+          <input id="admin-password" type="password" autocomplete="current-password" required class="w-full rounded-xl border border-outline-variant bg-surface-container-low px-3.5 py-3 text-sm text-stone-900 focus:border-primary-container focus:ring-2 focus:ring-orange-200" placeholder="admin123" />
         </div>
         <button type="submit" class="w-full rounded-xl bg-gradient-to-r from-primary-container to-orange-600 px-4 py-3 text-sm font-bold text-white shadow-md shadow-orange-500/20 transition hover:brightness-105">Sign in to admin</button>
         <p id="admin-login-error" class="hidden rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"></p>
+        <div class="rounded-xl bg-orange-50/70 border border-orange-200/60 p-3 text-center text-xs text-stone-600 space-y-0.5">
+          <p class="font-bold text-primary">Direct Admin Access</p>
+          <p class="text-[11px] text-stone-500">Fixed Login: <strong class="text-stone-800">admin</strong> &bull; Password: <strong class="text-stone-800">admin123</strong></p>
+        </div>
       </form>
     </div>
   </div>
@@ -443,12 +447,12 @@
       </div>
 
       <!-- Modal Body (Form) -->
-      <form id="addProductForm" onsubmit="handleSaveProduct(event)" class="p-6 space-y-4 overflow-y-auto flex-1">
-        <input type="hidden" id="editingProductId"/>
+      <form id="addProductForm" action="#" method="POST" onsubmit="handleSaveProduct(event)" class="p-6 space-y-4 overflow-y-auto flex-1">
+        <input type="hidden" id="editingProductId" name="id"/>
         <!-- Product Name -->
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1" for="prodName">Product Name *</label>
-          <input type="text" id="prodName" required placeholder="e.g. 7&quot; PENCIL SINGLE BOX"
+          <input type="text" id="prodName" name="name" required placeholder="e.g. 7&quot; PENCIL SINGLE BOX"
             class="w-full px-3.5 py-2.5 rounded-xl border border-outline-variant/70 text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-stone-900"/>
         </div>
 
@@ -456,7 +460,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1" for="prodCategory">Category *</label>
-            <select id="prodCategory" required
+            <select id="prodCategory" name="category" required
               class="w-full px-3.5 py-2.5 rounded-xl border border-outline-variant/70 text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-stone-900 font-medium">
               <option value="Pencils">Pencils</option>
               <option value="Ground Chakker">Ground Chakker</option>
@@ -467,7 +471,7 @@
 
           <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1" for="prodStock">Initial Stock Quantity *</label>
-            <input type="number" id="prodStock" required min="1" value="100"
+            <input type="number" id="prodStock" name="stock" required min="0" value="100"
               class="w-full px-3.5 py-2.5 rounded-xl border border-outline-variant/70 text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-stone-900"/>
           </div>
         </div>
@@ -478,7 +482,7 @@
             <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1" for="prodPrice">Selling Price (₹) *</label>
             <div class="relative">
               <span class="absolute left-3.5 top-2.5 text-stone-500 font-bold text-sm">₹</span>
-              <input type="number" id="prodPrice" required min="1" placeholder="899"
+              <input type="number" id="prodPrice" name="price" required min="0" step="any" placeholder="899"
                 class="w-full pl-8 pr-3.5 py-2.5 rounded-xl border border-outline-variant/70 text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-stone-900 font-semibold"/>
             </div>
           </div>
@@ -487,7 +491,7 @@
             <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1" for="prodOriginalPrice">Original MRP (₹)</label>
             <div class="relative">
               <span class="absolute left-3.5 top-2.5 text-stone-500 font-bold text-sm">₹</span>
-              <input type="number" id="prodOriginalPrice" min="1" placeholder="1199"
+              <input type="number" id="prodOriginalPrice" name="originalPrice" min="0" step="any" placeholder="1199"
                 class="w-full pl-8 pr-3.5 py-2.5 rounded-xl border border-outline-variant/70 text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-stone-900"/>
             </div>
           </div>
@@ -495,33 +499,36 @@
 
         <!-- Image URL with Preset Pickers -->
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1" for="prodImage">Image URL</label>
-          <input type="url" id="prodImage" oninput="updateImagePreview(this.value)" placeholder="https://..."
-            value="https://lh3.googleusercontent.com/aida-public/AB6AXuBWx00X12Fmm_QPvB_J9Tluq3vf6rtzggOm_EKuLuelzTzoVVvmflkMr68b26FEaYEZX8cseX6WTS_HOEOoU6E3dCYFw1bl790Aty1dfmtc4sm7ILB37Rtrx1CQTxaNFELlpw5cNgHjNQTzFUNYsONsnWRnVwMKiJk3x8n-UxZfMZF62eR_7t9_Hs8n4I0K6J31CX7VVo8mz4esG684TDwcFTih5r1MixKm-sMrDfj5OULBRbWj_cx2qQ"
+          <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1" for="prodImage">Image Path or URL</label>
+          <input type="text" id="prodImage" name="image" oninput="updateImagePreview(this.value)" placeholder="e.g. uploads/p10.jpeg, assets/p10.jpeg, or p2.jpeg"
+            value="uploads/p2.jpeg"
             class="w-full px-3.5 py-2.5 rounded-xl border border-outline-variant/70 text-xs focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-stone-900"/>
           
           <!-- Image Presets -->
           <div class="mt-2">
             <span class="text-[11px] font-semibold text-stone-500 block mb-1">Quick Presets:</span>
             <div class="flex flex-wrap gap-1.5">
-              <button type="button" onclick="selectImagePreset('cracker')" class="px-2.5 py-1 text-[11px] rounded-lg bg-stone-100 hover:bg-orange-100 text-stone-700 hover:text-primary font-medium transition">
-                ✏️ Pencils
+              <button type="button" onclick="selectImagePreset('p2')" class="px-2.5 py-1 text-[11px] rounded-lg bg-stone-100 hover:bg-orange-100 text-stone-700 hover:text-primary font-medium transition">
+                ✏️ Pencils (p2.jpeg)
               </button>
-              <button type="button" onclick="selectImagePreset('aerial')" class="px-2.5 py-1 text-[11px] rounded-lg bg-stone-100 hover:bg-orange-100 text-stone-700 hover:text-primary font-medium transition">
-                🚀 Sky Shot
+              <button type="button" onclick="selectImagePreset('p11')" class="px-2.5 py-1 text-[11px] rounded-lg bg-stone-100 hover:bg-orange-100 text-stone-700 hover:text-primary font-medium transition">
+                🌀 Chakker (p11.jpeg)
               </button>
-              <button type="button" onclick="selectImagePreset('sparkler')" class="px-2.5 py-1 text-[11px] rounded-lg bg-stone-100 hover:bg-orange-100 text-stone-700 hover:text-primary font-medium transition">
-                ✨ Twinkling Star
+              <button type="button" onclick="selectImagePreset('p15')" class="px-2.5 py-1 text-[11px] rounded-lg bg-stone-100 hover:bg-orange-100 text-stone-700 hover:text-primary font-medium transition">
+                🌺 Pots (p15.jpeg)
+              </button>
+              <button type="button" onclick="selectImagePreset('p18')" class="px-2.5 py-1 text-[11px] rounded-lg bg-stone-100 hover:bg-orange-100 text-stone-700 hover:text-primary font-medium transition">
+                ✨ Twinkling (p18.jpeg)
               </button>
               <button type="button" onclick="selectImagePreset('giftbox')" class="px-2.5 py-1 text-[11px] rounded-lg bg-stone-100 hover:bg-orange-100 text-stone-700 hover:text-primary font-medium transition">
-                🎁 Gift Hamper
+                🎁 Gift Box (web)
               </button>
             </div>
           </div>
 
           <!-- Preview -->
           <div class="mt-3 flex items-center gap-3 p-2.5 rounded-xl bg-stone-50 border border-outline-variant/40">
-            <img id="prodImagePreview" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWx00X12Fmm_QPvB_J9Tluq3vf6rtzggOm_EKuLuelzTzoVVvmflkMr68b26FEaYEZX8cseX6WTS_HOEOoU6E3dCYFw1bl790Aty1dfmtc4sm7ILB37Rtrx1CQTxaNFELlpw5cNgHjNQTzFUNYsONsnWRnVwMKiJk3x8n-UxZfMZF62eR_7t9_Hs8n4I0K6J31CX7VVo8mz4esG684TDwcFTih5r1MixKm-sMrDfj5OULBRbWj_cx2qQ"
+            <img id="prodImagePreview" src="uploads/p2.jpeg" onerror="handleImageError(this)"
               class="w-12 h-12 rounded-lg object-cover bg-stone-200 border border-stone-300" alt="Preview"/>
             <span class="text-xs text-stone-500">Live preview thumbnail</span>
           </div>
@@ -530,7 +537,7 @@
         <!-- Description -->
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1" for="prodDesc">Description</label>
-          <textarea id="prodDesc" rows="2" placeholder="High decibel sound burst, certified safety standards, suitable for festive celebrations..."
+          <textarea id="prodDesc" name="description" rows="2" placeholder="High decibel sound burst, certified safety standards, suitable for festive celebrations..."
             class="w-full px-3.5 py-2.5 rounded-xl border border-outline-variant/70 text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-stone-900"></textarea>
         </div>
 
@@ -567,18 +574,26 @@
   <!-- Admin Controller Script -->
   <script>
     const ADMIN_LOGIN_EMAIL = 'sukhigopi2006@gmail.com';
+    const FIXED_ADMIN_USERNAMES = ['admin', 'sukhigopi', 'sukhigopi2006@gmail.com', 'admin@sukhi.com'];
+    const FIXED_ADMIN_PASSWORDS = ['admin123', 'admin', 'sukhigopi', 'admin@123'];
 
     const IMAGE_PRESETS = {
-      cracker: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBWx00X12Fmm_QPvB_J9Tluq3vf6rtzggOm_EKuLuelzTzoVVvmflkMr68b26FEaYEZX8cseX6WTS_HOEOoU6E3dCYFw1bl790Aty1dfmtc4sm7ILB37Rtrx1CQTxaNFELlpw5cNgHjNQTzFUNYsONsnWRnVwMKiJk3x8n-UxZfMZF62eR_7t9_Hs8n4I0K6J31CX7VVo8mz4esG684TDwcFTih5r1MixKm-sMrDfj5OULBRbWj_cx2qQ',
-      aerial: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAF29EF_JCRD2bd0EN93g_3yiYZAcQpDham_sfD6YLBwMuXY0-my5UeJWKPTKn3rzvbOXmvnmfyw2MQXyQGzsIrPdYaED1_vIDYet_S9SIWWJJL2PgcBd2weYqDgDaDjpMK8sHy6cBvIN2R4AUVeS6lNy1Y0VWxfC8Zd848LPzY6w35bqleAw-90RBIffxxqlhyDnFUP7xpVqKOkGG5yL_sHCi9pKZvZx1X1Hj3I0EKdx1B8m3M4NB1bQ',
-      sparkler: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBIvczS9eaqjT9wt9eZpisZ5FSj4ELTVxGp5aQrJkQbXittDSCU9IncfSA3-bS_4vlKOtazYwI4M6pOzevJUmLRaR8Z477dB5GJxL9xzmTLKy-Au5PUwz8CI6w1-YI-R_LXeJ3t6rav8Mru4duTordqAsPgaen_G9UwdZDiC7Ji_SMOiwYd45IW7_oXpKJuXmaYczMx1em6yjDohDcOQw33XDjXAU_d3uRzZ95e34RoZF1V5oW33ordnw',
+      p2: 'uploads/p2.jpeg',
+      p11: 'uploads/p11.jpeg',
+      p15: 'uploads/p15.jpeg',
+      p18: 'uploads/p18.jpeg',
+      cracker: 'uploads/p2.jpeg',
+      aerial: 'uploads/p4.jpeg',
+      sparkler: 'uploads/p18.jpeg',
       giftbox: 'https://images.unsplash.com/photo-1607083206968-13611e3d76db?w=600&h=400&fit=crop'
     };
 
     let allLoadedProducts = [];
 
+    // Pure local check: NO database dependency
     function isAdminSessionActive() {
-      return !!window.auth?.currentUser && window.auth.currentUser.email?.toLowerCase() === ADMIN_LOGIN_EMAIL;
+      const session = Storage.get('sukhi_admin_session');
+      return !!(session && session.loggedInAt);
     }
 
     function showAdminAuthScreen(show) {
@@ -588,8 +603,15 @@
       if (dashView) dashView.classList.toggle('hidden', show);
     }
 
-    function saveAdminSession() {
-      Storage.set('sukhi_admin_session', { email: ADMIN_LOGIN_EMAIL, loggedInAt: Date.now() });
+    function saveAdminSession(username) {
+      Storage.set('sukhi_admin_session', {
+        username: username || 'admin',
+        email: ADMIN_LOGIN_EMAIL,
+        displayName: 'Store Administrator',
+        role: 'admin',
+        loggedInAt: Date.now()
+      });
+      AppState.isAdmin = true;
     }
 
     document.addEventListener('DOMContentLoaded', async () => {
@@ -599,21 +621,24 @@
       if (form) {
         form.addEventListener('submit', async (event) => {
           event.preventDefault();
-          const username = document.getElementById('admin-username').value.trim();
-          const password = document.getElementById('admin-password').value;
-          const email = username.includes('@') ? username.toLowerCase() : ADMIN_LOGIN_EMAIL;
-          try {
-            await Auth.login(email, password);
-            saveAdminSession();
+          const username = (document.getElementById('admin-username')?.value || '').trim();
+          const password = document.getElementById('admin-password')?.value || '';
+
+          const isUserMatch = FIXED_ADMIN_USERNAMES.includes(username.toLowerCase());
+          const isPassMatch = FIXED_ADMIN_PASSWORDS.includes(password);
+
+          if (isUserMatch && isPassMatch) {
+            saveAdminSession(username);
             if (errorBox) {
               errorBox.classList.add('hidden');
               errorBox.textContent = '';
             }
             showAdminAuthScreen(false);
-            checkAdminAuthentication();
-          } catch (error) {
+            await checkAdminAuthentication();
+            showToast('Welcome back, Administrator!');
+          } else {
             if (errorBox) {
-              errorBox.textContent = error.message || 'Admin sign-in failed.';
+              errorBox.textContent = 'Invalid credentials. Enter fixed admin username (admin or sukhigopi) and password (admin123 or admin).';
               errorBox.classList.remove('hidden');
             }
           }
@@ -692,7 +717,7 @@
           <tr class="hover:bg-orange-50/40 transition-colors border-b border-outline-variant/20">
             <td class="py-3 px-4">
               <div class="flex items-center gap-3">
-                <img src="${p.image || IMAGE_PRESETS.cracker}" alt="${p.name}" class="w-10 h-10 rounded-lg object-cover border border-stone-200 shrink-0"/>
+                <img src="${formatProductImageUrl(p.image || IMAGE_PRESETS.cracker)}" onerror="handleImageError(this)" alt="${p.name}" class="w-10 h-10 rounded-lg object-cover border border-stone-200 shrink-0"/>
                 <div>
                   <div class="font-bold text-stone-900">${p.name}</div>
                   <div class="text-[11px] text-stone-400">ID: ${p.id}</div>
@@ -765,7 +790,7 @@
       container.innerHTML = lowItems.slice(0, 5).map(p => `
         <div class="flex items-center justify-between p-3 rounded-xl bg-red-50/50 border border-red-200 hover:border-red-300 transition">
           <div class="flex items-center gap-3 min-w-0">
-            <img src="${p.image || IMAGE_PRESETS.cracker}" class="w-10 h-10 rounded-lg object-cover shrink-0 border border-red-200"/>
+            <img src="${formatProductImageUrl(p.image || IMAGE_PRESETS.cracker)}" onerror="handleImageError(this)" class="w-10 h-10 rounded-lg object-cover shrink-0 border border-red-200"/>
             <div class="min-w-0">
               <h4 class="text-xs font-bold text-stone-900 truncate">${p.name}</h4>
               <p class="text-[11px] font-bold text-error">Only ${p.stock ?? 0} left in stock</p>
@@ -912,7 +937,9 @@
 
     function updateImagePreview(url) {
       const img = document.getElementById('prodImagePreview');
-      if (img && url) img.src = url;
+      if (img) {
+        img.src = formatProductImageUrl(url) || 'pics/pencil_trademark_transparent.png';
+      }
     }
 
     function selectImagePreset(key) {
@@ -930,25 +957,28 @@
       saveBtn.disabled = true;
       saveBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-base">sync</span> Saving...';
 
-      const name = document.getElementById('prodName').value.trim();
-      const category = document.getElementById('prodCategory').value;
-      const price = Number(document.getElementById('prodPrice').value);
-      const originalPrice = document.getElementById('prodOriginalPrice').value ? Number(document.getElementById('prodOriginalPrice').value) : null;
-      const stock = parseInt(document.getElementById('prodStock').value) || 50;
-      const image = document.getElementById('prodImage').value.trim() || IMAGE_PRESETS.cracker;
-      const description = document.getElementById('prodDesc').value.trim() || 'Premium fireworks for Diwali & festival celebrations.';
-      const editingId = document.getElementById('editingProductId').value;
+      const name = (document.getElementById('prodName')?.value || '').trim();
+      const category = document.getElementById('prodCategory')?.value || 'Pencils';
+      const price = Number(document.getElementById('prodPrice')?.value) || 0;
+      const originalPriceVal = document.getElementById('prodOriginalPrice')?.value;
+      const originalPrice = originalPriceVal ? Number(originalPriceVal) : Math.round(price * 1.25);
+      const stock = parseInt(document.getElementById('prodStock')?.value, 10) || 50;
+      const rawImage = (document.getElementById('prodImage')?.value || '').trim();
+      const image = formatProductImageUrl(rawImage || 'uploads/p2.jpeg');
+      const description = (document.getElementById('prodDesc')?.value || '').trim() || 'Premium fireworks for Diwali & festival celebrations.';
+      const editingId = document.getElementById('editingProductId')?.value;
 
       const newProdData = {
         name,
         category,
         price,
-        originalPrice: originalPrice || Math.round(price * 1.25),
+        originalPrice,
         stock,
         image,
         description,
         rating: 4.9,
-        active: true
+        active: true,
+        tags: [category.toLowerCase().replace(/\s+/g, '-'), 'festive', 'handicraft']
       };
 
       try {
@@ -962,8 +992,8 @@
         closeAddProductModal();
         await loadAndRenderAdminData();
       } catch (err) {
-        console.error('Error adding product:', err);
-        showToast('Error saving product: ' + err.message, 'error');
+        console.error('Error adding/updating product:', err);
+        showToast('Error saving product: ' + (err.message || 'Unknown error'), 'error');
       } finally {
         saveBtn.disabled = false;
         saveBtn.innerHTML = '<span class="material-symbols-outlined text-base">check</span> Save Product to Store';

@@ -307,7 +307,7 @@
           return `
             <div class="flex items-center justify-between gap-2.5 pt-2">
               <div class="flex items-center gap-2 min-w-0">
-                <img src="${imgSrc}" onerror="this.src='pics/pencil_trademark_transparent.png'" alt="${item.name}" class="w-10 h-10 object-cover rounded-lg border border-stone-200 shrink-0"/>
+                <img src="${imgSrc}" onerror="handleImageError(this)" alt="${item.name}" class="w-10 h-10 object-cover rounded-lg border border-stone-200 shrink-0"/>
                 <div class="min-w-0">
                   <p class="font-bold text-stone-900 truncate">${item.name}</p>
                   <p class="text-[11px] text-stone-500">${formatPrice(itemPrice)} × ${itemQty}</p>

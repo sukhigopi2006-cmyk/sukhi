@@ -149,7 +149,7 @@
       return `
       <div class="light-card rounded-2xl p-4 flex flex-col gap-3 glow-hover transition-all duration-300 group">
         <a href="product.html?id=${p.id}" class="relative w-full h-48 rounded-xl overflow-hidden bg-stone-100 block">
-          <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${p.image}" alt="${p.name}"/>
+          <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${p.image}" onerror="handleImageError(this)" alt="${p.name}"/>
           ${discount ? `<div class="absolute top-3 left-3 bg-red-600 text-white px-2.5 py-1 rounded-md text-[11px] font-bold">${discount}% OFF</div>` : ''}
           <button data-toggle-wishlist="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${p.image}"
             class="absolute top-3 right-3 p-2 rounded-full bg-white/90 hover:bg-white shadow-sm" onclick="event.preventDefault()">

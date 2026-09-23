@@ -384,7 +384,7 @@ function renderWishlist() {
       ${list.map(p => `
         <div class="bg-white border border-stone-100 rounded-2xl p-4 shadow-sm">
           <a href="product.html?id=${p.id}">
-            <img src="${p.image}" class="w-full h-40 object-cover rounded-xl bg-stone-100" alt="${p.name}"/>
+            <img src="${p.image}" onerror="handleImageError(this)" class="w-full h-40 object-cover rounded-xl bg-stone-100" alt="${p.name}"/>
           </a>
           <h3 class="font-semibold mt-3">${p.name}</h3>
           <p class="text-primary font-bold">${formatPrice(p.price)}</p>

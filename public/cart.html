@@ -163,7 +163,7 @@
                 return `
                   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-2xl border border-stone-200 bg-white hover:border-orange-200 transition shadow-sm">
                     <div class="flex items-center gap-3.5 min-w-0">
-                      <img src="${imgSrc}" onerror="this.src='pics/pencil_trademark_transparent.png'" alt="${item.name}"
+                      <img src="${imgSrc}" onerror="handleImageError(this)" alt="${item.name}"
                         class="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-xl border border-stone-100 bg-stone-50 shrink-0" />
                       <div class="min-w-0">
                         <h3 class="font-bold text-stone-900 text-sm sm:text-base truncate">${item.name}</h3>

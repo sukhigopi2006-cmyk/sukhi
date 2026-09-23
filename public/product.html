@@ -345,7 +345,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (priceEl) priceEl.textContent = formatPrice(product.price);
 
   const mainImg = document.querySelector('section img');
-  if (mainImg && product.image) mainImg.src = product.image;
+  if (mainImg) {
+    if (product.image) mainImg.src = formatProductImageUrl(product.image);
+    mainImg.onerror = () => handleImageError(mainImg);
+  }
 
   const descEl = document.querySelector('.font-body-lg.text-\\[\\#44403c\\]');
   if (descEl && product.description) descEl.textContent = product.description;

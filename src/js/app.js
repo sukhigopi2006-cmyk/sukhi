@@ -11,34 +11,121 @@ const AppState = {
   cart: [],
   wishlist: [],
   products: [],
-  isAdmin: typeof window !== 'undefined' && window.location.pathname.includes('admin.html')
+  isAdmin: typeof window !== 'undefined' && (
+    window.location.pathname.includes('admin.html') ||
+    !!(localStorage.getItem('sukhi_admin_session'))
+  )
+};
+
+const FIXED_ADMIN_CREDENTIALS = {
+  usernames: ['admin', 'sukhigopi', 'sukhigopi2006@gmail.com', 'admin@sukhi.com'],
+  passwords: ['admin123', 'admin', 'sukhigopi', 'admin@123']
 };
 
 const ADMIN_EMAILS = ['sukhigopi2006@gmail.com', 'admin@sukhi.com', 'owner@sukhi.com'];
 const PRICE_MULTIPLIER = 2;
 
+function formatProductImageUrl(path, fallback = 'pics/pencil_trademark_transparent.png') {
+  if (!path || typeof path !== 'string') return fallback;
+  const trimmed = path.trim();
+  if (!trimmed) return fallback;
+
+  // External URL or data URI
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:') || trimmed.startsWith('blob:')) {
+    return trimmed;
+  }
+
+  // Remove leading slash if present
+  const normalized = trimmed.startsWith('/') ? trimmed.substring(1) : trimmed;
+
+  // Check if already prefixed with known directory path
+  if (normalized.startsWith('uploads/') ||
+      normalized.startsWith('assets/') ||
+      normalized.startsWith('images/') ||
+      normalized.startsWith('pics/')) {
+    return normalized;
+  }
+
+  // Bare filename -> prepend uploads/
+  return `uploads/${normalized}`;
+}
+window.formatProductImageUrl = formatProductImageUrl;
+
+const PRODUCT_IMAGE_MAP = {
+  p1: 'uploads/p2.jpeg',
+  p2: 'uploads/p2.jpeg',
+  p3: 'uploads/p4.jpeg',
+  p4: 'uploads/p4.jpeg',
+  p5: 'uploads/p6.jpeg',
+  p6: 'uploads/p6.jpeg',
+  p7: 'uploads/p8.jpeg',
+  p8: 'uploads/p8.jpeg',
+  p9: 'uploads/p10.jpeg',
+  p10: 'uploads/p10.jpeg',
+  p11: 'uploads/p11.jpeg',
+  p12: 'uploads/p11.jpeg',
+  p13: 'uploads/p13.jpeg',
+  p14: 'uploads/p14.jpeg',
+  p15: 'uploads/p15.jpeg',
+  p16: 'uploads/p16.jpeg',
+  p17: 'uploads/p17.jpeg',
+  p18: 'uploads/p18.jpeg'
+};
+
 function getProductImageUrl(productId, fallback = '') {
-  const safeId = String(productId || '').trim();
-  if (!safeId) return fallback || 'pics/pencil_trademark_transparent.png';
+  const safeId = String(productId || '').trim().toLowerCase();
+  if (PRODUCT_IMAGE_MAP[safeId]) {
+    return PRODUCT_IMAGE_MAP[safeId];
+  }
+  if (fallback && typeof fallback === 'string' && fallback.trim()) {
+    return formatProductImageUrl(fallback);
+  }
+  if (!safeId) return 'pics/pencil_trademark_transparent.png';
 
-  const normalized = safeId.toLowerCase().replace(/^id\s+/, '').replace(/^prod_/, '');
-  const candidates = [
-    `images/${safeId}.jpeg`,
-    `images/${safeId}.jpg`,
-    `images/${safeId}.png`,
-    `images/${normalized}.jpeg`,
-    `images/${normalized}.jpg`,
-    `images/${normalized}.png`,
-    `images/ID ${safeId}.jpeg`,
-    `images/ID ${safeId}.jpg`,
-    `images/ID ${safeId}.png`,
-    `images/ID ${normalized}.jpeg`,
-    `images/ID ${normalized}.jpg`,
-    `images/ID ${normalized}.png`
-  ];
+  const normalized = safeId.replace(/^id\s+/, '').replace(/^prod_/, '');
+  if (PRODUCT_IMAGE_MAP[normalized]) {
+    return PRODUCT_IMAGE_MAP[normalized];
+  }
+  return `uploads/${safeId.startsWith('p') ? safeId : normalized}.jpeg`;
+}
+window.getProductImageUrl = getProductImageUrl;
 
-  const preferred = safeId.startsWith('p') ? `images/${safeId}.jpeg` : candidates[0];
-  return preferred || fallback || 'pics/pencil_trademark_transparent.png';
+function handleImageError(img) {
+  if (!img || img.__fallbackHandled) return;
+  const currentSrc = img.getAttribute('src') || img.src || '';
+  const attempts = parseInt(img.dataset.imgAttempts || '0', 10);
+  img.dataset.imgAttempts = String(attempts + 1);
+
+  const cleanPath = currentSrc.split('?')[0].split('#')[0];
+  const filename = cleanPath.split('/').pop();
+
+  if (!filename || filename === 'pencil_trademark_transparent.png') {
+    img.__fallbackHandled = true;
+    img.src = 'pics/pencil_trademark_transparent.png';
+    return;
+  }
+
+  if (attempts === 0) {
+    img.src = 'uploads/' + filename;
+  } else if (attempts === 1) {
+    img.src = 'assets/' + filename;
+  } else if (attempts === 2) {
+    img.src = 'images/' + filename;
+  } else if (attempts === 3) {
+    img.src = 'pics/' + filename;
+  } else {
+    img.__fallbackHandled = true;
+    img.src = 'pics/pencil_trademark_transparent.png';
+  }
+}
+window.handleImageError = handleImageError;
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('error', function (event) {
+    if (event.target && event.target.tagName === 'IMG') {
+      handleImageError(event.target);
+    }
+  }, true);
 }
 
 // ============================================
@@ -82,6 +169,7 @@ const Cart = {
     const existing = AppState.cart.find(i => String(i.id).trim() === pId);
     const numPrice = Number(product.price) || 0;
     const numQty = parseInt(qty) || 1;
+    const imgUrl = formatProductImageUrl(product.image || product.images?.[0] || getProductImageUrl(pId));
     if (existing) {
       existing.qty += numQty;
     } else {
@@ -89,7 +177,7 @@ const Cart = {
         id: pId,
         name: product.name || 'Firework Item',
         price: numPrice,
-        image: product.image || product.images?.[0] || 'pics/pencil_trademark_transparent.png',
+        image: imgUrl,
         qty: numQty
       });
     }
@@ -186,7 +274,7 @@ const Wishlist = {
         id: product.id,
         name: product.name,
         price: product.price,
-        image: product.image || product.images?.[0] || ''
+        image: formatProductImageUrl(product.image || product.images?.[0] || getProductImageUrl(product.id))
       });
       showToast('Added to wishlist');
     }
@@ -234,10 +322,10 @@ const Products = {
       try {
         const snap = await db.collection('products').where('active', '==', true).get();
         if (!snap.empty) {
-          list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+          list = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         }
-      } catch (e) {
-        console.warn('Firestore products load failed, using local/sample data', e);
+      } catch (err) {
+        console.warn('Firestore products load failed, using local/cached catalog:', err);
       }
     }
 
@@ -246,25 +334,25 @@ const Products = {
     const samples = getSampleProducts();
     const merged = new Map();
 
-    // Prioritize Firestore list: samples -> custom -> list
-    // This ensures any product edited or updated in Firestore overrides sample data
-    const sources = list.length > 0 ? [...samples, ...custom, ...list] : [...custom, ...samples];
+    // Merge: samples -> list (Firestore) -> custom (local additions)
+    const sources = [...samples, ...list, ...custom];
 
     sources.forEach(product => {
       if (!product || !product.id || deleted.includes(product.id) || product.active === false) return;
       const nextProduct = {
         ...product,
         price: Number(product.price) || 0,
+        originalPrice: product.originalPrice != null ? Number(product.originalPrice) : Math.round((Number(product.price) || 100) * 1.25),
         stock: product.stock != null ? Number(product.stock) : 50,
-        image: product.image || getProductImageUrl(product.id, '') || 'pics/pencil_trademark_transparent.png'
+        image: formatProductImageUrl(product.image || getProductImageUrl(product.id, ''))
       };
       merged.set(product.id, nextProduct);
     });
 
     AppState.products = Array.from(merged.values());
-    const currentPrices = new Map(AppState.products.map(product => [product.id, product]));
+    const currentProducts = new Map(AppState.products.map(product => [product.id, product]));
     AppState.cart = AppState.cart.map(item => {
-      const product = currentPrices.get(item.id);
+      const product = currentProducts.get(item.id);
       return product ? { ...item, name: product.name, price: Number(product.price) || item.price, image: product.image || item.image } : item;
     });
     Storage.set('sukhi_cart', AppState.cart);
@@ -289,33 +377,34 @@ function getSampleProducts() {
       price: 67.5,
       category: 'Pencils',
       packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 70, ratePerUnit: 67.5, singlePieceRate: 0.96,
-      image: getProductImageUrl('p1', 'https://lh3.googleusercontent.com/aida-public/AB6AXuBWx00X12Fmm_QPvB_J9Tluq3vf6rtzggOm_EKuLuelzTzoVVvmflkMr68b26FEaYEZX8cseX6WTS_HOEOoU6E3dCYFw1bl790Aty1dfmtc4sm7ILB37Rtrx1CQTxaNFELlpw5cNgHjNQTzFUNYsONsnWRnVwMKiJk3x8n-UxZfMZF62eR_7t9_Hs8n4I0K6J31CX7VVo8mz4esG684TDwcFTih5r1MixKm-sMrDfj5OULBRbWj_cx2qQ'),
+      image: getProductImageUrl('p1'),
       description: '7 inch pencil firework, single box.', stock: 100, active: true, rating: 4.8, tags: ['pencil']
     },
     {
       id: 'p2',
       name: '7" PENCIL BIG BOX', price: 68.5, category: 'Pencils', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 70, ratePerUnit: 68.5, singlePieceRate: 0.98,
+      image: getProductImageUrl('p2'),
       description: '7 inch pencil firework, big box.', stock: 100, active: true, rating: 4.8, tags: ['pencil']
     },
-    { id: 'p3', name: '10" PENCIL', price: 127.5, category: 'Pencils', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 40, ratePerUnit: 127.5, singlePieceRate: 3.19, description: '10 inch pencil firework.', stock: 100, active: true, rating: 4.8, tags: ['pencil'] },
-    { id: 'p4', name: '10" PENCIL (U.V BOX)', price: 134.5, category: 'Pencils', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 40, ratePerUnit: 134.5, singlePieceRate: 3.36, description: '10 inch pencil firework in UV box.', stock: 100, active: true, rating: 4.8, tags: ['pencil'] },
-    { id: 'p5', name: '12" PENCIL', price: 167, category: 'Pencils', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 26, ratePerUnit: 167, singlePieceRate: 6.42, description: '12 inch pencil firework.', stock: 100, active: true, rating: 4.8, tags: ['pencil'] },
-    { id: 'p6', name: '12" PENCIL (U.V BOX)', price: 174, category: 'Pencils', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 26, ratePerUnit: 174, singlePieceRate: 6.69, description: '12 inch pencil firework in UV box.', stock: 100, active: true, rating: 4.8, tags: ['pencil'] },
-    { id: 'p7', name: '15" PENCIL', price: 260, category: 'Pencils', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 16.5, ratePerUnit: 260, singlePieceRate: 15.76, description: '15 inch pencil firework.', stock: 100, active: true, rating: 4.8, tags: ['pencil'] },
-    { id: 'p8', name: '15" PENCIL (U.V BOX)', price: 270, category: 'Pencils', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 16.5, ratePerUnit: 270, singlePieceRate: 16.36, description: '15 inch pencil firework in UV box.', stock: 100, active: true, rating: 4.8, tags: ['pencil'] },
-    { id: 'p9', name: '18" PENCIL', price: 310, category: 'Pencils', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 12.5, ratePerUnit: 310, singlePieceRate: 24.8, description: '18 inch pencil firework.', stock: 100, active: true, rating: 4.8, tags: ['pencil'] },
-    { id: 'p10', name: '18" PENCIL (U.V BOX)', price: 320, category: 'Pencils', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 12.5, ratePerUnit: 320, singlePieceRate: 25.6, description: '18 inch pencil firework in UV box.', stock: 100, active: true, rating: 4.8, tags: ['pencil'] },
-    { id: 'p11', name: 'GROUND CHAKKER BIG (U.V)', price: 92, category: 'Ground Chakker', packSize: '25 PCS UNIT', quantityPerCarton: 25, contents: 58, ratePerUnit: 92, singlePieceRate: 1.59, description: 'Big ground chakker in UV pack.', stock: 100, active: true, rating: 4.8, tags: ['ground chakker'] },
-    { id: 'p12', name: 'GROUND CHAKKER BIG', price: 100, category: 'Ground Chakker', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 46, ratePerUnit: 100, singlePieceRate: 2.17, description: 'Big ground chakker.', stock: 100, active: true, rating: 4.8, tags: ['ground chakker'] },
-    { id: 'p13', name: 'G.C SPECIAL (U.V)', price: 184, category: 'Ground Chakker', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 27, ratePerUnit: 184, singlePieceRate: 6.81, description: 'Special ground chakker in UV pack.', stock: 100, active: true, rating: 4.8, tags: ['ground chakker'] },
-    { id: 'p14', name: 'GROUND CHAKKER DX (U.V)', price: 355, category: 'Ground Chakker', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 16, ratePerUnit: 355, singlePieceRate: 22.19, description: 'Deluxe ground chakker in UV pack.', stock: 100, active: true, rating: 4.8, tags: ['ground chakker'] },
-    { id: 'p15', name: 'FLOWER POTS SPECIAL (U.V)', price: 238, category: 'Flower Pots', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 14, ratePerUnit: 238, singlePieceRate: 17, description: 'Special flower pot in UV pack.', stock: 100, active: true, rating: 4.8, tags: ['flower pots'] },
-    { id: 'p16', name: 'FLOWER POTS ASOKA (U.V)', price: 300, category: 'Flower Pots', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 9, ratePerUnit: 300, singlePieceRate: 33.33, description: 'Asoka flower pot in UV pack.', stock: 100, active: true, rating: 4.8, tags: ['flower pots'] },
-    { id: 'p17', name: 'COLOUR KOTI (U.V)', price: 520, category: 'Flower Pots', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 7, ratePerUnit: 520, singlePieceRate: 74.29, description: 'Colour Koti flower pot in UV pack.', stock: 100, active: true, rating: 4.8, tags: ['flower pots'] },
-    { id: 'p18', name: 'JIL JIL', price: 67, category: 'Twinkling Star', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 100, ratePerUnit: 67, singlePieceRate: 0.67, description: 'Twinkling star firework.', stock: 100, active: true, rating: 4.8, tags: ['twinkling star'] }
+    { id: 'p3', name: '10" PENCIL', price: 127.5, category: 'Pencils', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 40, ratePerUnit: 127.5, singlePieceRate: 3.19, image: getProductImageUrl('p3'), description: '10 inch pencil firework.', stock: 100, active: true, rating: 4.8, tags: ['pencil'] },
+    { id: 'p4', name: '10" PENCIL (U.V BOX)', price: 134.5, category: 'Pencils', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 40, ratePerUnit: 134.5, singlePieceRate: 3.36, image: getProductImageUrl('p4'), description: '10 inch pencil firework in UV box.', stock: 100, active: true, rating: 4.8, tags: ['pencil'] },
+    { id: 'p5', name: '12" PENCIL', price: 167, category: 'Pencils', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 26, ratePerUnit: 167, singlePieceRate: 6.42, image: getProductImageUrl('p5'), description: '12 inch pencil firework.', stock: 100, active: true, rating: 4.8, tags: ['pencil'] },
+    { id: 'p6', name: '12" PENCIL (U.V BOX)', price: 174, category: 'Pencils', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 26, ratePerUnit: 174, singlePieceRate: 6.69, image: getProductImageUrl('p6'), description: '12 inch pencil firework in UV box.', stock: 100, active: true, rating: 4.8, tags: ['pencil'] },
+    { id: 'p7', name: '15" PENCIL', price: 260, category: 'Pencils', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 16.5, ratePerUnit: 260, singlePieceRate: 15.76, image: getProductImageUrl('p7'), description: '15 inch pencil firework.', stock: 100, active: true, rating: 4.8, tags: ['pencil'] },
+    { id: 'p8', name: '15" PENCIL (U.V BOX)', price: 270, category: 'Pencils', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 16.5, ratePerUnit: 270, singlePieceRate: 16.36, image: getProductImageUrl('p8'), description: '15 inch pencil firework in UV box.', stock: 100, active: true, rating: 4.8, tags: ['pencil'] },
+    { id: 'p9', name: '18" PENCIL', price: 310, category: 'Pencils', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 12.5, ratePerUnit: 310, singlePieceRate: 24.8, image: getProductImageUrl('p9'), description: '18 inch pencil firework.', stock: 100, active: true, rating: 4.8, tags: ['pencil'] },
+    { id: 'p10', name: '18" PENCIL (U.V BOX)', price: 320, category: 'Pencils', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 12.5, ratePerUnit: 320, singlePieceRate: 25.6, image: getProductImageUrl('p10'), description: '18 inch pencil firework in UV box.', stock: 100, active: true, rating: 4.8, tags: ['pencil'] },
+    { id: 'p11', name: 'GROUND CHAKKER BIG (U.V)', price: 92, category: 'Ground Chakker', packSize: '25 PCS UNIT', quantityPerCarton: 25, contents: 58, ratePerUnit: 92, singlePieceRate: 1.59, image: getProductImageUrl('p11'), description: 'Big ground chakker in UV pack.', stock: 100, active: true, rating: 4.8, tags: ['ground chakker'] },
+    { id: 'p12', name: 'GROUND CHAKKER BIG', price: 100, category: 'Ground Chakker', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 46, ratePerUnit: 100, singlePieceRate: 2.17, image: getProductImageUrl('p12'), description: 'Big ground chakker.', stock: 100, active: true, rating: 4.8, tags: ['ground chakker'] },
+    { id: 'p13', name: 'G.C SPECIAL (U.V)', price: 184, category: 'Ground Chakker', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 27, ratePerUnit: 184, singlePieceRate: 6.81, image: getProductImageUrl('p13'), description: 'Special ground chakker in UV pack.', stock: 100, active: true, rating: 4.8, tags: ['ground chakker'] },
+    { id: 'p14', name: 'GROUND CHAKKER DX (U.V)', price: 355, category: 'Ground Chakker', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 16, ratePerUnit: 355, singlePieceRate: 22.19, image: getProductImageUrl('p14'), description: 'Deluxe ground chakker in UV pack.', stock: 100, active: true, rating: 4.8, tags: ['ground chakker'] },
+    { id: 'p15', name: 'FLOWER POTS SPECIAL (U.V)', price: 238, category: 'Flower Pots', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 14, ratePerUnit: 238, singlePieceRate: 17, image: getProductImageUrl('p15'), description: 'Special flower pot in UV pack.', stock: 100, active: true, rating: 4.8, tags: ['flower pots'] },
+    { id: 'p16', name: 'FLOWER POTS ASOKA (U.V)', price: 300, category: 'Flower Pots', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 9, ratePerUnit: 300, singlePieceRate: 33.33, image: getProductImageUrl('p16'), description: 'Asoka flower pot in UV pack.', stock: 100, active: true, rating: 4.8, tags: ['flower pots'] },
+    { id: 'p17', name: 'COLOUR KOTI (U.V)', price: 520, category: 'Flower Pots', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 7, ratePerUnit: 520, singlePieceRate: 74.29, image: getProductImageUrl('p17'), description: 'Colour Koti flower pot in UV pack.', stock: 100, active: true, rating: 4.8, tags: ['flower pots'] },
+    { id: 'p18', name: 'JIL JIL', price: 67, category: 'Twinkling Star', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 100, ratePerUnit: 67, singlePieceRate: 0.67, image: getProductImageUrl('p18'), description: 'Twinkling star firework.', stock: 100, active: true, rating: 4.8, tags: ['twinkling star'] }
   ].map(product => ({
     ...product,
-    image: getProductImageUrl(product.id, product.image || ''),
+    image: formatProductImageUrl(product.image || getProductImageUrl(product.id, '')),
     priceVersion: 2,
     price: Number((product.price * PRICE_MULTIPLIER).toFixed(2)),
     ratePerUnit: product.ratePerUnit == null ? product.ratePerUnit : Number((product.ratePerUnit * PRICE_MULTIPLIER).toFixed(2)),
@@ -364,6 +453,18 @@ const Offers = {
 // ============================================
 const Auth = {
   init() {
+    const adminSession = Storage.get('sukhi_admin_session');
+    if (adminSession && adminSession.loggedInAt) {
+      AppState.isAdmin = true;
+      if (!AppState.user) {
+        AppState.user = {
+          uid: 'admin_local',
+          email: adminSession.email || 'sukhigopi2006@gmail.com',
+          displayName: adminSession.displayName || 'Store Administrator'
+        };
+      }
+    }
+
     if (!window.auth) {
       this.updateUI();
       return;
@@ -371,15 +472,21 @@ const Auth = {
 
     try {
       auth.onAuthStateChanged(async (user) => {
+        const hasAdminSession = !!Storage.get('sukhi_admin_session');
         if (user) {
           AppState.user = user;
-          AppState.isAdmin = ADMIN_EMAILS.includes((user.email || '').toLowerCase()) || (typeof window !== 'undefined' && window.location.pathname.includes('admin.html'));
-          if (AppState.isAdmin) {
-            Storage.set('sukhi_admin_session', { email: user.email, displayName: user.displayName || 'Admin' });
+          AppState.isAdmin = ADMIN_EMAILS.includes((user.email || '').toLowerCase()) || hasAdminSession || (typeof window !== 'undefined' && window.location.pathname.includes('admin.html'));
+          if (AppState.isAdmin && !hasAdminSession) {
+            Storage.set('sukhi_admin_session', { email: user.email, displayName: user.displayName || 'Admin', loggedInAt: Date.now() });
           }
         } else {
-          AppState.user = null;
-          AppState.isAdmin = typeof window !== 'undefined' && window.location.pathname.includes('admin.html');
+          // If no Firebase user, do not wipe admin session if local admin session exists!
+          if (!hasAdminSession) {
+            AppState.user = null;
+            AppState.isAdmin = typeof window !== 'undefined' && window.location.pathname.includes('admin.html');
+          } else {
+            AppState.isAdmin = true;
+          }
         }
         this.updateUI();
         if (typeof window.checkAdminAuthentication === 'function') window.checkAdminAuthentication();
@@ -395,19 +502,36 @@ const Auth = {
   },
 
   async login(email, password) {
+    const normalizedUser = (email || '').trim().toLowerCase();
+    const isFixedAdmin = FIXED_ADMIN_CREDENTIALS.usernames.includes(normalizedUser) &&
+                         FIXED_ADMIN_CREDENTIALS.passwords.includes(password);
+
+    if (isFixedAdmin) {
+      const adminUser = {
+        uid: 'admin_local',
+        email: 'sukhigopi2006@gmail.com',
+        displayName: 'Store Administrator',
+        role: 'admin'
+      };
+      AppState.user = adminUser;
+      AppState.isAdmin = true;
+      Storage.set('sukhi_admin_session', { ...adminUser, loggedInAt: Date.now() });
+      this.updateUI();
+      return adminUser;
+    }
+
     if (!window.firebaseConfigStatus?.ready) throw new Error(window.firebaseConfigStatus?.message || 'Firebase customer login is not configured.');
-    const normalizedEmail = (email || '').trim().toLowerCase();
 
     if (!window.auth) {
       throw new Error('Authentication service is unavailable.');
     }
 
     try {
-      const cred = await auth.signInWithEmailAndPassword(normalizedEmail, password);
+      const cred = await auth.signInWithEmailAndPassword(normalizedUser, password);
       AppState.user = cred.user;
-      AppState.isAdmin = ADMIN_EMAILS.includes((cred.user.email || '').toLowerCase());
+      AppState.isAdmin = ADMIN_EMAILS.includes((cred.user.email || '').toLowerCase()) || !!Storage.get('sukhi_admin_session');
       if (AppState.isAdmin) {
-        Storage.set('sukhi_admin_session', { email: cred.user.email, displayName: cred.user.displayName || 'Admin' });
+        Storage.set('sukhi_admin_session', { email: cred.user.email, displayName: cred.user.displayName || 'Admin', loggedInAt: Date.now() });
       }
       this.updateUI();
       return cred.user;
@@ -455,7 +579,7 @@ const Auth = {
       }
     }
     AppState.user = null;
-    AppState.isAdmin = typeof window !== 'undefined' && window.location.pathname.includes('admin.html');
+    AppState.isAdmin = false;
     this.updateUI();
   },
 
@@ -503,7 +627,7 @@ const Orders = {
     const igst = isTN ? 0 : (subtotal * 0.18);
     const taxTotal = cgst + sgst + igst;
     const grandTotal = subtotal + taxTotal;
-    const orderId = 'SK-REQ-' + Date.now().toString().slice(-6);
+    const orderId = 'SK-REQ-' + Date.now().toString(36).toUpperCase();
 
     const orderPayload = {
       id: orderId,
@@ -547,38 +671,18 @@ const Orders = {
       type: 'order_request'
     };
 
-    // 1. Save order to Firestore
-    if (window.db) {
-      try {
-        await db.collection('orders').doc(orderId).set({
-          ...orderPayload,
-          serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-      } catch (err) {
-        console.warn('Firestore order save failed, keeping in local cache:', err);
-      }
+    if (!window.db) throw new Error('Order requests require a live Firebase connection.');
+    if (!window.functions) throw new Error('Order requests require the Firebase backend to be deployed.');
+    const submitOrderRequest = window.functions.httpsCallable('submitOrderRequest');
+    const result = await submitOrderRequest({ delivery: orderPayload.delivery, items: orderPayload.items });
+    const savedOrder = result.data?.order;
+    if (!savedOrder?.id) throw new Error('The order was not created. Please try again.');
+    Object.assign(orderPayload, savedOrder, {
+      adminNotificationEmail: 'sukhigopi2006@gmail.com',
+      customerEmail: savedOrder.customerEmail || orderPayload.customerEmail
+    });
 
-      // 2. AUTOMATIC STOCK REDUCTION IN DATABASE
-      for (const item of items) {
-        if (!item.id) continue;
-        try {
-          const prodRef = db.collection('products').doc(item.id);
-          const snap = await prodRef.get();
-          if (snap.exists) {
-            const curStock = Number(snap.data().stock ?? 50);
-            const newStock = Math.max(0, curStock - Number(item.qty || 1));
-            await prodRef.update({
-              stock: newStock,
-              updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-          }
-        } catch (err) {
-          console.warn(`Stock reduction for product ${item.id} error:`, err);
-        }
-      }
-    }
-
-    // Always maintain local storage backup for resilient offline / multi-device preview
+    // Keep a local copy only for the confirmation page; Firestore is the source of truth.
     const localOrders = Storage.get('sukhi_orders', []);
     localOrders.unshift(orderPayload);
     Storage.set('sukhi_orders', localOrders);
@@ -652,16 +756,11 @@ const Orders = {
   },
 
   async updateStatus(orderId, status) {
-    if (window.db) {
-      try {
-        await db.collection('orders').doc(orderId).update({
-          status,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-      } catch (e) {
-        console.warn('Firestore order status update failed:', e);
-      }
-    }
+    if (!window.db) throw new Error('Order status cannot be updated while Firebase is disconnected.');
+    await db.collection('orders').doc(orderId).update({
+      status,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
     const localOrders = Storage.get('sukhi_orders', []);
     const ord = localOrders.find(o => o.id === orderId);
     if (ord) {
@@ -770,45 +869,52 @@ const Customers = {
 // ============================================
 const AdminProducts = {
   async add(product) {
-    const newId = 'prod_' + Date.now();
+    const newId = product.id || ('prod_' + Date.now());
+    const formattedImg = formatProductImageUrl(product.image || 'pics/pencil_trademark_transparent.png');
     const newProduct = {
       id: newId,
       name: product.name || 'Firework Item',
       price: Number(product.price) || 0,
       priceVersion: 2,
-      originalPrice: product.originalPrice ? Number(product.originalPrice) : Math.round((Number(product.price) || 100) * 1.3),
+      originalPrice: product.originalPrice ? Number(product.originalPrice) : Math.round((Number(product.price) || 100) * 1.25),
       category: product.category || 'Pencils',
-      image: product.image || 'pics/pencil_trademark_transparent.png',
+      image: formattedImg,
       description: product.description || 'Premium festive fireworks from Sukhi Fireworks.',
-      stock: parseInt(product.stock) || 50,
-      active: true,
-      rating: 4.8,
-      tags: product.tags || ['festive'],
-      createdAt: new Date().toISOString()
+      stock: parseInt(product.stock, 10) || 50,
+      active: product.active !== false,
+      rating: Number(product.rating) || 4.8,
+      tags: product.tags || [String(product.category || 'festive').toLowerCase().replace(/\s+/g, '-'), 'festive'],
+      createdAt: product.createdAt || new Date().toISOString()
     };
 
     if (window.db) {
       try {
         await db.collection('products').doc(newId).set({
           ...newProduct,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          createdAt: (window.firebase && firebase.firestore && firebase.firestore.FieldValue)
+            ? firebase.firestore.FieldValue.serverTimestamp()
+            : new Date().toISOString()
         });
       } catch (err) {
-        console.error('Firestore AdminProducts.add failed:', err);
+        console.warn('Firestore AdminProducts.add skipped/failed, saved locally:', err);
       }
     }
 
     // 1. Save to custom products storage
     const custom = Storage.get('sukhi_custom_products', []);
-    custom.unshift(newProduct);
-    Storage.set('sukhi_custom_products', custom);
+    const filteredCustom = custom.filter(p => p.id !== newId);
+    filteredCustom.unshift(newProduct);
+    Storage.set('sukhi_custom_products', filteredCustom);
 
     // 2. Remove from deleted if previously deleted
     const deleted = Storage.get('sukhi_deleted_products', []);
     Storage.set('sukhi_deleted_products', deleted.filter(id => id !== newId));
 
     // 3. Update active AppState
-    if (!AppState.products.some(p => p.id === newProduct.id)) {
+    const existingIndex = AppState.products.findIndex(p => p.id === newProduct.id);
+    if (existingIndex >= 0) {
+      AppState.products[existingIndex] = newProduct;
+    } else {
       AppState.products.unshift(newProduct);
     }
 
@@ -818,17 +924,20 @@ const AdminProducts = {
   async update(id, data) {
     const cleanData = { ...data };
     if (cleanData.price != null) cleanData.price = Number(cleanData.price) || 0;
-    if (cleanData.stock != null) cleanData.stock = Math.max(0, parseInt(cleanData.stock) || 0);
+    if (cleanData.originalPrice != null) cleanData.originalPrice = Number(cleanData.originalPrice) || 0;
+    if (cleanData.stock != null) cleanData.stock = Math.max(0, parseInt(cleanData.stock, 10) || 0);
+    if (cleanData.image) cleanData.image = formatProductImageUrl(cleanData.image);
 
     if (window.db) {
       try {
         await db.collection('products').doc(id).set({
           ...cleanData,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          updatedAt: (window.firebase && firebase.firestore && firebase.firestore.FieldValue)
+            ? firebase.firestore.FieldValue.serverTimestamp()
+            : new Date().toISOString()
         }, { merge: true });
       } catch (err) {
-        console.error('Firestore AdminProducts.update failed:', err);
-        throw err;
+        console.warn('Firestore AdminProducts.update skipped/failed, saved locally:', err);
       }
     }
 
@@ -850,33 +959,53 @@ const AdminProducts = {
   },
 
   async updateStock(id, newStock) {
-    await this.update(id, { stock: Math.max(0, parseInt(newStock) || 0) });
+    await this.update(id, { stock: Math.max(0, parseInt(newStock, 10) || 0) });
   },
 
   async doubleAllPrices() {
-    if (!window.db) return 0;
-    const snapshot = await db.collection('products').get();
-    let batch = db.batch();
-    let count = 0;
-    for (const doc of snapshot.docs) {
-      const product = doc.data();
-      if (Number(product.priceVersion) >= 2) continue;
-      const changes = {
-        price: Number((Number(product.price || 0) * PRICE_MULTIPLIER).toFixed(2)),
-        priceVersion: 2,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      };
-      if (product.originalPrice != null) changes.originalPrice = Number((Number(product.originalPrice) * PRICE_MULTIPLIER).toFixed(2));
-      batch.update(doc.ref, changes);
-      count++;
-      if (count === 400) {
-        await batch.commit();
-        batch = db.batch();
-        count = 0;
+    if (window.db) {
+      try {
+        const snapshot = await db.collection('products').get();
+        let batch = db.batch();
+        let count = 0;
+        for (const doc of snapshot.docs) {
+          const product = doc.data();
+          if (Number(product.priceVersion) >= 2) continue;
+          const changes = {
+            price: Number((Number(product.price || 0) * PRICE_MULTIPLIER).toFixed(2)),
+            priceVersion: 2,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          };
+          if (product.originalPrice != null) changes.originalPrice = Number((Number(product.originalPrice) * PRICE_MULTIPLIER).toFixed(2));
+          batch.update(doc.ref, changes);
+          count++;
+          if (count === 400) {
+            await batch.commit();
+            batch = db.batch();
+            count = 0;
+          }
+        }
+        if (count) await batch.commit();
+      } catch (err) {
+        console.warn('Firestore price double failed:', err);
       }
     }
-    if (count) await batch.commit();
-    return snapshot.size;
+
+    const custom = Storage.get('sukhi_custom_products', []);
+    const updatedCustom = custom.map(p => ({
+      ...p,
+      price: Number((Number(p.price || 0) * PRICE_MULTIPLIER).toFixed(2)),
+      originalPrice: p.originalPrice != null ? Number((Number(p.originalPrice) * PRICE_MULTIPLIER).toFixed(2)) : undefined
+    }));
+    Storage.set('sukhi_custom_products', updatedCustom);
+
+    AppState.products = AppState.products.map(p => ({
+      ...p,
+      price: Number((Number(p.price || 0) * PRICE_MULTIPLIER).toFixed(2)),
+      originalPrice: p.originalPrice != null ? Number((Number(p.originalPrice) * PRICE_MULTIPLIER).toFixed(2)) : undefined
+    }));
+
+    return AppState.products.length;
   },
 
   async delete(id) {
@@ -888,7 +1017,9 @@ const AdminProducts = {
         try {
           await db.collection('products').doc(id).set({
             active: false,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            updatedAt: (window.firebase && firebase.firestore && firebase.firestore.FieldValue)
+              ? firebase.firestore.FieldValue.serverTimestamp()
+              : new Date().toISOString()
           }, { merge: true });
         } catch (_) {}
       }
@@ -917,36 +1048,40 @@ const AdminProducts = {
   async replaceCatalog(products) {
     Storage.set('sukhi_custom_products', []);
     Storage.set('sukhi_deleted_products', []);
-    AppState.products = products.map(product => ({ ...product }));
+    AppState.products = products.map(product => ({ ...product, image: formatProductImageUrl(product.image) }));
 
-    if (!window.db) return;
-
-    const snapshot = await db.collection('products').get();
-    let batch = db.batch();
-    let operationCount = 0;
-    for (const doc of snapshot.docs) {
-      batch.delete(doc.ref);
-      operationCount++;
-      if (operationCount === 400) {
-        await batch.commit();
-        batch = db.batch();
-        operationCount = 0;
+    if (window.db) {
+      try {
+        const snapshot = await db.collection('products').get();
+        let batch = db.batch();
+        let operationCount = 0;
+        for (const doc of snapshot.docs) {
+          batch.delete(doc.ref);
+          operationCount++;
+          if (operationCount === 400) {
+            await batch.commit();
+            batch = db.batch();
+            operationCount = 0;
+          }
+        }
+        for (const product of products) {
+          const ref = db.collection('products').doc(product.id);
+          batch.set(ref, {
+            ...product,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          operationCount++;
+          if (operationCount === 400) {
+            await batch.commit();
+            batch = db.batch();
+            operationCount = 0;
+          }
+        }
+        if (operationCount > 0) await batch.commit();
+      } catch (err) {
+        console.warn('Firestore replaceCatalog batch failed:', err);
       }
     }
-    for (const product of products) {
-      const ref = db.collection('products').doc(product.id);
-      batch.set(ref, {
-        ...product,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      operationCount++;
-      if (operationCount === 400) {
-        await batch.commit();
-        batch = db.batch();
-        operationCount = 0;
-      }
-    }
-    if (operationCount > 0) await batch.commit();
   }
 };
 
@@ -1055,3 +1190,7 @@ window.formatPrice = formatPrice;
 window.getQueryParam = getQueryParam;
 window.getSampleProducts = getSampleProducts;
 window.Offers = Offers;
+window.Storage = Storage;
+window.formatProductImageUrl = formatProductImageUrl;
+window.getProductImageUrl = getProductImageUrl;
+window.handleImageError = handleImageError;
