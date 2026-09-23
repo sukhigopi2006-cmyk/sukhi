@@ -192,8 +192,8 @@
 <span class="font-label-lg text-label-lg text-on-surface-variant">Order Total</span>
 <span class="font-body-md text-sm text-on-surface-variant/80 mt-0.5">Includes all taxes &amp; shipping</span>
 </div>
-<div class="font-price-display text-price-display text-primary-container flex items-end gap-1 font-extrabold">
-<span class="text-xl pb-1 text-primary-container/80">₹</span>1,249<span class="text-xl pb-1">.99</span>
+<div id="payment-header-total" class="font-price-display text-price-display text-primary-container flex items-end gap-1 font-extrabold">
+<span class="text-xl pb-1 text-primary-container/80">₹</span>0.00
 </div>
 </div>
 </section>
@@ -482,7 +482,10 @@ function sendRequestWithInvoice() {
   const mailTo = `mailto:${adminEmail}?cc=${encodeURIComponent(customerEmail)}&subject=${subject}&body=${body}`;
   window.location.href = mailTo;
 
-  document.getElementById('payment-total').textContent = formatCurrency(total);
+  const paymentTotalEl = document.getElementById('payment-total');
+  const paymentHeaderTotalEl = document.getElementById('payment-header-total');
+  if (paymentTotalEl) paymentTotalEl.textContent = formatCurrency(total);
+  if (paymentHeaderTotalEl) paymentHeaderTotalEl.innerHTML = `<span class="text-xl pb-1 text-primary-container/80">₹</span>${formatCurrency(total).replace('₹', '').trim()}`;
   showToast('Invoice downloaded and request email opened.', 'success');
 }
 
@@ -498,7 +501,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const gst = calculateGST(subtotal, delivery.state);
   const total = subtotal + gst.taxTotal;
 
-  document.getElementById('payment-total').textContent = formatCurrency(total);
+  const paymentTotalEl = document.getElementById('payment-total');
+  const paymentHeaderTotalEl = document.getElementById('payment-header-total');
+  if (paymentTotalEl) paymentTotalEl.textContent = formatCurrency(total);
+  if (paymentHeaderTotalEl) paymentHeaderTotalEl.innerHTML = `<span class="text-xl pb-1 text-primary-container/80">₹</span>${formatCurrency(total).replace('₹', '').trim()}`;
 
   const sendBtn = document.getElementById('sendRequestBtn');
   if (sendBtn) {

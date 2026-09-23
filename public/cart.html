@@ -84,11 +84,11 @@
 <div class="bg-card-bg border border-border-subtle rounded-2xl p-6 sticky top-24 shadow-sm">
 <h2 class="text-xl font-extrabold text-charcoal mb-5 pb-3 border-b border-border-subtle">Order Summary</h2>
 <div class="flex flex-col gap-3.5 border-b border-border-subtle pb-5 mb-5 text-sm">
-<div class="flex justify-between items-center"><span class="text-charcoal-muted">Subtotal</span><span class="font-semibold text-charcoal font-mono">₹0.00</span></div>
+<div class="flex justify-between items-center"><span class="text-charcoal-muted">Subtotal</span><span id="cart-summary-subtotal" class="font-semibold text-charcoal font-mono">₹0.00</span></div>
 <div class="flex justify-between items-center"><span class="text-charcoal-muted">Shipping</span><span class="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded text-xs">FREE</span></div>
-<div class="flex justify-between items-center"><span class="text-charcoal-muted">Tax</span><span class="font-semibold text-charcoal font-mono">₹0.00</span></div>
+<div class="flex justify-between items-center"><span class="text-charcoal-muted">Tax</span><span id="cart-summary-tax" class="font-semibold text-charcoal font-mono">₹0.00</span></div>
 </div>
-<div class="flex justify-between items-baseline mb-6"><span class="text-base font-bold text-charcoal">Total</span><span class="text-2xl font-extrabold text-charcoal font-mono">₹0.00</span></div>
+<div class="flex justify-between items-baseline mb-6"><span class="text-base font-bold text-charcoal">Total</span><span id="cart-summary-total" class="text-2xl font-extrabold text-charcoal font-mono">₹0.00</span></div>
 <a href="shop.html" class="w-full bg-primary hover:bg-primary-dark text-white font-bold text-sm py-4 rounded-xl flex items-center justify-center gap-2 shadow-md shadow-primary/25 hover:shadow-lg hover:shadow-primary/35 transition-all duration-300 active:scale-[0.99]">
     Continue Shopping
     <span class="material-symbols-outlined text-base">arrow_forward</span>
@@ -167,24 +167,36 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderCart();
 });
 
+function updateSummaryTotals() {
+  const subtotal = Cart.getTotal();
+  const tax = subtotal * 0.05;
+  const total = subtotal + tax;
+
+  const subtotalEl = document.getElementById('cart-summary-subtotal');
+  const taxEl = document.getElementById('cart-summary-tax');
+  const totalEl = document.getElementById('cart-summary-total');
+  const countEl = document.querySelector('.flex.items-center.justify-between.mb-8 span:last-child');
+
+  if (subtotalEl) subtotalEl.textContent = formatPrice(subtotal);
+  if (taxEl) taxEl.textContent = formatPrice(tax);
+  if (totalEl) totalEl.textContent = formatPrice(total);
+  if (countEl) countEl.textContent = `${Cart.getCount()} ${Cart.getCount() === 1 ? 'Item' : 'Items'}`;
+}
+
 function renderCart() {
   const cart = Cart.load();
   const container = document.querySelector('main') || document.body;
   
-  // Find or create cart items area
-  let itemsArea = document.getElementById('cart-items-dynamic');
-  if (!itemsArea) {
-    // Try to replace existing static content with dynamic
-    const main = document.querySelector('main') || document.querySelector('[class*="container"]') || document.body;
+  const itemsArea = document.getElementById('cart-items-dynamic') || (() => {
+    const main = document.querySelector('main') || document.body;
     const wrapper = document.createElement('div');
     wrapper.id = 'cart-items-dynamic';
     wrapper.className = 'max-w-4xl mx-auto px-4 py-8';
-    // Insert near top of main content
     const firstSection = main.querySelector('section, div');
     if (firstSection) firstSection.before(wrapper);
     else main.prepend(wrapper);
-    itemsArea = wrapper;
-  }
+    return wrapper;
+  })();
 
   if (cart.length === 0) {
     itemsArea.innerHTML = `
@@ -194,6 +206,7 @@ function renderCart() {
         <p class="text-stone-500 mt-2">Add some festive fireworks to get started!</p>
         <a href="shop.html" class="inline-block mt-6 px-6 py-3 bg-primary text-white rounded-full font-semibold hover:bg-orange-600 transition">Browse Products</a>
       </div>`;
+    updateSummaryTotals();
     return;
   }
 
@@ -227,11 +240,7 @@ function renderCart() {
       <a href="shop.html" class="mt-3 block w-full text-center py-2.5 text-stone-600 hover:text-primary text-sm">Continue Shopping</a>
     </div>
   `;
-}
-
-function updateQty(id, qty) {
-  if (qty < 1) { removeItem(id); return; }
-  Cart.updateQty(id, qty);
+  updateSummaryTotals();
   renderCart();
 }
 function removeItem(id) {

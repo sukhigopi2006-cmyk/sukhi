@@ -17,6 +17,30 @@ const AppState = {
 const ADMIN_EMAILS = ['admin@sukhi.com', 'owner@sukhi.com']; // Add your admin emails
 const PRICE_MULTIPLIER = 2;
 
+function getProductImageUrl(productId, fallback = '') {
+  const safeId = String(productId || '').trim();
+  if (!safeId) return fallback;
+
+  const normalized = safeId.toLowerCase().replace(/^id\s+/, '').replace(/^prod_/, '');
+  const candidates = [
+    `images/${safeId}.jpeg`,
+    `images/${safeId}.jpg`,
+    `images/${safeId}.png`,
+    `images/${normalized}.jpeg`,
+    `images/${normalized}.jpg`,
+    `images/${normalized}.png`,
+    `images/ID ${safeId}.jpeg`,
+    `images/ID ${safeId}.jpg`,
+    `images/ID ${safeId}.png`,
+    `images/ID ${normalized}.jpeg`,
+    `images/ID ${normalized}.jpg`,
+    `images/ID ${normalized}.png`
+  ];
+
+  const preferred = safeId.startsWith('p') ? `images/${safeId}.jpeg` : candidates[0];
+  return preferred || fallback || 'images/pencil_trademark_transparent.png';
+}
+
 // ============================================
 // LOCAL STORAGE HELPERS
 // ============================================
@@ -219,7 +243,11 @@ const Products = {
 
     [...list, ...custom, ...samples].forEach(product => {
       if (!product || deleted.includes(product.id) || product.active === false) return;
-      merged.set(product.id, { ...product });
+      const nextProduct = {
+        ...product,
+        image: product.image || getProductImageUrl(product.id, '') || ''
+      };
+      merged.set(product.id, nextProduct);
     });
 
     AppState.products = Array.from(merged.values());
@@ -250,7 +278,7 @@ function getSampleProducts() {
       price: 67.5,
       category: 'Pencils',
       packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 70, ratePerUnit: 67.5, singlePieceRate: 0.96,
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBWx00X12Fmm_QPvB_J9Tluq3vf6rtzggOm_EKuLuelzTzoVVvmflkMr68b26FEaYEZX8cseX6WTS_HOEOoU6E3dCYFw1bl790Aty1dfmtc4sm7ILB37Rtrx1CQTxaNFELlpw5cNgHjNQTzFUNYsONsnWRnVwMKiJk3x8n-UxZfMZF62eR_7t9_Hs8n4I0K6J31CX7VVo8mz4esG684TDwcFTih5r1MixKm-sMrDfj5OULBRbWj_cx2qQ',
+      image: getProductImageUrl('p1', 'https://lh3.googleusercontent.com/aida-public/AB6AXuBWx00X12Fmm_QPvB_J9Tluq3vf6rtzggOm_EKuLuelzTzoVVvmflkMr68b26FEaYEZX8cseX6WTS_HOEOoU6E3dCYFw1bl790Aty1dfmtc4sm7ILB37Rtrx1CQTxaNFELlpw5cNgHjNQTzFUNYsONsnWRnVwMKiJk3x8n-UxZfMZF62eR_7t9_Hs8n4I0K6J31CX7VVo8mz4esG684TDwcFTih5r1MixKm-sMrDfj5OULBRbWj_cx2qQ'),
       description: '7 inch pencil firework, single box.', stock: 100, active: true, rating: 4.8, tags: ['pencil']
     },
     {
@@ -276,6 +304,7 @@ function getSampleProducts() {
     { id: 'p18', name: 'JIL JIL', price: 67, category: 'Twinkling Star', packSize: '10 PCS UNIT', quantityPerCarton: 10, contents: 100, ratePerUnit: 67, singlePieceRate: 0.67, description: 'Twinkling star firework.', stock: 100, active: true, rating: 4.8, tags: ['twinkling star'] }
   ].map(product => ({
     ...product,
+    image: getProductImageUrl(product.id, product.image || ''),
     priceVersion: 2,
     price: Number((product.price * PRICE_MULTIPLIER).toFixed(2)),
     ratePerUnit: product.ratePerUnit == null ? product.ratePerUnit : Number((product.ratePerUnit * PRICE_MULTIPLIER).toFixed(2)),
