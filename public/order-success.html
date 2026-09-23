@@ -158,7 +158,7 @@
 <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-3.5 mb-8 text-left">
 <div class="bg-[#faf2ee] rounded-xl p-4 border border-[#eee4dc] shadow-xs">
 <p class="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Order ID</p>
-<p class="font-body text-xl font-bold text-primary">#SKH-98234</p>
+<p id="success-order-id" class="font-body text-xl font-bold text-primary">#</p>
 </div>
 <div class="bg-[#faf2ee] rounded-xl p-4 border border-[#eee4dc] shadow-xs">
 <p class="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Estimated Delivery</p>
@@ -167,17 +167,17 @@
 <div class="bg-[#faf2ee] rounded-xl p-4 md:p-5 border border-[#eee4dc] md:col-span-2 flex flex-col md:flex-row justify-between items-start md:items-center gap-3 shadow-xs">
 <div>
 <p class="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Shipping To</p>
-<p class="font-body text-sm font-medium text-on-surface">123 Rocket Road, Launchpad City, TX 75001</p>
+<p id="success-address" class="font-body text-sm font-medium text-on-surface"></p>
 </div>
 <div class="text-left md:text-right">
 <p class="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-0.5">Total Amount</p>
-<p class="font-body text-2xl font-extrabold text-[#1c1917]">₹1,249.99</p>
+<p id="success-total" class="font-body text-2xl font-extrabold text-[#1c1917]">₹0.00</p>
 </div>
 </div>
 </div>
 <!-- Secondary Actions -->
 <div class="w-full flex flex-col sm:flex-row gap-3 justify-center mb-4">
-<button onclick="showToast('Invoice download started', 'info')" class="flex-1 bg-white hover:bg-surface-container-low border border-outline-variant/70 text-on-surface font-label text-sm font-semibold py-3 px-5 rounded-lg flex items-center justify-center gap-2 transition-all shadow-xs hover:border-outline cursor-pointer">
+<button id="download-success-invoice" class="flex-1 bg-white hover:bg-surface-container-low border border-outline-variant/70 text-on-surface font-label text-sm font-semibold py-3 px-5 rounded-lg flex items-center justify-center gap-2 transition-all shadow-xs hover:border-outline cursor-pointer">
 <span class="material-symbols-outlined text-primary text-[20px]">receipt_long</span>
                 Download Invoice
             </button>
@@ -247,6 +247,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
 <script src="js/firebase-config.js"></script>
 <script src="js/app.js"></script>
+<script src="js/invoice-generator.js"></script>
 <script src="js/site-shell.js"></script>
 <script>
   // Fix navigation links on all pages
@@ -266,21 +267,27 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const order = JSON.parse(sessionStorage.getItem('sukhi_last_order') || '{}');
-  const id = getQueryParam('id') || order.id || 'ORD-XXXX';
+  const id = getQueryParam('order') || order.id || 'ORD-XXXX';
 
   // Update any order ID display
-  document.querySelectorAll('*').forEach(el => {
-    if (el.childNodes.length === 1 && el.textContent && el.textContent.includes('#')) {
-      el.textContent = el.textContent.replace(/#\w+/, '#' + id);
-    }
-  });
+  const orderIdEl = document.getElementById('success-order-id');
+  const totalEl = document.getElementById('success-total');
+  const addressEl = document.getElementById('success-address');
+  if (orderIdEl) orderIdEl.textContent = '#' + id;
+  if (totalEl) totalEl.textContent = formatPrice(order.total || 0);
+  if (addressEl) {
+    const delivery = order.delivery || {};
+    addressEl.textContent = [delivery.unit, delivery.street || delivery.address, delivery.city, delivery.district, delivery.state, delivery.pincode].filter(Boolean).join(', ');
+  }
+  const downloadButton = document.getElementById('download-success-invoice');
+  if (downloadButton && order.items?.length) downloadButton.onclick = () => InvoiceGenerator.download(order);
 
   // Inject success details
   const info = document.createElement('div');
   info.className = 'max-w-md mx-auto mt-6 p-4 bg-emerald-50 rounded-xl text-center';
   info.innerHTML = `
     <p class="text-sm text-emerald-700">Order ID: <strong>${id}</strong></p>
-    ${order.total ? `<p class="text-lg font-bold text-emerald-800 mt-1">${formatPrice(order.total)}</p>` : ''}
+    <p class="text-lg font-bold text-emerald-800 mt-1">${formatPrice(order.total || 0)}</p>
     <a href="shop.html" class="inline-block mt-4 text-primary font-semibold hover:underline">Continue Shopping →</a>
   `;
   const main = document.querySelector('main') || document.body;

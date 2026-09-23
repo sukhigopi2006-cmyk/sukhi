@@ -69,7 +69,17 @@ sukhi-fireworks-ecommerce/
    firebase use sukhifireworkes
    firebase deploy --only firestore:rules
    ```
-6. Deploy hosting:
+6. Configure and deploy the order backend. The callable function validates stock and creates the order; the Firestore trigger emails the admin and customer. Store SMTP credentials as Firebase Secret Manager values:
+   ```bash
+   firebase functions:secrets:set SMTP_HOST
+   firebase functions:secrets:set SMTP_PORT
+   firebase functions:secrets:set SMTP_USER
+   firebase functions:secrets:set SMTP_PASSWORD
+   firebase functions:secrets:set SMTP_FROM
+   firebase deploy --only functions
+   ```
+   Use an SMTP provider or Gmail app password. Never put the SMTP password in frontend files.
+7. Deploy hosting:
    ```bash
    firebase deploy --only hosting
    ```
@@ -108,7 +118,7 @@ For a project demo: the customer signs in, checkout upserts the customer record,
 1. Browse Home / Shop  
 2. Add to Cart or Wishlist  
 3. Login (required before placing an order)  
-4. Checkout → Delivery → Payment → Order Success  
+4. Checkout -> Delivery -> Order Request -> Order Success
 
 Cart persists in localStorage and syncs to Firestore when the user is logged in.
 
