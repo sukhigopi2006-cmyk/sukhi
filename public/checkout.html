@@ -1,392 +1,377 @@
 <!DOCTYPE html>
-
-<html class="light" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Sukhi - Secure Checkout</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-  tailwind.config = {
-    darkMode: "class",
-    theme: {
-      extend: {
-        "colors": {
-          "on-primary": "#ffffff",
-          "tertiary-container": "#ff674c",
-          "on-secondary-container": "#35697b",
-          "on-primary-fixed": "#351000",
-          "outline": "#8e7164",
-          "on-tertiary": "#ffffff",
-          "surface": "#ffffff",
-          "error-container": "#ffdad6",
-          "on-background": "#1c1917",
-          "tertiary-fixed-dim": "#ffb4a6",
-          "on-tertiary-container": "#660900",
-          "on-surface-variant": "#57534e",
-          "on-secondary-fixed-variant": "#114d5e",
-          "inverse-primary": "#ffb694",
-          "tertiary": "#b82007",
-          "on-tertiary-fixed-variant": "#8f1100",
-          "primary": "#ff6a00",
-          "error": "#ba1a1a",
-          "surface-bright": "#ffffff",
-          "background": "#ffffff",
-          "surface-container-high": "#eee7e3",
-          "secondary-fixed": "#b7eaff",
-          "on-primary-fixed-variant": "#7b2f00",
-          "surface-container-lowest": "#ffffff",
-          "secondary-fixed-dim": "#9acee3",
-          "surface-container-low": "#faf8f5",
-          "on-surface": "#1c1917",
-          "inverse-surface": "#33302d",
-          "tertiary-fixed": "#ffdad3",
-          "surface-container": "#f5f0ea",
-          "surface-tint": "#ff6a00",
-          "primary-fixed": "#ffdbcc",
-          "inverse-on-surface": "#f7efeb",
-          "on-secondary-fixed": "#001f28",
-          "on-error-container": "#93000a",
-          "on-error": "#ffffff",
-          "secondary": "#306577",
-          "surface-variant": "#e9e1dd",
-          "on-primary-container": "#571f00",
-          "surface-container-highest": "#e9e1dd",
-          "primary-container": "#ff6a00",
-          "primary-fixed-dim": "#ffb694",
-          "on-secondary": "#ffffff",
-          "secondary-container": "#b3e8fc",
-          "outline-variant": "#e2bfb0",
-          "on-tertiary-fixed": "#3f0300",
-          "surface-dim": "#e0d8d5"
-        },
-        "borderRadius": {
-          "DEFAULT": "0.25rem",
-          "lg": "0.5rem",
-          "xl": "0.75rem",
-          "full": "9999px"
-        },
-        "fontFamily": {
-          "body-md": ["Plus Jakarta Sans"],
-          "headline-md": ["Plus Jakarta Sans"],
-          "label-md": ["Space Grotesk"],
-          "display-md": ["Plus Jakarta Sans"],
-          "label-lg": ["Space Grotesk"],
-          "body-sm": ["Plus Jakarta Sans"],
-          "headline-lg": ["Plus Jakarta Sans"],
-          "title-md": ["Plus Jakarta Sans"],
-          "display-lg": ["Plus Jakarta Sans"],
-          "body-lg": ["Plus Jakarta Sans"],
-          "title-lg": ["Plus Jakarta Sans"]
+<html class="light" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+  <title>Sukhi Fireworks - Order Request Checkout</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#ff6a00",
+            "primary-container": "#ff6a00",
+            "primary-dark": "#e05a00"
+          },
+          fontFamily: {
+            sans: ["Plus Jakarta Sans", "sans-serif"],
+            mono: ["Space Grotesk", "sans-serif"]
+          }
         }
       }
+    };
+  </script>
+  <style>
+    .glass-panel {
+      background-color: #faf8f5;
+      border: 1px solid #eddcd2;
+      box-shadow: 0 4px 20px -2px rgba(28, 25, 23, 0.05);
     }
-  }
-</script>
-<style>
-        .glass-panel {
-            background-color: #faf8f5;
-            border: 1px solid #f0e6dc;
-            box-shadow: 0 4px 20px -2px rgba(28, 25, 23, 0.05);
-        }
-        .input-field {
-            background-color: #ffffff;
-            border: 1px solid #e7dfd8;
-            color: #1c1917;
-            transition: all 0.2s ease;
-        }
-        .input-field:focus {
-            outline: none;
-            border-color: #ff6a00;
-            box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.15);
-        }
-    </style>
-<link rel="stylesheet" href="js/site-shell.css"/>
+    .input-field {
+      background-color: #ffffff;
+      border: 1px solid #e7dfd8;
+      color: #1c1917;
+      transition: all 0.2s ease;
+    }
+    .input-field:focus {
+      outline: none;
+      border-color: #ff6a00;
+      box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.15);
+    }
+    @media (max-width: 1023px) {
+      .pb-checkout-mobile {
+        padding-bottom: 120px;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="js/site-shell.css"/>
 </head>
-<body class="bg-[#ffffff] text-[#1c1917] font-body-md min-h-screen flex flex-col antialiased selection:bg-[#ff6a00]/20">
-<!-- Minimal Checkout Header -->
-<header class="w-full py-4 px-6 md:px-12 border-b border-[#f0e6dc] bg-[#ffffff]/90 backdrop-blur-md sticky top-0 z-50 flex justify-between items-center">
-<a href="index.html" class="font-display-lg text-[26px] font-extrabold text-[#ff6a00] tracking-tight uppercase leading-none">Sukhi</a>
-<div class="flex items-center gap-2 text-[#57534e] font-label-lg text-sm font-semibold">
-<span class="material-symbols-outlined text-[18px] text-[#ff6a00]" data-icon="lock" data-weight="fill" style="font-variation-settings: 'FILL' 1;">lock</span>
-            Secure Checkout
+<body class="bg-white text-[#1c1917] font-sans min-h-screen flex flex-col antialiased selection:bg-[#ff6a00]/20">
+
+  <!-- Checkout Header -->
+  <header class="w-full py-3.5 px-4 md:px-12 border-b border-[#f0e6dc] bg-white/95 backdrop-blur-md sticky top-0 z-50 flex justify-between items-center shadow-sm">
+    <a href="index.html" class="flex items-center gap-2.5">
+      <img src="pics/pencil_trademark_transparent.png" onerror="this.src='images/pencil_trademark_transparent.png'" alt="Sukhi Logo" class="h-8 md:h-10 w-auto object-contain" />
+      <span class="font-mono text-2xl md:text-3xl font-extrabold text-[#ff6a00] tracking-tight uppercase leading-none">Sukhi</span>
+    </a>
+    <div class="flex items-center gap-1.5 text-stone-600 font-mono text-xs md:text-sm font-bold bg-orange-50 px-3 py-1.5 rounded-full border border-orange-100">
+      <span class="material-symbols-outlined text-[16px] text-[#ff6a00]" style="font-variation-settings: 'FILL' 1;">assignment_turned_in</span>
+      <span>Order Request</span>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-grow w-full max-w-6xl mx-auto px-4 md:px-8 py-6 md:py-10 pb-checkout-mobile">
+    <div class="mb-6 md:mb-8 text-center md:text-left">
+      <h1 class="text-2xl md:text-4xl font-extrabold text-[#ff6a00] tracking-tight font-mono">Order Request Details</h1>
+      <p class="text-sm md:text-base text-stone-500 mt-1">Provide your shipping information to generate your invoice and request verification.</p>
+    </div>
+
+    <form id="checkout-form" class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+      <!-- Left Column: Forms -->
+      <div class="md:col-span-7 lg:col-span-8 flex flex-col gap-6">
+
+        <!-- Progress Indicator -->
+        <div class="glass-panel rounded-2xl p-4 flex items-center justify-between relative overflow-hidden bg-[#faf8f5]">
+          <!-- Step 1 -->
+          <div class="flex flex-col items-center gap-1.5 relative z-10 w-1/3">
+            <div class="w-7 h-7 rounded-full bg-[#ff6a00] text-white flex items-center justify-center font-bold text-xs shadow-sm">
+              <span class="material-symbols-outlined text-sm">check</span>
+            </div>
+            <span class="text-xs font-bold text-[#ff6a00]">Contact</span>
+          </div>
+          <!-- Line -->
+          <div class="h-[2px] flex-grow bg-gradient-to-r from-[#ff6a00] to-stone-300 relative z-10 -mx-4 mt-[-18px]"></div>
+          <!-- Step 2 (Active) -->
+          <div class="flex flex-col items-center gap-1.5 relative z-10 w-1/3">
+            <div class="w-7 h-7 rounded-full bg-white border-2 border-[#ff6a00] text-[#ff6a00] flex items-center justify-center font-bold text-xs shadow-sm">
+              2
+            </div>
+            <span class="text-xs font-bold text-stone-900">Address</span>
+          </div>
+          <!-- Line -->
+          <div class="h-[2px] flex-grow bg-stone-200 relative z-10 -mx-4 mt-[-18px]"></div>
+          <!-- Step 3 -->
+          <div class="flex flex-col items-center gap-1.5 relative z-10 w-1/3">
+            <div class="w-7 h-7 rounded-full bg-stone-200 text-stone-500 flex items-center justify-center font-bold text-xs">
+              3
+            </div>
+            <span class="text-xs font-semibold text-stone-500">Invoice</span>
+          </div>
         </div>
-</header>
-<!-- Main Content -->
-<main class="flex-grow w-full max-w-6xl mx-auto px-4 md:px-8 py-8 md:py-12">
-<div class="mb-8 text-center md:text-left text-[#1c1917]">
-<h1 class="text-3xl md:text-5xl font-extrabold text-[#ff6a00] mb-2 tracking-tight">Checkout</h1>
-<p class="text-lg text-[#57534e]">Complete your order details below.</p>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-<!-- Left Column: Forms -->
-<div class="md:col-span-8 flex flex-col gap-6">
-<!-- Progress Bar -->
-<div class="glass-panel rounded-xl p-5 flex items-center justify-between relative overflow-hidden bg-[#faf8f5] border border-[#f0e6dc]">
-<!-- Step 1 -->
-<div class="flex flex-col items-center gap-2 relative z-10 w-1/3">
-<div class="w-8 h-8 rounded-full bg-[#ff6a00] text-white flex items-center justify-center font-bold text-sm shadow-md shadow-[#ff6a00]/30">
-<span class="material-symbols-outlined text-[16px]" data-icon="check" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check</span>
-</div>
-<span class="font-label-lg text-xs md:text-sm font-bold text-[#ff6a00]">Contact</span>
-</div>
-<!-- Line -->
-<div class="h-[2px] flex-grow bg-gradient-to-r from-[#ff6a00] to-[#e7dfd8] relative z-10 -mx-4 mt-[-24px]"></div>
-<!-- Step 2 (Active) -->
-<div class="flex flex-col items-center gap-2 relative z-10 w-1/3">
-<div class="w-8 h-8 rounded-full bg-white border-2 border-[#ff6a00] text-[#ff6a00] flex items-center justify-center font-bold text-sm relative shadow-sm">
-<span class="material-symbols-outlined text-[14px] absolute -top-2 -right-2 text-[#ff6a00]" data-icon="flare" data-weight="fill" style="font-variation-settings: 'FILL' 1;">flare</span>
-                            2
-                        </div>
-<span class="font-label-lg text-xs md:text-sm font-bold text-[#1c1917]">Address</span>
-</div>
-<!-- Line -->
-<div class="h-[2px] flex-grow bg-[#e7dfd8] relative z-10 -mx-4 mt-[-24px]"></div>
-<!-- Step 3 -->
-<div class="flex flex-col items-center gap-2 relative z-10 w-1/3">
-<div class="w-8 h-8 rounded-full bg-[#f0e6dc] text-[#57534e] flex items-center justify-center font-bold text-sm">
-                            3
-                        </div>
-<span class="font-label-lg text-xs md:text-sm font-semibold text-[#57534e]">Payment</span>
-</div>
-</div>
-<!-- Contact Form Card -->
-<section class="glass-panel rounded-xl p-6 md:p-8 bg-[#faf8f5] border border-[#f0e6dc] relative overflow-hidden group">
-<div class="flex items-center gap-3 mb-6">
-<span class="material-symbols-outlined text-[#ff6a00]" data-icon="perm_contact_calendar">perm_contact_calendar</span>
-<h2 class="text-xl md:text-2xl font-bold text-[#1c1917]">Contact Information</h2>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-<div class="flex flex-col gap-2 md:col-span-2">
-<label class="font-label-lg text-sm font-semibold text-[#1c1917]">Full Name *</label>
-<input name="name" class="input-field rounded-lg px-4 py-3 text-[#1c1917] placeholder:text-[#a8a29e] w-full" placeholder="John Doe" type="text" required/>
-</div>
-<div class="flex flex-col gap-2">
-<label class="font-label-lg text-sm font-semibold text-[#1c1917]">Phone Number *</label>
-<input name="phone" class="input-field rounded-lg px-4 py-3 text-[#1c1917] placeholder:text-[#a8a29e] w-full" placeholder="+91 98765 43210" type="tel" required/>
-</div>
-<div class="flex flex-col gap-2">
-<label class="font-label-lg text-sm font-semibold text-[#1c1917]">Alternate Phone</label>
-<input name="alternatePhone" class="input-field rounded-lg px-4 py-3 text-[#1c1917] placeholder:text-[#a8a29e] w-full" placeholder="Optional" type="tel"/>
-</div>
-<div class="flex flex-col gap-2 md:col-span-2">
-<label class="font-label-lg text-sm font-semibold text-[#1c1917]">Email *</label>
-<input name="email" class="input-field rounded-lg px-4 py-3 text-[#1c1917] placeholder:text-[#a8a29e] w-full" placeholder="you@example.com" type="email" required/>
-</div>
-</div>
-</section>
-<!-- Address Form Card -->
-<section class="glass-panel rounded-xl p-6 md:p-8 bg-[#faf8f5] border border-[#f0e6dc] relative overflow-hidden group">
-<div class="flex items-center gap-3 mb-6">
-<span class="material-symbols-outlined text-[#ff6a00]" data-icon="local_shipping">local_shipping</span>
-<h2 class="text-xl md:text-2xl font-bold text-[#1c1917]">Shipping Address</h2>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-<div class="flex flex-col gap-2">
-<label class="font-label-lg text-sm font-semibold text-[#1c1917]">Door / Flat No. *</label>
-<input name="unit" class="input-field rounded-lg px-4 py-3 text-[#1c1917] placeholder:text-[#a8a29e] w-full" placeholder="A-102" type="text" required/>
-</div>
-<div class="flex flex-col gap-2">
-<label class="font-label-lg text-sm font-semibold text-[#1c1917]">Street / Area *</label>
-<input name="street" class="input-field rounded-lg px-4 py-3 text-[#1c1917] placeholder:text-[#a8a29e] w-full" placeholder="123 Market Road" type="text" required/>
-</div>
-<div class="flex flex-col gap-2 md:col-span-2">
-<label class="font-label-lg text-sm font-semibold text-[#1c1917]">Address *</label>
-<input name="address" class="input-field rounded-lg px-4 py-3 text-[#1c1917] placeholder:text-[#a8a29e] w-full" placeholder="Full address for delivery" type="text" required/>
-</div>
-<div class="flex flex-col gap-2">
-<label class="font-label-lg text-sm font-semibold text-[#1c1917]">District *</label>
-<input name="district" class="input-field rounded-lg px-4 py-3 text-[#1c1917] placeholder:text-[#a8a29e] w-full" placeholder="Madurai" type="text" required/>
-</div>
-<div class="flex flex-col gap-2">
-<label class="font-label-lg text-sm font-semibold text-[#1c1917]">City / Town *</label>
-<input name="city" class="input-field rounded-lg px-4 py-3 text-[#1c1917] placeholder:text-[#a8a29e] w-full" placeholder="Madurai" type="text" required/>
-</div>
-<div class="flex flex-col gap-2 md:col-span-2">
-<label class="font-label-lg text-sm font-semibold text-[#1c1917]">State / Union Territory *</label>
-<select name="state" class="input-field rounded-lg px-4 py-3 text-[#1c1917] w-full appearance-none bg-no-repeat" required>
-<option disabled="" selected="" value="">Select State / UT</option>
-<option value="Andhra Pradesh">Andhra Pradesh</option>
-<option value="Arunachal Pradesh">Arunachal Pradesh</option>
-<option value="Assam">Assam</option>
-<option value="Bihar">Bihar</option>
-<option value="Chhattisgarh">Chhattisgarh</option>
-<option value="Goa">Goa</option>
-<option value="Gujarat">Gujarat</option>
-<option value="Haryana">Haryana</option>
-<option value="Himachal Pradesh">Himachal Pradesh</option>
-<option value="Jharkhand">Jharkhand</option>
-<option value="Karnataka">Karnataka</option>
-<option value="Kerala">Kerala</option>
-<option value="Madhya Pradesh">Madhya Pradesh</option>
-<option value="Maharashtra">Maharashtra</option>
-<option value="Manipur">Manipur</option>
-<option value="Meghalaya">Meghalaya</option>
-<option value="Mizoram">Mizoram</option>
-<option value="Nagaland">Nagaland</option>
-<option value="Odisha">Odisha</option>
-<option value="Punjab">Punjab</option>
-<option value="Rajasthan">Rajasthan</option>
-<option value="Sikkim">Sikkim</option>
-<option value="Tamil Nadu">Tamil Nadu</option>
-<option value="Telangana">Telangana</option>
-<option value="Tripura">Tripura</option>
-<option value="Uttar Pradesh">Uttar Pradesh</option>
-<option value="Uttarakhand">Uttarakhand</option>
-<option value="West Bengal">West Bengal</option>
-<option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
-<option value="Chandigarh">Chandigarh</option>
-<option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu</option>
-<option value="Delhi">Delhi</option>
-<option value="Jammu and Kashmir">Jammu and Kashmir</option>
-<option value="Ladakh">Ladakh</option>
-<option value="Lakshadweep">Lakshadweep</option>
-<option value="Puducherry">Puducherry</option>
-</select>
-</div>
-<div class="flex flex-col gap-2 relative">
-<label class="font-label-lg text-sm font-semibold text-[#1c1917]">Pincode *</label>
-<input name="pincode" class="input-field rounded-lg px-4 py-3 text-[#1c1917] w-full pr-10 border-[#ff6a00] focus:ring-2 focus:ring-[#ff6a00]" placeholder="626001" type="text" required/>
-<span class="material-symbols-outlined text-[#ff6a00] absolute right-3 bottom-3" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-</div>
-<div class="flex flex-col gap-2 md:col-span-2">
-<label class="font-label-lg text-sm font-semibold text-[#1c1917]">Landmark</label>
-<input name="landmark" class="input-field rounded-lg px-4 py-3 text-[#1c1917] placeholder:text-[#a8a29e] w-full" placeholder="Near bus stand / market" type="text"/>
-</div>
-</div>
-</section>
-</div>
-<!-- Right Column: Summary Sidebar -->
-<div class="md:col-span-4 sticky top-[90px]">
-<aside class="glass-panel rounded-xl p-6 bg-[#faf8f5] flex flex-col gap-4 border-t-4 border-t-[#ff6a00] border-x border-b border-[#f0e6dc]">
-<h3 class="text-xl font-bold text-[#1c1917] mb-1">Order Summary</h3>
-<!-- Items List -->
-<div class="flex flex-col gap-4 border-b border-[#f0e6dc] pb-4">
-<div class="rounded-xl border border-dashed border-[#f0e6dc] bg-[#fffaf7] p-4 text-center">
-<p class="text-sm font-semibold text-[#1c1917]">No items in this order yet.</p>
-<p class="mt-1 text-xs text-[#57534e]">Add products from the shop to continue.</p>
-</div>
-</div>
-<!-- Totals -->
-<div class="flex flex-col gap-2 pt-1">
-<div class="flex justify-between items-center text-sm text-[#57534e]">
-<span>Subtotal</span>
-<span id="checkout-subtotal" class="font-medium text-[#1c1917]">₹0.00</span>
-</div>
-<div class="flex justify-between items-center text-sm text-[#57534e]">
-<span>Taxes (Estimated)</span>
-<span id="checkout-tax" class="font-medium text-[#1c1917]">₹0.00</span>
-</div>
-<div class="flex justify-between items-center text-sm text-[#57534e]">
-<span>Shipping</span>
-<span class="font-bold text-[#16a34a]">Free</span>
-</div>
-</div>
-<!-- Grand Total -->
-<div class="flex justify-between items-end border-t border-[#f0e6dc] pt-4 mt-2">
-<span class="text-lg font-bold text-[#1c1917]">Total</span>
-<span id="checkout-total" class="text-2xl font-extrabold text-[#ff6a00]">₹0.00</span>
-</div>
-<!-- Action Button -->
-<button class="w-full mt-4 bg-[#ff6a00] hover:bg-[#e05d00] text-white font-bold text-base rounded-full px-6 py-4 transition-all duration-200 shadow-lg shadow-[#ff6a00]/30 hover:shadow-xl hover:shadow-[#ff6a00]/40 flex items-center justify-center gap-2 group">
-                        Continue to Payment
-                        <span class="material-symbols-outlined transform group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
-</button>
-<p class="text-center font-label-lg text-xs text-[#57534e] mt-2 flex items-center justify-center gap-1">
-<span class="material-symbols-outlined text-[15px] text-[#ff6a00]" data-icon="verified_user">verified_user</span>
-                        SSL Encrypted Checkout
-                    </p>
-</aside>
-</div>
-</div>
-</main>
-<!-- Footer -->
-<footer class="relative w-full border-t border-[#f0e6dc] bg-[#faf8f5] grid grid-cols-1 md:grid-cols-4 gap-6 px-6 md:px-12 py-10 max-w-6xl mx-auto mt-12">
-<div class="flex flex-col gap-3 col-span-1 md:col-span-2">
-<a href="index.html" class="text-2xl font-extrabold text-[#ff6a00] tracking-tight uppercase leading-none">Sukhi</a>
-<p class="text-sm text-[#57534e]">© 2026 Sukhi Fireworks. Light with caution.</p>
-</div>
-<div class="flex flex-col gap-2 col-span-1">
-<h4 class="font-label-lg text-sm font-bold text-[#1c1917] mb-1 uppercase tracking-wider">Navigation</h4>
-<a class="text-sm text-[#57534e] hover:text-[#ff6a00] transition-colors" href="index.html">Home</a>
-<a class="text-sm text-[#57534e] hover:text-[#ff6a00] transition-colors" href="shop.html">Shop All</a>
-</div>
-<div class="flex flex-col gap-2 col-span-1">
-<h4 class="font-label-lg text-sm font-bold text-[#1c1917] mb-1 uppercase tracking-wider">Support</h4>
-<a class="text-sm text-[#57534e] hover:text-[#ff6a00] transition-colors" href="cart.html">View Cart</a>
-<a class="text-sm text-[#57534e] hover:text-[#ff6a00] transition-colors" href="wishlist.html">Wishlist</a>
-</div>
-</footer>
 
-<!-- Firebase SDK + App Logic -->
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
-<script src="js/firebase-config.js"></script>
-<script src="js/app.js"></script>
-<script src="js/site-shell.js"></script>
-<script>
-  // Fix navigation links on all pages
-  document.addEventListener('DOMContentLoaded', () => {
-    // Bottom nav
-    const bottomLinks = document.querySelectorAll('nav.fixed a, nav[class*="bottom"] a');
-    bottomLinks.forEach(a => {
-      const text = (a.textContent || '').toLowerCase();
-      if (text.includes('home')) a.href = 'index.html';
-      else if (text.includes('wishlist') || text.includes('favorite')) a.href = 'wishlist.html';
-      else if (text.includes('cart') || text.includes('bag')) a.href = 'cart.html';
-      else if (text.includes('profile') || text.includes('person')) a.href = 'login.html';
-    });
-  });
-</script>
-</body></html>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const cart = Cart.load();
-  if (!cart.length) {
-    showToast('Cart is empty', 'error');
-    setTimeout(() => location.href = 'shop.html', 1000);
-    return;
-  }
+        <!-- Contact Information Card -->
+        <section class="glass-panel rounded-2xl p-5 md:p-7 bg-[#faf8f5]">
+          <div class="flex items-center gap-2.5 mb-5 pb-3 border-b border-stone-200">
+            <span class="material-symbols-outlined text-[#ff6a00]">contact_page</span>
+            <h2 class="text-lg md:text-xl font-bold text-stone-900 font-mono">1. Contact Information</h2>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1.5 md:col-span-2">
+              <label class="text-xs font-bold uppercase tracking-wider text-stone-600">Full Name *</label>
+              <input name="name" id="inp-name" class="input-field rounded-xl px-4 py-3 text-sm text-stone-900 placeholder:text-stone-400 w-full" placeholder="e.g. Sukhi Gopi" type="text" required/>
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold uppercase tracking-wider text-stone-600">Phone Number *</label>
+              <input name="phone" id="inp-phone" class="input-field rounded-xl px-4 py-3 text-sm text-stone-900 placeholder:text-stone-400 w-full" placeholder="+91 98765 43210" type="tel" required/>
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold uppercase tracking-wider text-stone-600">Alternate Phone</label>
+              <input name="alternatePhone" id="inp-altphone" class="input-field rounded-xl px-4 py-3 text-sm text-stone-900 placeholder:text-stone-400 w-full" placeholder="Optional backup number" type="tel"/>
+            </div>
+            <div class="flex flex-col gap-1.5 md:col-span-2">
+              <label class="text-xs font-bold uppercase tracking-wider text-stone-600">Email Address (For Invoice Copy) *</label>
+              <input name="email" id="inp-email" class="input-field rounded-xl px-4 py-3 text-sm text-stone-900 placeholder:text-stone-400 w-full" placeholder="you@example.com" type="email" required readonly/>
+              <span class="text-[11px] text-stone-500">Your official invoice and order confirmation will be delivered to this email.</span>
+            </div>
+          </div>
+        </section>
 
-  const subtotal = cart.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 1), 0);
-  const tax = subtotal * 0.05;
-  const total = subtotal + tax;
+        <!-- Shipping Address Card -->
+        <section class="glass-panel rounded-2xl p-5 md:p-7 bg-[#faf8f5]">
+          <div class="flex items-center gap-2.5 mb-5 pb-3 border-b border-stone-200">
+            <span class="material-symbols-outlined text-[#ff6a00]">local_shipping</span>
+            <h2 class="text-lg md:text-xl font-bold text-stone-900 font-mono">2. Delivery Address</h2>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold uppercase tracking-wider text-stone-600">Door / Flat No. *</label>
+              <input name="unit" id="inp-unit" class="input-field rounded-xl px-4 py-3 text-sm text-stone-900 placeholder:text-stone-400 w-full" placeholder="e.g. 227 / Door 4B" type="text" required/>
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold uppercase tracking-wider text-stone-600">Street / Area *</label>
+              <input name="street" id="inp-street" class="input-field rounded-xl px-4 py-3 text-sm text-stone-900 placeholder:text-stone-400 w-full" placeholder="e.g. Amman Kovil Patti Middle Street" type="text" required/>
+            </div>
+            <div class="flex flex-col gap-1.5 md:col-span-2">
+              <label class="text-xs font-bold uppercase tracking-wider text-stone-600">Full Address Description *</label>
+              <input name="address" id="inp-address" class="input-field rounded-xl px-4 py-3 text-sm text-stone-900 placeholder:text-stone-400 w-full" placeholder="Building name, road name, nearby landmark" type="text" required/>
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold uppercase tracking-wider text-stone-600">City / Town *</label>
+              <input name="city" id="inp-city" class="input-field rounded-xl px-4 py-3 text-sm text-stone-900 placeholder:text-stone-400 w-full" placeholder="e.g. Sivakasi" type="text" required/>
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold uppercase tracking-wider text-stone-600">District *</label>
+              <input name="district" id="inp-district" class="input-field rounded-xl px-4 py-3 text-sm text-stone-900 placeholder:text-stone-400 w-full" placeholder="e.g. Virudhunagar" type="text" required/>
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold uppercase tracking-wider text-stone-600">State / Union Territory *</label>
+              <select name="state" id="inp-state" class="input-field rounded-xl px-4 py-3 text-sm text-stone-900 w-full" required>
+                <option value="Tamil Nadu" selected>Tamil Nadu</option>
+                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                <option value="Karnataka">Karnataka</option>
+                <option value="Kerala">Kerala</option>
+                <option value="Telangana">Telangana</option>
+                <option value="Maharashtra">Maharashtra</option>
+                <option value="Gujarat">Gujarat</option>
+                <option value="Delhi">Delhi</option>
+                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                <option value="West Bengal">West Bengal</option>
+                <option value="Rajasthan">Rajasthan</option>
+                <option value="Other">Other State / UT</option>
+              </select>
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold uppercase tracking-wider text-stone-600">Pincode *</label>
+              <input name="pincode" id="inp-pincode" class="input-field rounded-xl px-4 py-3 text-sm text-stone-900 placeholder:text-stone-400 w-full" placeholder="626189" type="text" required/>
+            </div>
+            <div class="flex flex-col gap-1.5 md:col-span-2">
+              <label class="text-xs font-bold uppercase tracking-wider text-stone-600">Landmark (Optional)</label>
+              <input name="landmark" id="inp-landmark" class="input-field rounded-xl px-4 py-3 text-sm text-stone-900 placeholder:text-stone-400 w-full" placeholder="Near temple, bus stand, or hospital" type="text"/>
+            </div>
+          </div>
+        </section>
+      </div>
 
-  const subtotalEl = document.getElementById('checkout-subtotal');
-  const taxEl = document.getElementById('checkout-tax');
-  const totalEl = document.getElementById('checkout-total');
+      <!-- Right Column: Dynamic Summary Sidebar -->
+      <div class="md:col-span-5 lg:col-span-4 sticky top-20">
+        <aside class="glass-panel rounded-2xl p-5 md:p-6 bg-[#faf8f5] flex flex-col gap-4 border-t-4 border-t-[#ff6a00] shadow-sm">
+          <div class="flex items-center justify-between pb-3 border-b border-stone-200">
+            <h3 class="text-lg font-bold text-stone-900 font-mono">Order Request</h3>
+            <span id="checkout-count-badge" class="text-xs font-bold text-primary bg-orange-100 px-2.5 py-0.5 rounded-full">0 Items</span>
+          </div>
 
-  if (subtotalEl) subtotalEl.textContent = formatPrice(subtotal);
-  if (taxEl) taxEl.textContent = formatPrice(tax);
-  if (totalEl) totalEl.textContent = formatPrice(total);
+          <!-- Dynamic Items List -->
+          <div id="checkout-items-list" class="max-h-60 overflow-y-auto space-y-3 pr-1 text-xs divide-y divide-stone-200/60">
+            <!-- Dynamically populated -->
+          </div>
 
-  const summary = document.createElement('div');
-  summary.className = 'fixed bottom-24 right-4 bg-white border border-stone-200 rounded-2xl p-4 shadow-lg z-30 max-w-xs hidden md:block';
-  summary.innerHTML = `
-    <p class="font-semibold text-sm text-stone-500 mb-2">Order Summary</p>
-    <p class="text-lg font-bold text-primary">${formatPrice(total)}</p>
-    <p class="text-xs text-stone-400 mt-1">${Cart.getCount()} items</p>
-  `;
-  document.body.appendChild(summary);
+          <!-- Financial Totals -->
+          <div class="space-y-2 pt-2 border-t border-stone-200 text-sm">
+            <div class="flex justify-between items-center text-stone-600">
+              <span>Items Subtotal</span>
+              <span id="checkout-subtotal" class="font-semibold text-stone-900 font-mono">₹0.00</span>
+            </div>
+            <div class="flex justify-between items-center text-stone-600">
+              <span>Estimated GST (18%)</span>
+              <span id="checkout-tax" class="font-semibold text-stone-900 font-mono">₹0.00</span>
+            </div>
+            <div class="flex justify-between items-center text-stone-600">
+              <span>Shipping Charge</span>
+              <span class="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded text-xs">FREE</span>
+            </div>
+          </div>
 
-  document.querySelectorAll('button, a').forEach(el => {
-    const t = (el.textContent || '').toLowerCase();
-    if (t.includes('continue') || t.includes('proceed') || t.includes('payment') || t.includes('next')) {
-      el.addEventListener('click', (e) => {
-        e.preventDefault();
-        const formData = {};
-        document.querySelectorAll('input, select, textarea').forEach(inp => {
-          if (inp.name || inp.placeholder) {
-            formData[inp.name || inp.placeholder] = inp.value;
+          <!-- Grand Total -->
+          <div class="flex justify-between items-end border-t border-stone-200 pt-4">
+            <span class="text-base font-bold text-stone-900">Total Amount</span>
+            <span id="checkout-total" class="text-2xl font-extrabold text-[#ff6a00] font-mono">₹0.00</span>
+          </div>
+
+          <!-- Action Submission Button -->
+          <button type="submit" id="btnSubmitOrderRequest"
+            class="w-full mt-2 bg-[#ff6a00] hover:bg-[#e05d00] active:scale-[0.98] text-white font-bold text-base rounded-2xl py-3.5 px-6 shadow-lg shadow-orange-500/25 transition-all flex items-center justify-center gap-2 group">
+            <span>Proceed to Order Request</span>
+            <span class="material-symbols-outlined text-lg transform group-hover:translate-x-1 transition-transform">arrow_forward</span>
+          </button>
+
+          <div class="text-center text-[11px] text-stone-500 space-y-1">
+            <p class="flex items-center justify-center gap-1 font-semibold text-stone-700">
+              <span class="material-symbols-outlined text-xs text-emerald-600">verified</span>
+              Direct Order Request • No Payment Gateway Needed
+            </p>
+            <p>Instant invoice will download and notification sent to admin &amp; customer.</p>
+          </div>
+        </aside>
+      </div>
+    </form>
+  </main>
+
+  <!-- Mobile Sticky Bar for Android Viewports -->
+  <div id="mobile-checkout-bar" class="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-stone-200 p-3 z-40 md:hidden shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+    <div class="max-w-md mx-auto flex items-center justify-between gap-3">
+      <div>
+        <span class="text-[10px] text-stone-500 uppercase tracking-wider block font-bold">Total Request</span>
+        <span id="mobile-checkout-total" class="text-lg font-extrabold text-primary font-mono">₹0.00</span>
+      </div>
+      <button onclick="document.getElementById('checkout-form').requestSubmit()"
+        class="flex-1 bg-primary hover:bg-primary-dark active:scale-95 text-white font-bold text-xs py-3 px-4 rounded-xl shadow-md shadow-orange-500/20 flex items-center justify-center gap-1.5 transition text-center">
+        <span>Proceed to Request</span>
+        <span class="material-symbols-outlined text-base">arrow_forward</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Firebase SDK + App Logic -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-functions-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/invoice-generator.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const cart = Cart.load();
+      if (!cart || !cart.length) {
+        showToast('Your cart is empty', 'error');
+        setTimeout(() => location.href = 'shop.html', 1000);
+        return;
+      }
+
+      // Pre-fill if saved delivery or user exists
+      const savedDelivery = JSON.parse(sessionStorage.getItem('sukhi_delivery') || '{}');
+      if (savedDelivery.name) document.getElementById('inp-name').value = savedDelivery.name;
+      else if (AppState.user?.displayName) document.getElementById('inp-name').value = AppState.user.displayName;
+      if (savedDelivery.email) document.getElementById('inp-email').value = savedDelivery.email;
+      else if (AppState.user?.email) document.getElementById('inp-email').value = AppState.user.email;
+      if (savedDelivery.phone) document.getElementById('inp-phone').value = savedDelivery.phone;
+      if (savedDelivery.alternatePhone) document.getElementById('inp-altphone').value = savedDelivery.alternatePhone;
+      if (savedDelivery.unit) document.getElementById('inp-unit').value = savedDelivery.unit;
+      if (savedDelivery.street) document.getElementById('inp-street').value = savedDelivery.street;
+      if (savedDelivery.address) document.getElementById('inp-address').value = savedDelivery.address;
+      if (savedDelivery.city) document.getElementById('inp-city').value = savedDelivery.city;
+      if (savedDelivery.district) document.getElementById('inp-district').value = savedDelivery.district;
+      if (savedDelivery.state) document.getElementById('inp-state').value = savedDelivery.state;
+      if (savedDelivery.pincode) document.getElementById('inp-pincode').value = savedDelivery.pincode;
+      if (savedDelivery.landmark) document.getElementById('inp-landmark').value = savedDelivery.landmark;
+
+      // Render Dynamic Cart Items in Sidebar
+      const itemsListEl = document.getElementById('checkout-items-list');
+      const badgeEl = document.getElementById('checkout-count-badge');
+      const count = Cart.getCount();
+      if (badgeEl) badgeEl.textContent = `${count} ${count === 1 ? 'Item' : 'Items'}`;
+
+      if (itemsListEl) {
+        itemsListEl.innerHTML = cart.map(item => {
+          const itemPrice = Number(item.price) || 0;
+          const itemQty = Number(item.qty) || 1;
+          const lineTotal = itemPrice * itemQty;
+          const imgSrc = item.image || 'pics/pencil_trademark_transparent.png';
+          return `
+            <div class="flex items-center justify-between gap-2.5 pt-2">
+              <div class="flex items-center gap-2 min-w-0">
+                <img src="${imgSrc}" onerror="this.src='pics/pencil_trademark_transparent.png'" alt="${item.name}" class="w-10 h-10 object-cover rounded-lg border border-stone-200 shrink-0"/>
+                <div class="min-w-0">
+                  <p class="font-bold text-stone-900 truncate">${item.name}</p>
+                  <p class="text-[11px] text-stone-500">${formatPrice(itemPrice)} × ${itemQty}</p>
+                </div>
+              </div>
+              <span class="font-bold text-stone-900 font-mono shrink-0">${formatPrice(lineTotal)}</span>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Compute Prices Dynamically
+      const subtotal = Cart.getTotal();
+      const tax = subtotal * 0.18;
+      const total = subtotal + tax;
+
+      const subtotalEl = document.getElementById('checkout-subtotal');
+      const taxEl = document.getElementById('checkout-tax');
+      const totalEl = document.getElementById('checkout-total');
+      const mobileTotalEl = document.getElementById('mobile-checkout-total');
+
+      if (subtotalEl) subtotalEl.textContent = formatPrice(subtotal);
+      if (taxEl) taxEl.textContent = formatPrice(tax);
+      if (totalEl) totalEl.textContent = formatPrice(total);
+      if (mobileTotalEl) mobileTotalEl.textContent = formatPrice(total);
+
+      // Submit the request to Firestore before generating the customer invoice.
+      const form = document.getElementById('checkout-form');
+      if (form) {
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          if (!AppState.user) {
+            requireSignedIn('Please sign in before submitting an order request.');
+            return;
+          }
+          const submitButtons = form.querySelectorAll('button[type="submit"], button[onclick*="requestSubmit"]');
+          submitButtons.forEach(button => { button.disabled = true; });
+          const formData = {
+            name: document.getElementById('inp-name').value.trim(),
+            phone: document.getElementById('inp-phone').value.trim(),
+            alternatePhone: document.getElementById('inp-altphone').value.trim(),
+            email: document.getElementById('inp-email').value.trim(),
+            unit: document.getElementById('inp-unit').value.trim(),
+            street: document.getElementById('inp-street').value.trim(),
+            address: document.getElementById('inp-address').value.trim(),
+            city: document.getElementById('inp-city').value.trim(),
+            district: document.getElementById('inp-district').value.trim(),
+            state: document.getElementById('inp-state').value,
+            pincode: document.getElementById('inp-pincode').value.trim(),
+            landmark: document.getElementById('inp-landmark').value.trim()
+          };
+
+          try {
+            sessionStorage.setItem('sukhi_delivery', JSON.stringify(formData));
+            const order = await Orders.createOrderRequest({ delivery: formData, items: Cart.load() });
+            InvoiceGenerator.download(order);
+            location.href = `order-success.html?order=${encodeURIComponent(order.id)}`;
+          } catch (error) {
+            showToast(error.message || 'Could not submit the order request.', 'error');
+            submitButtons.forEach(button => { button.disabled = false; });
           }
         });
-        sessionStorage.setItem('sukhi_delivery', JSON.stringify(formData));
-        location.href = 'payment.html';
-      });
-    }
-  });
-});
-</script>
+      }
+    });
+  </script>
+</body>
+</html>

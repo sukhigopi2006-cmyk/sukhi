@@ -14,12 +14,12 @@ const AppState = {
   isAdmin: typeof window !== 'undefined' && window.location.pathname.includes('admin.html')
 };
 
-const ADMIN_EMAILS = ['admin@sukhi.com', 'owner@sukhi.com']; // Add your admin emails
+const ADMIN_EMAILS = ['sukhigopi2006@gmail.com', 'admin@sukhi.com', 'owner@sukhi.com'];
 const PRICE_MULTIPLIER = 2;
 
 function getProductImageUrl(productId, fallback = '') {
   const safeId = String(productId || '').trim();
-  if (!safeId) return fallback;
+  if (!safeId) return fallback || 'pics/pencil_trademark_transparent.png';
 
   const normalized = safeId.toLowerCase().replace(/^id\s+/, '').replace(/^prod_/, '');
   const candidates = [
@@ -38,7 +38,7 @@ function getProductImageUrl(productId, fallback = '') {
   ];
 
   const preferred = safeId.startsWith('p') ? `images/${safeId}.jpeg` : candidates[0];
-  return preferred || fallback || 'images/pencil_trademark_transparent.png';
+  return preferred || fallback || 'pics/pencil_trademark_transparent.png';
 }
 
 // ============================================
@@ -78,31 +78,36 @@ const Cart = {
   },
 
   add(product, qty = 1) {
-    const existing = AppState.cart.find(i => i.id === product.id);
+    const pId = String(product.id || '').trim();
+    const existing = AppState.cart.find(i => String(i.id).trim() === pId);
+    const numPrice = Number(product.price) || 0;
+    const numQty = parseInt(qty) || 1;
     if (existing) {
-      existing.qty += qty;
+      existing.qty += numQty;
     } else {
       AppState.cart.push({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.image || product.images?.[0] || '',
-        qty
+        id: pId,
+        name: product.name || 'Firework Item',
+        price: numPrice,
+        image: product.image || product.images?.[0] || 'pics/pencil_trademark_transparent.png',
+        qty: numQty
       });
     }
     this.save();
-    showToast(`${product.name} added to cart`);
+    showToast(`${product.name || 'Product'} added to cart`);
   },
 
   remove(productId) {
-    AppState.cart = AppState.cart.filter(i => i.id !== productId);
+    const pId = String(productId || '').trim();
+    AppState.cart = AppState.cart.filter(i => String(i.id).trim() !== pId);
     this.save();
   },
 
   updateQty(productId, qty) {
-    const item = AppState.cart.find(i => i.id === productId);
+    const pId = String(productId || '').trim();
+    const item = AppState.cart.find(i => String(i.id).trim() === pId);
     if (item) {
-      item.qty = Math.max(1, qty);
+      item.qty = Math.max(1, parseInt(qty) || 1);
       this.save();
     }
   },
@@ -113,7 +118,7 @@ const Cart = {
   },
 
   getTotal() {
-    return AppState.cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+    return AppState.cart.reduce((sum, i) => sum + ((Number(i.price) || 0) * (Number(i.qty) || 1)), 0);
   },
 
   getCount() {
@@ -224,37 +229,26 @@ const Wishlist = {
 // ============================================
 const Products = {
   async load() {
-    let list = [];
-    if (window.db) {
-      try {
-        const snap = await db.collection('products').where('active', '==', true).get();
-        if (!snap.empty) {
-          list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        }
-      } catch (e) {
-        console.warn('Firestore products load failed, using local/sample data', e);
-      }
-    }
+    if (!window.db) throw new Error('Product catalog is unavailable because Firebase is not connected.');
 
-    const custom = Storage.get('sukhi_custom_products', []);
-    const deleted = Storage.get('sukhi_deleted_products', []);
-    const samples = getSampleProducts();
+    const snap = await db.collection('products').where('active', '==', true).get();
     const merged = new Map();
-
-    [...list, ...custom, ...samples].forEach(product => {
-      if (!product || deleted.includes(product.id) || product.active === false) return;
+    snap.docs.forEach(doc => {
+      const product = { id: doc.id, ...doc.data() };
       const nextProduct = {
         ...product,
-        image: product.image || getProductImageUrl(product.id, '') || ''
+        price: Number(product.price) || 0,
+        stock: product.stock != null ? Number(product.stock) : 0,
+        image: product.image || getProductImageUrl(product.id, 'pics/pencil_trademark_transparent.png')
       };
       merged.set(product.id, nextProduct);
     });
 
     AppState.products = Array.from(merged.values());
-    const currentPrices = new Map(AppState.products.map(product => [product.id, product]));
+    const currentProducts = new Map(AppState.products.map(product => [product.id, product]));
     AppState.cart = AppState.cart.map(item => {
-      const product = currentPrices.get(item.id);
-      return product ? { ...item, name: product.name, price: product.price, image: product.image || item.image } : item;
+      const product = currentProducts.get(item.id);
+      return product ? { ...item, name: product.name, price: Number(product.price) || item.price, image: product.image || item.image } : item;
     });
     Storage.set('sukhi_cart', AppState.cart);
     return AppState.products;
@@ -479,47 +473,159 @@ function requireSignedIn(message = 'Please sign in to continue.') {
 }
 
 const Orders = {
-  async create(orderData) {
-    if (!window.db) throw new Error('Database not ready');
-    if (!AppState.user) throw new Error('Please sign in before placing an order.');
+  async createOrderRequest(orderData = {}) {
+    const items = (orderData.items && orderData.items.length) ? orderData.items : AppState.cart;
+    if (!items.length) throw new Error('Your cart is empty. Please add fireworks first.');
 
-    const customer = await Customers.upsert(orderData.delivery || {});
-    const order = {
-      ...orderData,
-      userId: AppState.user.uid,
-      userEmail: AppState.user.email,
-      customerId: customer.id,
-      status: 'pending',
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      items: AppState.cart,
-      total: Cart.getTotal(),
-      itemCount: Cart.getCount()
+    const delivery = orderData.delivery || {};
+    const subtotal = items.reduce((sum, i) => sum + ((Number(i.price) || 0) * (Number(i.qty) || 1)), 0);
+    const state = (delivery.state || 'Tamil Nadu').trim();
+    const isTN = state.toLowerCase() === 'tamil nadu';
+    const cgst = isTN ? (subtotal * 0.09) : 0;
+    const sgst = isTN ? (subtotal * 0.09) : 0;
+    const igst = isTN ? 0 : (subtotal * 0.18);
+    const taxTotal = cgst + sgst + igst;
+    const grandTotal = subtotal + taxTotal;
+    const orderId = 'SK-REQ-' + Date.now().toString(36).toUpperCase();
+
+    const orderPayload = {
+      id: orderId,
+      orderNumber: orderId,
+      createdAt: new Date().toISOString(),
+      status: 'Pending',
+      items: items.map(i => ({
+        id: String(i.id || '').trim(),
+        name: i.name || 'Firework Item',
+        price: Number(i.price) || 0,
+        qty: Number(i.qty) || 1,
+        image: i.image || ''
+      })),
+      subtotal,
+      taxes: {
+        type: isTN ? 'intra-state' : 'inter-state',
+        cgst,
+        sgst,
+        igst,
+        taxTotal
+      },
+      total: grandTotal,
+      itemCount: items.reduce((s, i) => s + (Number(i.qty) || 1), 0),
+      delivery: {
+        name: delivery.name || 'Valued Customer',
+        email: delivery.email || AppState.user?.email || '',
+        phone: delivery.phone || '',
+        alternatePhone: delivery.alternatePhone || '',
+        unit: delivery.unit || '',
+        street: delivery.street || '',
+        address: delivery.address || '',
+        city: delivery.city || '',
+        district: delivery.district || '',
+        state: state,
+        pincode: delivery.pincode || '',
+        landmark: delivery.landmark || ''
+      },
+      adminNotificationEmail: 'sukhigopi2006@gmail.com',
+      customerEmail: delivery.email || AppState.user?.email || '',
+      userId: AppState.user ? AppState.user.uid : null,
+      type: 'order_request'
     };
-    const ref = await db.collection('orders').add(order);
+
+    if (!window.db) throw new Error('Order requests require a live Firebase connection.');
+    if (!window.functions) throw new Error('Order requests require the Firebase backend to be deployed.');
+    const submitOrderRequest = window.functions.httpsCallable('submitOrderRequest');
+    const result = await submitOrderRequest({ delivery: orderPayload.delivery, items: orderPayload.items });
+    const savedOrder = result.data?.order;
+    if (!savedOrder?.id) throw new Error('The order was not created. Please try again.');
+    Object.assign(orderPayload, savedOrder, {
+      adminNotificationEmail: 'sukhigopi2006@gmail.com',
+      customerEmail: savedOrder.customerEmail || orderPayload.customerEmail
+    });
+
+    // Keep a local copy only for the confirmation page; Firestore is the source of truth.
+    const localOrders = Storage.get('sukhi_orders', []);
+    localOrders.unshift(orderPayload);
+    Storage.set('sukhi_orders', localOrders);
+
+    // 3. Decrement in local AppState.products immediately
+    items.forEach(orderedItem => {
+      const p = AppState.products.find(prod => String(prod.id).trim() === String(orderedItem.id).trim());
+      if (p && p.stock != null) {
+        p.stock = Math.max(0, Number(p.stock) - Number(orderedItem.qty || 1));
+      }
+    });
+
+    // 4. Clear cart & store last order for confirmation / invoice retrieval
     Cart.clear();
-    return { id: ref.id, ...order };
+    sessionStorage.setItem('sukhi_last_order', JSON.stringify(orderPayload));
+
+    return orderPayload;
+  },
+
+  async create(orderData) {
+    return await this.createOrderRequest(orderData);
   },
 
   async getUserOrders() {
     if (!AppState.user || !window.db) return [];
-    const snap = await db.collection('orders')
-      .where('userId', '==', AppState.user.uid)
-      .orderBy('createdAt', 'desc')
-      .get();
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    try {
+      const snap = await db.collection('orders')
+        .where('userId', '==', AppState.user.uid)
+        .orderBy('createdAt', 'desc')
+        .get();
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    } catch (err) {
+      console.warn('Error fetching user orders:', err);
+      return [];
+    }
   },
 
   async getAllOrders() {
-    if (!window.db) return [];
-    const snap = await db.collection('orders').orderBy('createdAt', 'desc').limit(50).get();
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    if (window.db) {
+      try {
+        const snap = await db.collection('orders').orderBy('createdAt', 'desc').limit(100).get();
+        if (!snap.empty) {
+          return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        }
+      } catch (e) {
+        console.warn('Failed to load orders from Firestore:', e);
+      }
+    }
+    return Storage.get('sukhi_orders', []);
+  },
+
+  listenOrders(callback) {
+    if (!window.db) {
+      callback(Storage.get('sukhi_orders', []));
+      return () => {};
+    }
+    try {
+      return db.collection('orders').orderBy('createdAt', 'desc').limit(100)
+        .onSnapshot(snap => {
+          const orders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+          callback(orders);
+        }, err => {
+          console.warn('Orders onSnapshot error:', err);
+          callback(Storage.get('sukhi_orders', []));
+        });
+    } catch (err) {
+      console.warn('listenOrders setup error:', err);
+      callback(Storage.get('sukhi_orders', []));
+      return () => {};
+    }
   },
 
   async updateStatus(orderId, status) {
+    if (!window.db) throw new Error('Order status cannot be updated while Firebase is disconnected.');
     await db.collection('orders').doc(orderId).update({
       status,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     });
+    const localOrders = Storage.get('sukhi_orders', []);
+    const ord = localOrders.find(o => o.id === orderId);
+    if (ord) {
+      ord.status = status;
+      Storage.set('sukhi_orders', localOrders);
+    }
   }
 };
 
@@ -629,58 +735,65 @@ const AdminProducts = {
       price: Number(product.price) || 0,
       priceVersion: 2,
       originalPrice: product.originalPrice ? Number(product.originalPrice) : Math.round((Number(product.price) || 100) * 1.3),
-      category: product.category || 'Crackers',
-      image: product.image || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBWx00X12Fmm_QPvB_J9Tluq3vf6rtzggOm_EKuLuelzTzoVVvmflkMr68b26FEaYEZX8cseX6WTS_HOEOoU6E3dCYFw1bl790Aty1dfmtc4sm7ILB37Rtrx1CQTxaNFELlpw5cNgHjNQTzFUNYsONsnWRnVwMKiJk3x8n-UxZfMZF62eR_7t9_Hs8n4I0K6J31CX7VVo8mz4esG684TDwcFTih5r1MixKm-sMrDfj5OULBRbWj_cx2qQ',
+      category: product.category || 'Pencils',
+      image: product.image || 'pics/pencil_trademark_transparent.png',
       description: product.description || 'Premium festive fireworks from Sukhi Fireworks.',
       stock: parseInt(product.stock) || 50,
       active: true,
       rating: 4.8,
-      tags: product.tags || ['new', 'festive'],
+      tags: product.tags || ['festive'],
       createdAt: new Date().toISOString()
     };
+
+    if (window.db) {
+      await db.collection('products').doc(newId).set({
+        ...newProduct,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    } else throw new Error('Product changes require a live Firebase connection.');
 
     // 1. Save to custom products storage
     const custom = Storage.get('sukhi_custom_products', []);
     custom.unshift(newProduct);
     Storage.set('sukhi_custom_products', custom);
 
-    // 2. Also ensure not in deleted
+    // 2. Remove from deleted if previously deleted
     const deleted = Storage.get('sukhi_deleted_products', []);
-    const filteredDeleted = deleted.filter(id => id !== newId);
-    Storage.set('sukhi_deleted_products', filteredDeleted);
+    Storage.set('sukhi_deleted_products', deleted.filter(id => id !== newId));
 
     // 3. Update active AppState
     if (!AppState.products.some(p => p.id === newProduct.id)) {
       AppState.products.unshift(newProduct);
     }
 
-    // 4. Try Firestore sync if available
-    if (window.db) {
-      const ref = db.collection('products').doc(newId);
-      await ref.set({ ...newProduct, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-    }
     return newProduct;
   },
 
   async update(id, data) {
-    // Update local storage
+    const cleanData = { ...data };
+    if (cleanData.price != null) cleanData.price = Number(cleanData.price) || 0;
+    if (cleanData.stock != null) cleanData.stock = Math.max(0, parseInt(cleanData.stock) || 0);
+
+    if (!window.db) throw new Error('Product changes require a live Firebase connection.');
+    await db.collection('products').doc(id).set({
+      ...cleanData,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+
+    // Update local storage cache
     const custom = Storage.get('sukhi_custom_products', []);
     const idx = custom.findIndex(p => p.id === id);
     if (idx >= 0) {
-      custom[idx] = { ...custom[idx], ...data };
+      custom[idx] = { ...custom[idx], ...cleanData };
+      Storage.set('sukhi_custom_products', custom);
+    } else {
+      custom.push({ id, ...cleanData });
       Storage.set('sukhi_custom_products', custom);
     }
 
     const stateProd = AppState.products.find(p => p.id === id);
     if (stateProd) {
-      Object.assign(stateProd, data);
-    }
-
-    if (window.db) {
-      await db.collection('products').doc(id).set({
-        ...data,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true });
+      Object.assign(stateProd, cleanData);
     }
   },
 
@@ -689,7 +802,7 @@ const AdminProducts = {
   },
 
   async doubleAllPrices() {
-    if (!window.db) throw new Error('Firestore is not available.');
+    if (!window.db) return 0;
     const snapshot = await db.collection('products').get();
     let batch = db.batch();
     let count = 0;
@@ -702,8 +815,6 @@ const AdminProducts = {
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       };
       if (product.originalPrice != null) changes.originalPrice = Number((Number(product.originalPrice) * PRICE_MULTIPLIER).toFixed(2));
-      if (product.ratePerUnit != null) changes.ratePerUnit = Number((Number(product.ratePerUnit) * PRICE_MULTIPLIER).toFixed(2));
-      if (product.singlePieceRate != null) changes.singlePieceRate = Number((Number(product.singlePieceRate) * PRICE_MULTIPLIER).toFixed(2));
       batch.update(doc.ref, changes);
       count++;
       if (count === 400) {
@@ -713,11 +824,13 @@ const AdminProducts = {
       }
     }
     if (count) await batch.commit();
-    Storage.remove('sukhi_custom_products');
     return snapshot.size;
   },
 
   async delete(id) {
+    if (!window.db) throw new Error('Product changes require a live Firebase connection.');
+    await db.collection('products').doc(id).delete();
+
     // Add to deleted products list
     const deleted = Storage.get('sukhi_deleted_products', []);
     if (!deleted.includes(id)) {
@@ -732,20 +845,18 @@ const AdminProducts = {
 
     // Remove from AppState
     AppState.products = AppState.products.filter(p => p.id !== id);
-
-    if (window.db) {
-      await db.collection('products').doc(id).set({
-        active: false,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true });
-    }
   },
 
   async getAll() {
-    if (!AppState.products || !AppState.products.length) {
-      await Products.load();
-    }
-    return AppState.products;
+    if (!window.db) throw new Error('Product changes require a live Firebase connection.');
+    const snapshot = await db.collection('products').get();
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      price: Number(doc.data().price) || 0,
+      stock: Number(doc.data().stock) || 0,
+      image: doc.data().image || getProductImageUrl(doc.id, 'pics/pencil_trademark_transparent.png')
+    }));
   },
 
   async replaceCatalog(products) {
@@ -810,7 +921,9 @@ function showToast(message, type = 'success') {
 }
 
 function formatPrice(n) {
-  return '₹' + Number(n).toLocaleString('en-IN');
+  const num = Number(n);
+  if (isNaN(num)) return '₹0.00';
+  return '₹' + num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 function getQueryParam(name) {

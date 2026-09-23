@@ -199,9 +199,9 @@
             </div>
           </div>
           <div>
-            <div class="font-headline text-2xl font-extrabold text-stone-900">₹1,24,500</div>
-            <div class="text-[11px] font-semibold text-emerald-700 flex items-center gap-0.5 mt-0.5">
-              <span class="material-symbols-outlined text-xs">trending_up</span> +14% this month
+            <div class="font-headline text-2xl font-extrabold text-stone-900" id="statRevenue">₹0.00</div>
+            <div class="text-[11px] font-semibold text-stone-500 flex items-center gap-0.5 mt-0.5">
+              Revenue from real requests
             </div>
           </div>
         </div>
@@ -215,9 +215,9 @@
             </div>
           </div>
           <div>
-            <div class="font-headline text-2xl font-extrabold text-stone-900" id="statActiveOrders">84</div>
+            <div class="font-headline text-2xl font-extrabold text-stone-900" id="statActiveOrders">0</div>
             <div class="text-[11px] font-medium text-stone-500 mt-0.5">
-              <span class="text-primary font-bold">12</span> pending shipment
+              <span class="text-primary font-bold" id="statPendingOrders">0</span> pending shipment
             </div>
           </div>
         </div>
@@ -368,44 +368,8 @@
                   <th class="pb-3 font-semibold text-right">Action</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-outline-variant/20">
-                <tr class="hover:bg-orange-50/40 transition-colors">
-                  <td class="py-3.5 pr-3 text-primary-container font-bold">#ORD-9924</td>
-                  <td class="py-3.5 pr-3 font-medium text-stone-800">Rajesh Kumar</td>
-                  <td class="py-3.5 pr-3 text-stone-500">2x (Diwali Gift Box)</td>
-                  <td class="py-3.5 pr-3">
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-label text-[11px] font-bold">Pending</span>
-                  </td>
-                  <td class="py-3.5 text-right">
-                    <button onclick="showToast('Order #ORD-9924 marked as Shipped!')" class="text-xs px-2.5 py-1 bg-stone-100 hover:bg-orange-100 text-stone-700 hover:text-primary rounded-lg font-semibold transition">
-                      Ship Order
-                    </button>
-                  </td>
-                </tr>
-                <tr class="hover:bg-orange-50/40 transition-colors">
-                  <td class="py-3.5 pr-3 text-primary-container font-bold">#ORD-9921</td>
-                  <td class="py-3.5 pr-3 font-medium text-stone-800">Sarah Jenkins</td>
-                  <td class="py-3.5 pr-3 text-stone-500">3x (1000 Wala Red Giant)</td>
-                  <td class="py-3.5 pr-3">
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-800 font-label text-[11px] font-bold">Shipped</span>
-                  </td>
-                  <td class="py-3.5 text-right">
-                    <button onclick="showToast('Order #ORD-9921 marked as Delivered!')" class="text-xs px-2.5 py-1 bg-stone-100 hover:bg-emerald-100 text-stone-700 hover:text-emerald-800 rounded-lg font-semibold transition">
-                      Deliver
-                    </button>
-                  </td>
-                </tr>
-                <tr class="hover:bg-orange-50/40 transition-colors">
-                  <td class="py-3.5 pr-3 text-primary-container font-bold">#ORD-9920</td>
-                  <td class="py-3.5 pr-3 font-medium text-stone-800">Michael Chang</td>
-                  <td class="py-3.5 pr-3 text-stone-500">1x (Sky Dragon Shot)</td>
-                  <td class="py-3.5 pr-3">
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-label text-[11px] font-bold">Delivered</span>
-                  </td>
-                  <td class="py-3.5 text-right">
-                    <span class="text-xs text-stone-400 font-medium">Completed</span>
-                  </td>
-                </tr>
+              <tbody id="adminOrdersTableBody" class="divide-y divide-outline-variant/20">
+                <tr><td colspan="5" class="py-8 text-center text-stone-400">No customer orders yet.</td></tr>
               </tbody>
             </table>
           </div>
@@ -594,6 +558,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-functions-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
   <script src="js/firebase-config.js"></script>
@@ -601,7 +566,7 @@
 
   <!-- Admin Controller Script -->
   <script>
-    const ADMIN_LOGIN_CREDENTIALS = { username: 'sukhigopi', password: 'sukhigopi20068866' };
+    const ADMIN_LOGIN_EMAIL = 'sukhigopi2006@gmail.com';
 
     const IMAGE_PRESETS = {
       cracker: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBWx00X12Fmm_QPvB_J9Tluq3vf6rtzggOm_EKuLuelzTzoVVvmflkMr68b26FEaYEZX8cseX6WTS_HOEOoU6E3dCYFw1bl790Aty1dfmtc4sm7ILB37Rtrx1CQTxaNFELlpw5cNgHjNQTzFUNYsONsnWRnVwMKiJk3x8n-UxZfMZF62eR_7t9_Hs8n4I0K6J31CX7VVo8mz4esG684TDwcFTih5r1MixKm-sMrDfj5OULBRbWj_cx2qQ',
@@ -613,8 +578,7 @@
     let allLoadedProducts = [];
 
     function isAdminSessionActive() {
-      const raw = Storage.get('sukhi_admin_session');
-      return !!raw && raw.username === ADMIN_LOGIN_CREDENTIALS.username && raw.password === ADMIN_LOGIN_CREDENTIALS.password;
+      return !!window.auth?.currentUser && window.auth.currentUser.email?.toLowerCase() === ADMIN_LOGIN_EMAIL;
     }
 
     function showAdminAuthScreen(show) {
@@ -625,11 +589,7 @@
     }
 
     function saveAdminSession() {
-      Storage.set('sukhi_admin_session', {
-        username: ADMIN_LOGIN_CREDENTIALS.username,
-        password: ADMIN_LOGIN_CREDENTIALS.password,
-        loggedInAt: Date.now()
-      });
+      Storage.set('sukhi_admin_session', { email: ADMIN_LOGIN_EMAIL, loggedInAt: Date.now() });
     }
 
     document.addEventListener('DOMContentLoaded', async () => {
@@ -637,11 +597,13 @@
       const errorBox = document.getElementById('admin-login-error');
 
       if (form) {
-        form.addEventListener('submit', (event) => {
+        form.addEventListener('submit', async (event) => {
           event.preventDefault();
           const username = document.getElementById('admin-username').value.trim();
           const password = document.getElementById('admin-password').value;
-          if (username === ADMIN_LOGIN_CREDENTIALS.username && password === ADMIN_LOGIN_CREDENTIALS.password) {
+          const email = username.includes('@') ? username.toLowerCase() : ADMIN_LOGIN_EMAIL;
+          try {
+            await Auth.login(email, password);
             saveAdminSession();
             if (errorBox) {
               errorBox.classList.add('hidden');
@@ -649,11 +611,11 @@
             }
             showAdminAuthScreen(false);
             checkAdminAuthentication();
-            return;
-          }
-          if (errorBox) {
-            errorBox.textContent = 'Invalid admin username or password.';
-            errorBox.classList.remove('hidden');
+          } catch (error) {
+            if (errorBox) {
+              errorBox.textContent = error.message || 'Admin sign-in failed.';
+              errorBox.classList.remove('hidden');
+            }
           }
         });
       }
@@ -671,7 +633,7 @@
 
       const emailEl = document.getElementById('adminEmailDisplay');
       const nameEl = document.getElementById('adminDisplayName');
-      if (emailEl) emailEl.textContent = `${ADMIN_LOGIN_CREDENTIALS.username}@sukhi.local`;
+      if (emailEl) emailEl.textContent = ADMIN_LOGIN_EMAIL;
       if (nameEl) nameEl.textContent = 'Store Administrator';
 
       await loadAndRenderAdminData();
@@ -687,7 +649,6 @@
     // Load products and populate table + metrics
     async function loadAndRenderAdminData() {
       try {
-        if (window.db) await AdminProducts.doubleAllPrices();
         allLoadedProducts = await AdminProducts.getAll();
       } catch (err) {
         console.warn('Error loading products for admin:', err);
@@ -697,6 +658,11 @@
       renderProductsTable(allLoadedProducts);
       renderLowInventory(allLoadedProducts);
       updateDashboardMetrics(allLoadedProducts);
+      if (window.adminOrdersUnsubscribe) window.adminOrdersUnsubscribe();
+      window.adminOrdersUnsubscribe = Orders.listenOrders(orders => {
+        renderAdminOrders(orders);
+        updateOrderMetrics(orders);
+      });
       await loadAdminOffers();
       testFirebaseHealth();
     }
@@ -824,6 +790,46 @@
       const lowCount = products.filter(p => (p.stock ?? 50) < 20).length;
       if (lowEl) lowEl.textContent = lowCount + ' Items';
       if (lowSubEl) lowSubEl.textContent = lowCount > 0 ? `${lowCount} require restocking` : 'Inventory optimal';
+    }
+
+    function updateOrderMetrics(orders) {
+      const active = orders.filter(order => !['Completed', 'Delivered', 'Cancelled'].includes(order.status));
+      const pending = orders.filter(order => order.status === 'Pending');
+      const revenue = orders.reduce((sum, order) => sum + (Number(order.total) || 0), 0);
+      document.getElementById('statRevenue').textContent = formatPrice(revenue);
+      document.getElementById('statActiveOrders').textContent = active.length;
+      document.getElementById('statPendingOrders').textContent = pending.length;
+    }
+
+    function renderAdminOrders(orders) {
+      const tbody = document.getElementById('adminOrdersTableBody');
+      if (!tbody) return;
+      if (!orders.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-stone-400">No customer orders yet.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = orders.map(order => `
+        <tr class="hover:bg-orange-50/40 transition-colors">
+          <td class="py-3.5 pr-3 text-primary-container font-bold">#${order.id}</td>
+          <td class="py-3.5 pr-3 font-medium text-stone-800">${order.delivery?.name || 'Customer'}<span class="block text-[11px] text-stone-400">${order.customerEmail || order.delivery?.email || ''}</span></td>
+          <td class="py-3.5 pr-3 text-stone-500">${order.itemCount || 0} item(s) - ${formatPrice(order.total)}</td>
+          <td class="py-3.5 pr-3">
+            <select onchange="changeOrderStatus('${order.id}', this.value)" class="rounded-lg border border-outline-variant/70 bg-white px-2 py-1 text-xs font-bold text-stone-700">
+              ${['Pending', 'Shipped', 'Completed', 'Cancelled'].map(status => `<option value="${status}" ${order.status === status ? 'selected' : ''}>${status}</option>`).join('')}
+            </select>
+          </td>
+          <td class="py-3.5 text-right text-xs text-stone-500">${order.createdAt?.toDate ? order.createdAt.toDate().toLocaleString('en-IN') : 'Just now'}</td>
+        </tr>`).join('');
+    }
+
+    async function changeOrderStatus(orderId, status) {
+      try {
+        await Orders.updateStatus(orderId, status);
+        showToast(`Order ${orderId} marked ${status}.`);
+      } catch (error) {
+        showToast(error.message || 'Could not update order status.', 'error');
+        await loadAndRenderAdminData();
+      }
     }
 
     // Search and Category Filter

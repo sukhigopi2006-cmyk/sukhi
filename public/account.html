@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>My Orders - Sukhi Fireworks</title>
+  <link rel="stylesheet" href="js/site-shell.css">
+  <style>
+    main { width:min(920px,calc(100% - 28px)); margin:0 auto; padding:42px 0; }
+    h1 { font:700 38px/1.1 'Space Grotesk',sans-serif; color:#111d3a; margin:0 0 8px; }
+    .intro { color:#667085; margin:0 0 28px; }
+    .orders { display:grid; gap:14px; }
+    .order { padding:20px; background:#fff; border:1px solid #e5e9f2; border-radius:16px; box-shadow:0 10px 28px rgba(17,29,58,.07); }
+    .order-head { display:flex; justify-content:space-between; gap:16px; align-items:flex-start; }
+    .order-id { color:#f05a47; font-weight:800; }
+    .status { display:inline-block; padding:5px 9px; border-radius:999px; background:#fff0ed; color:#cf3f36; font-size:12px; font-weight:800; }
+    .items { color:#667085; font-size:13px; margin:12px 0 0; }
+    .empty { padding:32px; text-align:center; background:#fff; border:1px dashed #cbd3e1; border-radius:16px; color:#667085; }
+    @media(max-width:600px) { main { padding:28px 0 86px; } h1 { font-size:30px; } .order-head { flex-direction:column; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>My order requests</h1>
+    <p class="intro">Live status updates for requests submitted from your account.</p>
+    <div id="orders" class="orders"><div class="empty">Loading your orders...</div></div>
+  </main>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/site-shell.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const container = document.getElementById('orders');
+      const render = orders => {
+        if (!orders.length) {
+          container.innerHTML = '<div class="empty">You have not submitted any order requests yet.</div>';
+          return;
+        }
+        container.innerHTML = orders.map(order => `
+          <article class="order">
+            <div class="order-head">
+              <div><div class="order-id">${order.id}</div><small>${order.createdAt?.toDate ? order.createdAt.toDate().toLocaleString('en-IN') : 'Recent request'}</small></div>
+              <div><span class="status">${order.status || 'Pending'}</span><strong style="display:block;text-align:right;margin-top:8px">${formatPrice(order.total)}</strong></div>
+            </div>
+            <p class="items">${(order.items || []).map(item => `${item.name} x ${item.qty}`).join(', ')}</p>
+          </article>`).join('');
+      };
+      auth.onAuthStateChanged(user => {
+        if (!user) { window.location.href = 'login.html?redirect=account.html'; return; }
+        db.collection('orders').where('userId', '==', user.uid).onSnapshot(snapshot => {
+          const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => String(b.createdAt?.seconds || '').localeCompare(String(a.createdAt?.seconds || '')));
+          render(orders);
+        }, () => { container.innerHTML = '<div class="empty">Orders could not be loaded. Please refresh and try again.</div>'; });
+      });
+    });
+  </script>
+</body>
+</html>

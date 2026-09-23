@@ -35,6 +35,7 @@ if (window.firebaseConfigStatus.ready) {
     firebase.initializeApp(firebaseConfig);
     window.auth = firebase.auth();
     window.db = firebase.firestore();
+    window.functions = firebase.functions ? firebase.functions() : null;
     window.storage = firebase.storage();
     if (firebase.database) {
       window.rtdb = firebase.database();
