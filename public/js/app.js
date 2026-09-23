@@ -1165,6 +1165,15 @@ function showToast(message, type = 'success') {
 }
 
 function formatPrice(n) {
+  // Accept numbers, numeric strings, or already formatted strings like "₹1,234.00"
+  if (typeof n === 'string') {
+    // Strip out any non‑numeric characters except the decimal point
+    const cleaned = n.replace(/[^0-9.]+/g, '');
+    const parsed = Number(cleaned);
+    if (!isNaN(parsed)) {
+      n = parsed;
+    }
+  }
   const num = Number(n);
   if (isNaN(num)) return '₹0.00';
   return '₹' + num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
