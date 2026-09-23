@@ -1,7 +1,7 @@
 /* Shared customer-facing layout for Sukhi Fireworks. */
 (function () {
   const page = window.location.pathname.split('/').pop() || 'index.html';
-  if (page === 'admin.html') return;
+  if (page === 'admin.html' || page === 'checkout.html' || page === 'payment.html') return;
 
   document.querySelectorAll('body > header, body > nav, body > footer').forEach(element => element.remove());
 
@@ -29,7 +29,7 @@
   header.innerHTML = `
     <div class="site-header-inner">
       <a href="index.html" class="site-brand" aria-label="Sukhi Fireworks home">
-        <img class="site-brand-mark" src="../pics/pencil_trademark_transparent.png" alt="Pencil Trademark" />
+        <img class="site-brand-mark" src="pics/pencil_trademark_transparent.png" onerror="this.src='images/pencil_trademark_transparent.png'" alt="Pencil Trademark" />
         <span class="site-brand-company">Sukhi</span>
       </a>
       <nav class="site-desktop-nav" aria-label="Main navigation">${desktopLinks}</nav>
@@ -49,6 +49,7 @@
         <a href="login.html" data-auth-login class="site-login-button">Customer Login</a>
         <div data-auth-user class="site-user-menu hidden">
           <span data-user-name></span>
+          <a href="account.html">My orders</a>
           <button onclick="Auth.logout()" type="button">Logout</button>
         </div>
       </div>
