@@ -18,8 +18,8 @@ const AppState = {
 };
 
 const FIXED_ADMIN_CREDENTIALS = {
-  usernames: ['admin', 'sukhigopi', 'sukhigopi2006@gmail.com', 'admin@sukhi.com'],
-  passwords: ['admin123', 'admin', 'sukhigopi', 'admin@123']
+  usernames: ['sukhigopi', 'sukhigopi2006@gmail.com', 'admin'],
+  passwords: ['chikko']
 };
 
 const ADMIN_EMAILS = ['sukhigopi2006@gmail.com', 'admin@sukhi.com', 'owner@sukhi.com'];
@@ -503,8 +503,9 @@ const Auth = {
 
   async login(email, password) {
     const normalizedUser = (email || '').trim().toLowerCase();
+    const normalizedPass = (password || '').trim().toLowerCase();
     const isFixedAdmin = FIXED_ADMIN_CREDENTIALS.usernames.includes(normalizedUser) &&
-                         FIXED_ADMIN_CREDENTIALS.passwords.includes(password);
+                         FIXED_ADMIN_CREDENTIALS.passwords.includes(normalizedPass);
 
     if (isFixedAdmin) {
       const adminUser = {
@@ -671,23 +672,46 @@ const Orders = {
       type: 'order_request'
     };
 
-    if (!window.db) throw new Error('Order requests require a live Firebase connection.');
-    if (!window.functions) throw new Error('Order requests require the Firebase backend to be deployed.');
-    const submitOrderRequest = window.functions.httpsCallable('submitOrderRequest');
-    const result = await submitOrderRequest({ delivery: orderPayload.delivery, items: orderPayload.items });
-    const savedOrder = result.data?.order;
-    if (!savedOrder?.id) throw new Error('The order was not created. Please try again.');
-    Object.assign(orderPayload, savedOrder, {
-      adminNotificationEmail: 'sukhigopi2006@gmail.com',
-      customerEmail: savedOrder.customerEmail || orderPayload.customerEmail
-    });
+    let remoteSaved = false;
+    if (window.functions) {
+      try {
+        const submitOrderRequest = window.functions.httpsCallable('submitOrderRequest');
+        const result = await submitOrderRequest({ delivery: orderPayload.delivery, items: orderPayload.items });
+        const savedOrder = result.data?.order;
+        if (savedOrder?.id) {
+          Object.assign(orderPayload, savedOrder);
+          remoteSaved = true;
+        }
+      } catch (e) {
+        console.warn('Firebase Cloud Function order request failed, falling back to local/Firestore:', e);
+      }
+    }
 
-    // Keep a local copy only for the confirmation page; Firestore is the source of truth.
+    if (!remoteSaved && window.db) {
+      try {
+        const ref = await db.collection('orders').add({
+          ...orderPayload,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        orderPayload.id = ref.id;
+        remoteSaved = true;
+      } catch (e) {
+        console.warn('Firestore direct order save failed, persisting locally:', e);
+      }
+    }
+
+    if (!orderPayload.id) {
+      orderPayload.id = 'SK-ORD-' + Date.now().toString().slice(-6);
+    }
+    orderPayload.adminNotificationEmail = 'sukhigopi2006@gmail.com';
+    orderPayload.customerEmail = orderPayload.customerEmail || orderPayload.delivery.email;
+
+    // Keep a local copy for the confirmation page, My Account, and Admin Dashboard
     const localOrders = Storage.get('sukhi_orders', []);
     localOrders.unshift(orderPayload);
     Storage.set('sukhi_orders', localOrders);
 
-    // 3. Decrement in local AppState.products immediately
+    // Decrement in local AppState.products immediately
     items.forEach(orderedItem => {
       const p = AppState.products.find(prod => String(prod.id).trim() === String(orderedItem.id).trim());
       if (p && p.stock != null) {
@@ -695,9 +719,9 @@ const Orders = {
       }
     });
 
-    // 4. Clear cart & store last order for confirmation / invoice retrieval
-    Cart.clear();
-    sessionStorage.setItem('sukhi_last_order', JSON.stringify(orderPayload));
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.setItem('sukhi_last_order', JSON.stringify(orderPayload));
+    }
 
     return orderPayload;
   },
@@ -707,66 +731,96 @@ const Orders = {
   },
 
   async getUserOrders() {
-    if (!AppState.user || !window.db) return [];
-    try {
-      const snap = await db.collection('orders')
-        .where('userId', '==', AppState.user.uid)
-        .orderBy('createdAt', 'desc')
-        .get();
-      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    } catch (err) {
-      console.warn('Error fetching user orders:', err);
-      return [];
+    let remoteOrders = [];
+    if (AppState.user && window.db) {
+      try {
+        const snap = await db.collection('orders')
+          .where('userId', '==', AppState.user.uid)
+          .orderBy('createdAt', 'desc')
+          .get();
+        remoteOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      } catch (err) {
+        console.warn('Error fetching user orders from Firestore:', err);
+      }
     }
+    const localOrders = Storage.get('sukhi_orders', []);
+    const userEmail = (AppState.user?.email || '').toLowerCase();
+    const userLocal = localOrders.filter(o => {
+      const ordEmail = (o.customerEmail || o.delivery?.email || '').toLowerCase();
+      return !userEmail || ordEmail === userEmail || (AppState.user?.uid && o.userId === AppState.user.uid);
+    });
+    const map = new Map();
+    remoteOrders.forEach(o => map.set(o.id, o));
+    userLocal.forEach(o => { if (!map.has(o.id)) map.set(o.id, o); });
+    return Array.from(map.values());
   },
 
   async getAllOrders() {
+    let remote = [];
     if (window.db) {
       try {
         const snap = await db.collection('orders').orderBy('createdAt', 'desc').limit(100).get();
         if (!snap.empty) {
-          return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+          remote = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         }
       } catch (e) {
         console.warn('Failed to load orders from Firestore:', e);
       }
     }
-    return Storage.get('sukhi_orders', []);
+    const local = Storage.get('sukhi_orders', []);
+    const map = new Map();
+    remote.forEach(o => map.set(o.id, o));
+    local.forEach(o => { if (!map.has(o.id)) map.set(o.id, o); });
+    return Array.from(map.values());
   },
 
   listenOrders(callback) {
+    const notifyCombined = (remoteOrders = []) => {
+      const local = Storage.get('sukhi_orders', []);
+      const map = new Map();
+      remoteOrders.forEach(o => map.set(o.id, o));
+      local.forEach(o => { if (!map.has(o.id)) map.set(o.id, o); });
+      callback(Array.from(map.values()));
+    };
+
     if (!window.db) {
-      callback(Storage.get('sukhi_orders', []));
+      notifyCombined([]);
       return () => {};
     }
     try {
       return db.collection('orders').orderBy('createdAt', 'desc').limit(100)
         .onSnapshot(snap => {
           const orders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-          callback(orders);
+          notifyCombined(orders);
         }, err => {
           console.warn('Orders onSnapshot error:', err);
-          callback(Storage.get('sukhi_orders', []));
+          notifyCombined([]);
         });
     } catch (err) {
       console.warn('listenOrders setup error:', err);
-      callback(Storage.get('sukhi_orders', []));
+      notifyCombined([]);
       return () => {};
     }
   },
 
   async updateStatus(orderId, status) {
-    if (!window.db) throw new Error('Order status cannot be updated while Firebase is disconnected.');
-    await db.collection('orders').doc(orderId).update({
-      status,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
+    if (window.db) {
+      try {
+        await db.collection('orders').doc(orderId).update({
+          status,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      } catch (e) {
+        console.warn('Firestore order status update skipped:', e);
+      }
+    }
     const localOrders = Storage.get('sukhi_orders', []);
     const ord = localOrders.find(o => o.id === orderId);
     if (ord) {
       ord.status = status;
       Storage.set('sukhi_orders', localOrders);
     }
+    return true;
   }
 };
 

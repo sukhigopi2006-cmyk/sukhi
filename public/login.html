@@ -464,9 +464,9 @@
           setMessage('Account created. You are now signed in.', 'success');
         } else {
           const userVal = email.value.trim().toLowerCase();
-          const passVal = password.value;
-          if (['admin', 'sukhigopi', 'sukhigopi2006@gmail.com', 'admin@sukhi.com'].includes(userVal) &&
-              ['admin123', 'admin', 'sukhigopi', 'admin@123'].includes(passVal)) {
+          const passVal = password.value.trim().toLowerCase();
+          if (['sukhigopi', 'sukhigopi2006@gmail.com', 'admin'].includes(userVal) &&
+              ['chikko'].includes(passVal)) {
             Storage.set('sukhi_admin_session', {
               username: userVal,
               email: 'sukhigopi2006@gmail.com',

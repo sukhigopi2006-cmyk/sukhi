@@ -49,7 +49,7 @@
         <a href="login.html" data-auth-login class="site-login-button">Customer Login</a>
         <div data-auth-user class="site-user-menu hidden">
           <span data-user-name></span>
-          <a href="account.html">My orders</a>
+          <a href="account.html">My Account</a>
           <button onclick="Auth.logout()" type="button">Logout</button>
         </div>
       </div>

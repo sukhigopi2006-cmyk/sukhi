@@ -68,17 +68,17 @@
       <form id="admin-login-form" class="space-y-4">
         <div class="space-y-1.5">
           <label for="admin-username" class="text-xs font-bold uppercase tracking-[0.16em] text-stone-500">Username</label>
-          <input id="admin-username" type="text" autocomplete="username" required class="w-full rounded-xl border border-outline-variant bg-surface-container-low px-3.5 py-3 text-sm text-stone-900 focus:border-primary-container focus:ring-2 focus:ring-orange-200" placeholder="admin or sukhigopi" />
+          <input id="admin-username" type="text" autocomplete="username" required class="w-full rounded-xl border border-outline-variant bg-surface-container-low px-3.5 py-3 text-sm text-stone-900 focus:border-primary-container focus:ring-2 focus:ring-orange-200" placeholder="sukhigopi" />
         </div>
         <div class="space-y-1.5">
           <label for="admin-password" class="text-xs font-bold uppercase tracking-[0.16em] text-stone-500">Password</label>
-          <input id="admin-password" type="password" autocomplete="current-password" required class="w-full rounded-xl border border-outline-variant bg-surface-container-low px-3.5 py-3 text-sm text-stone-900 focus:border-primary-container focus:ring-2 focus:ring-orange-200" placeholder="admin123" />
+          <input id="admin-password" type="password" autocomplete="current-password" required class="w-full rounded-xl border border-outline-variant bg-surface-container-low px-3.5 py-3 text-sm text-stone-900 focus:border-primary-container focus:ring-2 focus:ring-orange-200" placeholder="••••••••" />
         </div>
         <button type="submit" class="w-full rounded-xl bg-gradient-to-r from-primary-container to-orange-600 px-4 py-3 text-sm font-bold text-white shadow-md shadow-orange-500/20 transition hover:brightness-105">Sign in to admin</button>
         <p id="admin-login-error" class="hidden rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"></p>
         <div class="rounded-xl bg-orange-50/70 border border-orange-200/60 p-3 text-center text-xs text-stone-600 space-y-0.5">
           <p class="font-bold text-primary">Direct Admin Access</p>
-          <p class="text-[11px] text-stone-500">Fixed Login: <strong class="text-stone-800">admin</strong> &bull; Password: <strong class="text-stone-800">admin123</strong></p>
+          <p class="text-[11px] text-stone-500">Admin Username: <strong class="text-stone-800">sukhigopi</strong> &bull; Direct Authentication</p>
         </div>
       </form>
     </div>
@@ -353,23 +353,31 @@
         
         <!-- Recent Orders (2/3 width) -->
         <section class="lg:col-span-2 card-surface rounded-2xl p-5 md:p-6">
-          <div class="flex justify-between items-center mb-5">
-            <h3 class="font-headline text-lg font-bold text-stone-900 flex items-center gap-2">
-              <span class="material-symbols-outlined text-primary-container text-xl">receipt_long</span>
-              Recent Customer Orders
-            </h3>
-            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-orange-100 text-primary">Live Tracking</span>
+          <div class="flex flex-wrap justify-between items-center gap-3 mb-5">
+            <div>
+              <h3 class="font-headline text-lg font-bold text-stone-900 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary-container text-xl">receipt_long</span>
+                Customer Orders &amp; Reports
+              </h3>
+              <p class="text-xs text-stone-500 mt-0.5">Real-time order requests with instant invoices and export reports.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="generateOrderReport()" class="px-3 py-1.5 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition">
+                <span class="material-symbols-outlined text-base">download</span> Order Report (CSV)
+              </button>
+              <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-orange-100 text-primary">Live Tracking</span>
+            </div>
           </div>
 
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-xs md:text-sm">
               <thead>
                 <tr class="border-b border-outline-variant/40 text-stone-500 font-label text-xs uppercase tracking-wider">
-                  <th class="pb-3 pr-3 font-semibold">Order ID</th>
-                  <th class="pb-3 pr-3 font-semibold">Customer</th>
-                  <th class="pb-3 pr-3 font-semibold">Items</th>
-                  <th class="pb-3 pr-3 font-semibold">Status</th>
-                  <th class="pb-3 font-semibold text-right">Action</th>
+                  <th class="pb-3 pr-2 font-semibold">Order ID</th>
+                  <th class="pb-3 pr-2 font-semibold">Customer</th>
+                  <th class="pb-3 pr-2 font-semibold">Items</th>
+                  <th class="pb-3 pr-2 font-semibold">Status</th>
+                  <th class="pb-3 font-semibold text-right">Invoice &amp; Actions</th>
                 </tr>
               </thead>
               <tbody id="adminOrdersTableBody" class="divide-y divide-outline-variant/20">
@@ -570,12 +578,13 @@
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
   <script src="js/firebase-config.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/invoice-generator.js"></script>
 
   <!-- Admin Controller Script -->
   <script>
     const ADMIN_LOGIN_EMAIL = 'sukhigopi2006@gmail.com';
-    const FIXED_ADMIN_USERNAMES = ['admin', 'sukhigopi', 'sukhigopi2006@gmail.com', 'admin@sukhi.com'];
-    const FIXED_ADMIN_PASSWORDS = ['admin123', 'admin', 'sukhigopi', 'admin@123'];
+    const FIXED_ADMIN_USERNAMES = ['sukhigopi', 'sukhigopi2006@gmail.com', 'admin'];
+    const FIXED_ADMIN_PASSWORDS = ['chikko'];
 
     const IMAGE_PRESETS = {
       p2: 'uploads/p2.jpeg',
@@ -622,10 +631,10 @@
         form.addEventListener('submit', async (event) => {
           event.preventDefault();
           const username = (document.getElementById('admin-username')?.value || '').trim();
-          const password = document.getElementById('admin-password')?.value || '';
+          const password = (document.getElementById('admin-password')?.value || '').trim();
 
           const isUserMatch = FIXED_ADMIN_USERNAMES.includes(username.toLowerCase());
-          const isPassMatch = FIXED_ADMIN_PASSWORDS.includes(password);
+          const isPassMatch = FIXED_ADMIN_PASSWORDS.includes(password.toLowerCase());
 
           if (isUserMatch && isPassMatch) {
             saveAdminSession(username);
@@ -638,7 +647,7 @@
             showToast('Welcome back, Administrator!');
           } else {
             if (errorBox) {
-              errorBox.textContent = 'Invalid credentials. Enter fixed admin username (admin or sukhigopi) and password (admin123 or admin).';
+              errorBox.textContent = 'Invalid credentials. Enter admin username (sukhigopi) and password (chikko).';
               errorBox.classList.remove('hidden');
             }
           }
@@ -826,7 +835,10 @@
       document.getElementById('statPendingOrders').textContent = pending.length;
     }
 
+    let currentAdminOrders = [];
+
     function renderAdminOrders(orders) {
+      currentAdminOrders = orders || [];
       const tbody = document.getElementById('adminOrdersTableBody');
       if (!tbody) return;
       if (!orders.length) {
@@ -835,16 +847,87 @@
       }
       tbody.innerHTML = orders.map(order => `
         <tr class="hover:bg-orange-50/40 transition-colors">
-          <td class="py-3.5 pr-3 text-primary-container font-bold">#${order.id}</td>
-          <td class="py-3.5 pr-3 font-medium text-stone-800">${order.delivery?.name || 'Customer'}<span class="block text-[11px] text-stone-400">${order.customerEmail || order.delivery?.email || ''}</span></td>
-          <td class="py-3.5 pr-3 text-stone-500">${order.itemCount || 0} item(s) - ${formatPrice(order.total)}</td>
-          <td class="py-3.5 pr-3">
+          <td class="py-3.5 pr-2 text-primary-container font-bold">#${order.id}</td>
+          <td class="py-3.5 pr-2 font-medium text-stone-800">${order.delivery?.name || 'Customer'}<span class="block text-[11px] text-stone-400">${order.customerEmail || order.delivery?.email || ''}</span></td>
+          <td class="py-3.5 pr-2 text-stone-500">${order.itemCount || (order.items ? order.items.length : 0)} item(s)<span class="block font-bold text-stone-800">${formatPrice(order.total)}</span></td>
+          <td class="py-3.5 pr-2">
             <select onchange="changeOrderStatus('${order.id}', this.value)" class="rounded-lg border border-outline-variant/70 bg-white px-2 py-1 text-xs font-bold text-stone-700">
               ${['Pending', 'Shipped', 'Completed', 'Cancelled'].map(status => `<option value="${status}" ${order.status === status ? 'selected' : ''}>${status}</option>`).join('')}
             </select>
           </td>
-          <td class="py-3.5 text-right text-xs text-stone-500">${order.createdAt?.toDate ? order.createdAt.toDate().toLocaleString('en-IN') : 'Just now'}</td>
+          <td class="py-3.5 text-right whitespace-nowrap">
+            <div class="flex items-center justify-end gap-1.5">
+              <button onclick="viewOrderInvoice('${order.id}')" title="Download Invoice HTML/PDF"
+                class="p-1.5 text-stone-600 hover:text-primary-container hover:bg-orange-50 rounded-lg transition">
+                <span class="material-symbols-outlined text-base">receipt</span>
+              </button>
+              <button onclick="emailOrderInvoiceAdmin('${order.id}')" title="Email invoice to admin & customer"
+                class="p-1.5 text-stone-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition">
+                <span class="material-symbols-outlined text-base">mail</span>
+              </button>
+            </div>
+          </td>
         </tr>`).join('');
+    }
+
+    function viewOrderInvoice(orderId) {
+      const order = currentAdminOrders.find(o => String(o.id) === String(orderId));
+      if (!order) {
+        showToast('Order not found', 'error');
+        return;
+      }
+      if (window.InvoiceGenerator) {
+        InvoiceGenerator.download(order);
+      } else {
+        showToast('Invoice generator unavailable', 'error');
+      }
+    }
+
+    function emailOrderInvoiceAdmin(orderId) {
+      const order = currentAdminOrders.find(o => String(o.id) === String(orderId));
+      if (!order) {
+        showToast('Order not found', 'error');
+        return;
+      }
+      if (window.InvoiceGenerator && InvoiceGenerator.sendInvoiceEmails) {
+        InvoiceGenerator.sendInvoiceEmails(order);
+      } else {
+        showToast('Email generator unavailable', 'error');
+      }
+    }
+
+    function generateOrderReport() {
+      if (!currentAdminOrders || !currentAdminOrders.length) {
+        showToast('No orders available to generate report.', 'error');
+        return;
+      }
+      const totalRevenue = currentAdminOrders.reduce((sum, o) => sum + (Number(o.total) || 0), 0);
+
+      let csvContent = "data:text/csv;charset=utf-8,";
+      csvContent += "Order ID,Date,Customer Name,Customer Email,Phone,City,State,Items Count,Status,Total Amount (INR)\r\n";
+
+      currentAdminOrders.forEach(o => {
+        const date = o.createdAt?.toDate ? o.createdAt.toDate().toISOString() : (o.createdAt || 'N/A');
+        const name = `"${(o.delivery?.name || 'Customer').replace(/"/g, '""')}"`;
+        const email = `"${(o.customerEmail || o.delivery?.email || '').replace(/"/g, '""')}"`;
+        const phone = `"${(o.delivery?.phone || '').replace(/"/g, '""')}"`;
+        const city = `"${(o.delivery?.city || '').replace(/"/g, '""')}"`;
+        const state = `"${(o.delivery?.state || '').replace(/"/g, '""')}"`;
+        const count = o.itemCount || (o.items ? o.items.length : 0);
+        const status = o.status || 'Pending';
+        const total = o.total || 0;
+        csvContent += `${o.id},${date},${name},${email},${phone},${city},${state},${count},${status},${total}\r\n`;
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `sukhi_order_report_${Date.now()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      showToast(`Order report generated for ${currentAdminOrders.length} orders (Total: ${formatPrice(totalRevenue)})`, 'success');
     }
 
     async function changeOrderStatus(orderId, status) {

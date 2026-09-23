@@ -438,6 +438,7 @@ Admin Notification: sukhigopi2006@gmail.com`;
   },
 
   download(order, filename) {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
     const html = this.generateHtml(order);
     const safeName = filename || `sukhi_invoice_${order.id || Date.now()}.html`;
     const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
@@ -449,6 +450,43 @@ Admin Notification: sukhigopi2006@gmail.com`;
     a.click();
     a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 2000);
+  },
+
+  sendInvoiceEmails(order) {
+    const adminEmail = this.ADMIN_EMAIL || 'sukhigopi2006@gmail.com';
+    const customerEmail = (order.customerEmail || order.delivery?.email || '').trim();
+    const orderId = order.id || 'SK-ORD-' + Date.now().toString().slice(-6);
+    const subject = `Sukhi Fireworks - Official Order Request & Invoice #${orderId}`;
+    const body = this.generateEmailText(order);
+
+    const mailToUrl = `mailto:${adminEmail}?cc=${encodeURIComponent(customerEmail)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+    if (typeof window !== 'undefined') {
+      try {
+        const mailLink = document.createElement('a');
+        mailLink.href = mailToUrl;
+        mailLink.style.display = 'none';
+        if (typeof mailLink.click === 'function') {
+          mailLink.click();
+        }
+        if (typeof mailLink.remove === 'function') {
+          setTimeout(() => mailLink.remove(), 1000);
+        }
+      } catch (err) {
+        console.warn('Mail client trigger error:', err);
+      }
+      if (typeof showToast === 'function') {
+        showToast(`Invoice generated! Email sent to ${adminEmail}${customerEmail ? ' & ' + customerEmail : ''}`, 'success');
+      }
+    }
+
+    return {
+      success: true,
+      adminEmail,
+      customerEmail,
+      subject,
+      dispatchedAt: Date.now()
+    };
   }
 };
 

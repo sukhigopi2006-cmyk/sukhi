@@ -360,11 +360,17 @@
             landmark: document.getElementById('inp-landmark').value.trim()
           };
 
-          try {
             sessionStorage.setItem('sukhi_delivery', JSON.stringify(formData));
             const order = await Orders.createOrderRequest({ delivery: formData, items: Cart.load() });
-            InvoiceGenerator.download(order);
-            location.href = `order-success.html?order=${encodeURIComponent(order.id)}`;
+            if (window.InvoiceGenerator) {
+              InvoiceGenerator.download(order);
+              if (typeof InvoiceGenerator.sendInvoiceEmails === 'function') {
+                InvoiceGenerator.sendInvoiceEmails(order);
+              }
+            }
+            setTimeout(() => {
+              location.href = `order-success.html?order=${encodeURIComponent(order.id)}`;
+            }, 800);
           } catch (error) {
             showToast(error.message || 'Could not submit the order request.', 'error');
             submitButtons.forEach(button => { button.disabled = false; });
