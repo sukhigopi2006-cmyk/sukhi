@@ -349,7 +349,7 @@
             name: document.getElementById('inp-name').value.trim(),
             phone: document.getElementById('inp-phone').value.trim(),
             alternatePhone: document.getElementById('inp-altphone').value.trim(),
-            email: document.getElementById('inp-email').value.trim(),
+            email: (document.getElementById('inp-email').value.trim()) || (AppState.user ? AppState.user.email : ''),
             unit: document.getElementById('inp-unit').value.trim(),
             street: document.getElementById('inp-street').value.trim(),
             address: document.getElementById('inp-address').value.trim(),
@@ -360,17 +360,25 @@
             landmark: document.getElementById('inp-landmark').value.trim()
           };
 
+          try {
+            // Ensure email is always set (readonly field may not populate before auth loads)
+            if (!formData.email && AppState.user && AppState.user.email) {
+              formData.email = AppState.user.email;
+            }
             sessionStorage.setItem('sukhi_delivery', JSON.stringify(formData));
-            const order = await Orders.createOrderRequest({ delivery: formData, items: Cart.load() });
+            // Use already-loaded cart - avoid Cart.load() re-render side effects
+            const orderItems = (cart && cart.length) ? cart : (AppState.cart && AppState.cart.length ? AppState.cart : Cart.load());
+            const order = await Orders.createOrderRequest({ delivery: formData, items: orderItems });
             if (window.InvoiceGenerator) {
               InvoiceGenerator.download(order);
               if (typeof InvoiceGenerator.sendInvoiceEmails === 'function') {
-                InvoiceGenerator.sendInvoiceEmails(order);
+                setTimeout(function() { InvoiceGenerator.sendInvoiceEmails(order); }, 600);
               }
             }
-            setTimeout(() => {
-              location.href = `order-success.html?order=${encodeURIComponent(order.id)}`;
-            }, 800);
+            Cart.clear();
+            setTimeout(function() {
+              location.href = 'order-success.html?order=' + encodeURIComponent(order.id);
+            }, 900);
           } catch (error) {
             showToast(error.message || 'Could not submit the order request.', 'error');
             submitButtons.forEach(button => { button.disabled = false; });

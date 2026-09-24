@@ -508,6 +508,19 @@
         <!-- Image URL with Preset Pickers -->
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1" for="prodImage">Image Path or URL</label>
+          <!-- Upload from PC -->
+          <div class="mb-2 flex items-center gap-2">
+            <label for="prodImageFile" class="flex items-center gap-2 cursor-pointer px-3.5 py-2 rounded-xl border-2 border-dashed border-orange-300 hover:border-primary-container bg-orange-50/60 hover:bg-orange-50 text-xs font-bold text-primary-container transition-colors flex-1 justify-center">
+              <span class="material-symbols-outlined text-base">upload_file</span>
+              <span>Upload Image from This PC</span>
+              <input type="file" id="prodImageFile" accept="image/*" class="sr-only" onchange="handleProductImageUpload(this)" />
+            </label>
+          </div>
+          <div class="flex items-center gap-2 mb-1">
+            <div class="flex-1 h-px bg-stone-200"></div>
+            <span class="text-[10px] text-stone-400 font-semibold uppercase tracking-wider">or enter URL / path</span>
+            <div class="flex-1 h-px bg-stone-200"></div>
+          </div>
           <input type="text" id="prodImage" name="image" oninput="updateImagePreview(this.value)" placeholder="e.g. uploads/p10.jpeg, assets/p10.jpeg, or p2.jpeg"
             value="uploads/p2.jpeg"
             class="w-full px-3.5 py-2.5 rounded-xl border border-outline-variant/70 text-xs focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-stone-900"/>
@@ -538,7 +551,10 @@
           <div class="mt-3 flex items-center gap-3 p-2.5 rounded-xl bg-stone-50 border border-outline-variant/40">
             <img id="prodImagePreview" src="uploads/p2.jpeg" onerror="handleImageError(this)"
               class="w-12 h-12 rounded-lg object-cover bg-stone-200 border border-stone-300" alt="Preview"/>
-            <span class="text-xs text-stone-500">Live preview thumbnail</span>
+            <div>
+              <span class="text-xs text-stone-500">Live preview thumbnail</span>
+              <p id="prodImageUploadStatus" class="text-[11px] text-emerald-700 font-semibold hidden">✓ Custom image loaded from your PC</p>
+            </div>
           </div>
         </div>
 
@@ -1007,6 +1023,11 @@
       document.getElementById('prodImage').value = product.image || '';
       document.getElementById('prodDesc').value = product.description || '';
       updateImagePreview(product.image || IMAGE_PRESETS.cracker);
+      // Reset upload status
+      const statusEl = document.getElementById('prodImageUploadStatus');
+      if (statusEl) statusEl.classList.add('hidden');
+      const fileInput = document.getElementById('prodImageFile');
+      if (fileInput) fileInput.value = '';
       document.getElementById('productModalTitle').textContent = 'Edit Firework Product';
       document.getElementById('btnSaveProduct').innerHTML = '<span class="material-symbols-outlined text-base">save</span> Update Product';
       document.getElementById('addProductModal').classList.remove('hidden');
@@ -1016,6 +1037,11 @@
       document.getElementById('addProductModal').classList.add('hidden');
       document.getElementById('addProductForm')?.reset();
       document.getElementById('editingProductId').value = '';
+      // Reset file upload input and status
+      const fileInput = document.getElementById('prodImageFile');
+      if (fileInput) fileInput.value = '';
+      const statusEl = document.getElementById('prodImageUploadStatus');
+      if (statusEl) statusEl.classList.add('hidden');
     }
 
     function updateImagePreview(url) {
@@ -1030,7 +1056,87 @@
       if (url) {
         document.getElementById('prodImage').value = url;
         updateImagePreview(url);
+        // Clear upload status
+        const statusEl = document.getElementById('prodImageUploadStatus');
+        if (statusEl) statusEl.classList.add('hidden');
       }
+    }
+
+    // Handle local image file upload from PC
+    function handleProductImageUpload(input) {
+      const file = input && input.files && input.files[0];
+      if (!file) return;
+
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        showToast('Please select a valid image file (JPG, PNG, WebP, GIF).', 'error');
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        showToast('Image file is too large. Please use an image under 5MB.', 'error');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const dataUrl = e.target.result;
+        const previewImg = document.getElementById('prodImagePreview');
+        const imageInput = document.getElementById('prodImage');
+        const statusEl = document.getElementById('prodImageUploadStatus');
+
+        // Set the data URL for immediate preview
+        if (previewImg) previewImg.src = dataUrl;
+
+        // Try to upload the file to the server's uploads directory
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_').toLowerCase();
+        const uploadPath = 'uploads/' + safeName;
+
+        if (window.location.protocol !== 'file:') {
+          // Attempt server upload
+          const formData = new FormData();
+          formData.append('image', file, safeName);
+
+          fetch('/upload-product-image', { method: 'POST', body: formData })
+            .then(res => res.ok ? res.json() : Promise.reject(res))
+            .then(data => {
+              const serverPath = data.path || uploadPath;
+              if (imageInput) imageInput.value = serverPath;
+              if (statusEl) {
+                statusEl.textContent = '✓ Uploaded: ' + serverPath;
+                statusEl.classList.remove('hidden');
+              }
+              showToast('Image uploaded to server: ' + serverPath);
+            })
+            .catch(() => {
+              // Server upload failed - use data URL as fallback
+              if (imageInput) imageInput.value = dataUrl;
+              if (statusEl) {
+                statusEl.textContent = '✓ Custom image loaded (stored locally)';
+                statusEl.classList.remove('hidden');
+              }
+              showToast('Image loaded from your PC (will be stored as data URL).', 'info');
+            });
+        } else {
+          // Running from file:// - just use data URL
+          if (imageInput) imageInput.value = dataUrl;
+          if (statusEl) {
+            statusEl.textContent = '✓ Custom image loaded from your PC';
+            statusEl.classList.remove('hidden');
+          }
+          showToast('Image loaded! It will be saved with this product.');
+        }
+
+        // Reset file input so same file can be re-selected
+        if (input) input.value = '';
+      };
+
+      reader.onerror = function() {
+        showToast('Could not read image file. Please try again.', 'error');
+      };
+
+      reader.readAsDataURL(file);
     }
 
     // Save Product

@@ -48,9 +48,32 @@
         </a>
         <a href="login.html" data-auth-login class="site-login-button">Customer Login</a>
         <div data-auth-user class="site-user-menu hidden">
-          <span data-user-name></span>
-          <a href="account.html">My Account</a>
-          <button onclick="Auth.logout()" type="button">Logout</button>
+          <button id="site-account-btn" class="site-icon-link site-account-icon-btn" aria-label="My account" aria-expanded="false" aria-haspopup="true">
+            <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">account_circle</span>
+          </button>
+          <div id="site-account-dropdown" class="site-account-dropdown" role="menu" aria-hidden="true">
+            <div class="site-account-dropdown-header">
+              <span class="material-symbols-outlined site-account-dropdown-avatar" style="font-variation-settings:'FILL' 1;">account_circle</span>
+              <div>
+                <p class="site-account-dropdown-name" data-user-name>User</p>
+                <p class="site-account-dropdown-email" data-user-email></p>
+              </div>
+            </div>
+            <div class="site-account-dropdown-divider"></div>
+            <a href="account.html" class="site-account-dropdown-item" role="menuitem">
+              <span class="material-symbols-outlined">manage_accounts</span>
+              <span>My Account</span>
+            </a>
+            <a href="account.html#orders" class="site-account-dropdown-item" role="menuitem">
+              <span class="material-symbols-outlined">receipt_long</span>
+              <span>My Orders</span>
+            </a>
+            <div class="site-account-dropdown-divider"></div>
+            <button onclick="Auth.logout()" type="button" class="site-account-dropdown-item site-account-dropdown-logout" role="menuitem">
+              <span class="material-symbols-outlined">logout</span>
+              <span>Sign Out</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -133,4 +156,43 @@
   const search = header.querySelector('input[name="search"]');
   const query = new URLSearchParams(window.location.search).get('search');
   if (search && query) search.value = query;
+
+  // Account icon dropdown toggle
+  const accountBtn = document.getElementById('site-account-btn');
+  const accountDropdown = document.getElementById('site-account-dropdown');
+  if (accountBtn && accountDropdown) {
+    accountBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const isOpen = accountDropdown.classList.contains('is-open');
+      accountDropdown.classList.toggle('is-open', !isOpen);
+      accountBtn.setAttribute('aria-expanded', String(!isOpen));
+      accountDropdown.setAttribute('aria-hidden', String(isOpen));
+    });
+    document.addEventListener('click', function(e) {
+      if (!accountDropdown.contains(e.target) && e.target !== accountBtn) {
+        accountDropdown.classList.remove('is-open');
+        accountBtn.setAttribute('aria-expanded', 'false');
+        accountDropdown.setAttribute('aria-hidden', 'true');
+      }
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        accountDropdown.classList.remove('is-open');
+        accountBtn.setAttribute('aria-expanded', 'false');
+        accountDropdown.setAttribute('aria-hidden', 'true');
+      }
+    });
+  }
+
+  // Patch Auth.updateUI to also update the email display in dropdown
+  const _origUpdateUI = typeof Auth !== 'undefined' ? Auth.updateUI.bind(Auth) : null;
+  if (typeof Auth !== 'undefined') {
+    Auth.updateUI = function() {
+      if (_origUpdateUI) _origUpdateUI();
+      const emailEls = document.querySelectorAll('[data-user-email]');
+      emailEls.forEach(el => {
+        el.textContent = (AppState && AppState.user) ? (AppState.user.email || '') : '';
+      });
+    };
+  }
 })();
