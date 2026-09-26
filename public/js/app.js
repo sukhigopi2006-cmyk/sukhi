@@ -131,10 +131,7 @@ const AppState = {
   cart: [],
   wishlist: [],
   products: [],
-  isAdmin: typeof window !== 'undefined' && (
-    window.location.pathname.includes('admin.html') ||
-    !!(localStorage.getItem('sukhi_admin_session'))
-  )
+  isAdmin: false
 };
 
 const FIXED_ADMIN_CREDENTIALS = {
@@ -438,38 +435,71 @@ const Wishlist = {
 const Products = {
   async load() {
     let list = [];
+    let firestoreActive = false;
+
     if (window.db) {
       try {
-        const snap = await db.collection('products').where('active', '==', true).get();
+        const snap = await db.collection('products').get();
         if (!snap.empty) {
-          list = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          list = snap.docs
+            .map(doc => ({ id: doc.id, ...doc.data() }))
+            .filter(p => p.active !== false && p.deleted !== true);
+          firestoreActive = true;
+        } else {
+          // If Firestore is reachable but empty, seed sample products ONCE to the database
+          firestoreActive = true;
+          const samples = getSampleProducts();
+          for (const s of samples) {
+            try {
+              await db.collection('products').doc(s.id).set({
+                ...s,
+                active: true,
+                createdAt: (window.firebase && firebase.firestore && firebase.firestore.FieldValue)
+                  ? firebase.firestore.FieldValue.serverTimestamp()
+                  : new Date().toISOString()
+              });
+              list.push(s);
+            } catch (seedErr) {
+              console.warn('Firestore seed warning for ' + s.id + ':', seedErr);
+            }
+          }
         }
       } catch (err) {
-        console.warn('Firestore products load failed, using local/cached catalog:', err);
+        console.warn('Firestore products load failed, falling back to local storage:', err);
       }
     }
 
-    const custom = Storage.get('sukhi_custom_products', []);
-    const deleted = Storage.get('sukhi_deleted_products', []);
-    const samples = getSampleProducts();
-    const merged = new Map();
-
-    // Merge: samples -> list (Firestore) -> custom (local additions)
-    const sources = [...samples, ...list, ...custom];
-
-    sources.forEach(product => {
-      if (!product || !product.id || deleted.includes(product.id) || product.active === false) return;
-      const nextProduct = {
+    let finalProducts = [];
+    if (firestoreActive && list.length > 0) {
+      // FIRESTORE IS THE AUTHORITATIVE SINGLE SOURCE OF TRUTH.
+      // Do NOT re-inject hardcoded sample products, so deletions remain 100% permanent!
+      finalProducts = list.map(product => ({
         ...product,
         price: Number(product.price) || 0,
         originalPrice: product.originalPrice != null ? Number(product.originalPrice) : Math.round((Number(product.price) || 100) * 1.25),
         stock: product.stock != null ? Number(product.stock) : 50,
         image: formatProductImageUrl(product.image || getProductImageUrl(product.id, ''))
-      };
-      merged.set(product.id, nextProduct);
-    });
+      }));
+    } else {
+      // Offline fallback only when central database is completely unreachable
+      const custom = Storage.get('sukhi_custom_products', []);
+      const deleted = Storage.get('sukhi_deleted_products', []);
+      const samples = getSampleProducts();
+      const merged = new Map();
+      [...samples, ...custom].forEach(product => {
+        if (!product || !product.id || deleted.includes(product.id) || product.active === false || product.deleted === true) return;
+        merged.set(product.id, {
+          ...product,
+          price: Number(product.price) || 0,
+          originalPrice: product.originalPrice != null ? Number(product.originalPrice) : Math.round((Number(product.price) || 100) * 1.25),
+          stock: product.stock != null ? Number(product.stock) : 50,
+          image: formatProductImageUrl(product.image || getProductImageUrl(product.id, ''))
+        });
+      });
+      finalProducts = Array.from(merged.values());
+    }
 
-    AppState.products = Array.from(merged.values());
+    AppState.products = finalProducts;
     const currentProducts = new Map(AppState.products.map(product => [product.id, product]));
     AppState.cart = AppState.cart.map(item => {
       const product = currentProducts.get(item.id);
@@ -602,8 +632,14 @@ const Offers = {
 // ============================================
 const Auth = {
   init() {
-    const adminSession = Storage.get('sukhi_admin_session');
-    if (adminSession && adminSession.loggedInAt) {
+    let adminSession = Storage.get('sukhi_admin_session');
+    if (!adminSession && typeof sessionStorage !== 'undefined') {
+      try {
+        adminSession = JSON.parse(sessionStorage.getItem('sukhi_admin_session') || 'null');
+      } catch (_) {}
+    }
+
+    if (adminSession && adminSession.loggedInAt && adminSession.authenticated) {
       AppState.isAdmin = true;
       if (!AppState.user) {
         AppState.user = {
@@ -612,6 +648,8 @@ const Auth = {
           displayName: adminSession.displayName || 'Store Administrator'
         };
       }
+    } else {
+      AppState.isAdmin = false;
     }
 
     if (!window.auth) {
@@ -621,18 +659,21 @@ const Auth = {
 
     try {
       auth.onAuthStateChanged(async (user) => {
-        const hasAdminSession = !!Storage.get('sukhi_admin_session');
+        let currentAdmin = Storage.get('sukhi_admin_session');
+        if (!currentAdmin && typeof sessionStorage !== 'undefined') {
+          try {
+            currentAdmin = JSON.parse(sessionStorage.getItem('sukhi_admin_session') || 'null');
+          } catch (_) {}
+        }
+        const hasAdminSession = !!(currentAdmin && currentAdmin.authenticated);
+
         if (user) {
           AppState.user = user;
-          AppState.isAdmin = ADMIN_EMAILS.includes((user.email || '').toLowerCase()) || hasAdminSession || (typeof window !== 'undefined' && window.location.pathname.includes('admin.html'));
-          if (AppState.isAdmin && !hasAdminSession) {
-            Storage.set('sukhi_admin_session', { email: user.email, displayName: user.displayName || 'Admin', loggedInAt: Date.now() });
-          }
+          AppState.isAdmin = hasAdminSession;
         } else {
-          // If no Firebase user, do not wipe admin session if local admin session exists!
           if (!hasAdminSession) {
             AppState.user = null;
-            AppState.isAdmin = typeof window !== 'undefined' && window.location.pathname.includes('admin.html');
+            AppState.isAdmin = false;
           } else {
             AppState.isAdmin = true;
           }
@@ -659,13 +700,17 @@ const Auth = {
     if (isFixedAdmin) {
       const adminUser = {
         uid: 'admin_local',
+        username: normalizedUser,
         email: 'sukhigopi2006@gmail.com',
         displayName: 'Store Administrator',
-        role: 'admin'
+        role: 'admin',
+        authenticated: true,
+        token: 'adm_sec_' + btoa(normalizedUser + ':' + Date.now()),
+        loggedInAt: Date.now()
       };
       AppState.user = adminUser;
       AppState.isAdmin = true;
-      Storage.set('sukhi_admin_session', { ...adminUser, loggedInAt: Date.now() });
+      Storage.set('sukhi_admin_session', adminUser);
       this.updateUI();
       return adminUser;
     }
@@ -679,10 +724,13 @@ const Auth = {
     try {
       const cred = await auth.signInWithEmailAndPassword(normalizedUser, password);
       AppState.user = cred.user;
-      AppState.isAdmin = ADMIN_EMAILS.includes((cred.user.email || '').toLowerCase()) || !!Storage.get('sukhi_admin_session');
-      if (AppState.isAdmin) {
-        Storage.set('sukhi_admin_session', { email: cred.user.email, displayName: cred.user.displayName || 'Admin', loggedInAt: Date.now() });
+      let currentAdmin = Storage.get('sukhi_admin_session');
+      if (!currentAdmin && typeof sessionStorage !== 'undefined') {
+        try {
+          currentAdmin = JSON.parse(sessionStorage.getItem('sukhi_admin_session') || 'null');
+        } catch (_) {}
       }
+      AppState.isAdmin = !!(currentAdmin && currentAdmin.authenticated);
       this.updateUI();
       return cred.user;
     } catch (err) {
@@ -721,6 +769,8 @@ const Auth = {
 
   async logout() {
     Storage.remove('sukhi_admin_session');
+    if (typeof sessionStorage !== 'undefined') sessionStorage.removeItem('sukhi_admin_session');
+    if (typeof localStorage !== 'undefined') localStorage.removeItem('sukhi_admin_session');
     if (window.auth) {
       try {
         await auth.signOut();
@@ -956,37 +1006,94 @@ const Orders = {
   },
 
   async updateStatus(orderId, status) {
+    let updatedRemotely = false;
+    let lastError = null;
+
     if (window.db) {
       try {
         await db.collection('orders').doc(orderId).update({
           status,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          updatedAt: (window.firebase && firebase.firestore && firebase.firestore.FieldValue)
+            ? firebase.firestore.FieldValue.serverTimestamp()
+            : new Date().toISOString()
         });
+        updatedRemotely = true;
       } catch (e) {
-        console.warn('Firestore order status update skipped:', e);
+        console.warn('Direct Firestore order status update skipped:', e);
+        lastError = e;
       }
     }
+
+    // Backend Cloud Function update fallback
+    if (window.functions && typeof window.functions.httpsCallable === 'function') {
+      try {
+        const callable = window.functions.httpsCallable('adminUpdateOrderStatus');
+        await callable({ orderId, status });
+        updatedRemotely = true;
+      } catch (cfErr) {
+        console.warn('Cloud Function adminUpdateOrderStatus fallback error:', cfErr);
+      }
+    }
+
+    if (window.rtdb) {
+      try {
+        await rtdb.ref('orders/' + orderId).update({ status, updatedAt: Date.now() });
+      } catch (_) {}
+    }
+
     const localOrders = Storage.get('sukhi_orders', []);
     const ord = localOrders.find(o => o.id === orderId);
     if (ord) {
       ord.status = status;
       Storage.set('sukhi_orders', localOrders);
     }
+
+    if (!updatedRemotely && lastError && window.db) {
+      throw new Error('Could not update order in database: ' + lastError.message);
+    }
     return true;
   },
 
   async delete(orderId) {
-    // Delete from Firestore (authoritative source)
+    let deletedRemotely = false;
+    let lastError = null;
+
+    // 1. Direct Firestore deletion
     if (window.db) {
       try {
         await db.collection('orders').doc(orderId).delete();
+        deletedRemotely = true;
       } catch (e) {
-        console.warn('Firestore order delete failed:', e);
+        console.warn('Direct Firestore order delete failed:', e);
+        lastError = e;
       }
     }
-    // Remove from local storage
+
+    // 2. Cloud Function backend deletion (root admin privilege)
+    if (window.functions && typeof window.functions.httpsCallable === 'function') {
+      try {
+        const callable = window.functions.httpsCallable('adminDeleteOrder');
+        await callable({ orderId });
+        deletedRemotely = true;
+      } catch (cfErr) {
+        console.warn('Cloud Function adminDeleteOrder error:', cfErr);
+      }
+    }
+
+    // 3. Realtime Database cleanup if configured
+    if (window.rtdb) {
+      try {
+        await rtdb.ref('orders/' + orderId).remove();
+      } catch (_) {}
+    }
+
+    // 4. Remove from local storage
     const localOrders = Storage.get('sukhi_orders', []);
     Storage.set('sukhi_orders', localOrders.filter(o => o.id !== orderId));
+
+    if (!deletedRemotely && lastError && window.db) {
+      throw new Error('Database order deletion failed: ' + lastError.message);
+    }
     return true;
   },
 
@@ -1121,7 +1228,7 @@ const Customers = {
 // ============================================
 const AdminProducts = {
   async add(product) {
-    const newId = product.id || ('prod_' + Date.now());
+    const newId = product.id || ('prod_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 6));
     const formattedImg = formatProductImageUrl(product.image || 'pics/pencil_trademark_transparent.png');
     const newProduct = {
       id: newId,
@@ -1136,8 +1243,11 @@ const AdminProducts = {
       active: product.active !== false,
       rating: Number(product.rating) || 4.8,
       tags: product.tags || [String(product.category || 'festive').toLowerCase().replace(/\s+/g, '-'), 'festive'],
-      createdAt: product.createdAt || new Date().toISOString()
+      createdAt: new Date().toISOString()
     };
+
+    let savedRemotely = false;
+    let lastError = null;
 
     if (window.db) {
       try {
@@ -1147,27 +1257,45 @@ const AdminProducts = {
             ? firebase.firestore.FieldValue.serverTimestamp()
             : new Date().toISOString()
         });
+        savedRemotely = true;
       } catch (err) {
-        console.warn('Firestore AdminProducts.add skipped/failed, saved locally:', err);
+        console.warn('Direct Firestore AdminProducts.add failed:', err);
+        lastError = err;
       }
     }
 
-    // 1. Save to custom products storage
+    if (window.functions && typeof window.functions.httpsCallable === 'function') {
+      try {
+        const callable = window.functions.httpsCallable('adminSaveProduct');
+        await callable({ productId: newId, data: newProduct });
+        savedRemotely = true;
+      } catch (cfErr) {
+        console.warn('Cloud Function adminSaveProduct error:', cfErr);
+      }
+    }
+
+    if (window.rtdb) {
+      try {
+        await rtdb.ref('products/' + newId).set(newProduct);
+      } catch (_) {}
+    }
+
+    // Save to local cache
     const custom = Storage.get('sukhi_custom_products', []);
     const filteredCustom = custom.filter(p => p.id !== newId);
     filteredCustom.unshift(newProduct);
     Storage.set('sukhi_custom_products', filteredCustom);
 
-    // 2. Remove from deleted if previously deleted
-    const deleted = Storage.get('sukhi_deleted_products', []);
-    Storage.set('sukhi_deleted_products', deleted.filter(id => id !== newId));
-
-    // 3. Update active AppState
+    // Update active AppState
     const existingIndex = AppState.products.findIndex(p => p.id === newProduct.id);
     if (existingIndex >= 0) {
       AppState.products[existingIndex] = newProduct;
     } else {
       AppState.products.unshift(newProduct);
+    }
+
+    if (!savedRemotely && lastError && window.db) {
+      throw new Error('Failed to save product in central database: ' + lastError.message);
     }
 
     return newProduct;
@@ -1180,6 +1308,9 @@ const AdminProducts = {
     if (cleanData.stock != null) cleanData.stock = Math.max(0, parseInt(cleanData.stock, 10) || 0);
     if (cleanData.image) cleanData.image = formatProductImageUrl(cleanData.image);
 
+    let updatedRemotely = false;
+    let lastError = null;
+
     if (window.db) {
       try {
         await db.collection('products').doc(id).set({
@@ -1188,9 +1319,27 @@ const AdminProducts = {
             ? firebase.firestore.FieldValue.serverTimestamp()
             : new Date().toISOString()
         }, { merge: true });
+        updatedRemotely = true;
       } catch (err) {
-        console.warn('Firestore AdminProducts.update skipped/failed, saved locally:', err);
+        console.warn('Direct Firestore AdminProducts.update failed:', err);
+        lastError = err;
       }
+    }
+
+    if (window.functions && typeof window.functions.httpsCallable === 'function') {
+      try {
+        const callable = window.functions.httpsCallable('adminSaveProduct');
+        await callable({ productId: id, data: cleanData });
+        updatedRemotely = true;
+      } catch (cfErr) {
+        console.warn('Cloud Function adminSaveProduct update error:', cfErr);
+      }
+    }
+
+    if (window.rtdb) {
+      try {
+        await rtdb.ref('products/' + id).update(cleanData);
+      } catch (_) {}
     }
 
     // Update local storage cache
@@ -1208,6 +1357,12 @@ const AdminProducts = {
     if (stateProd) {
       Object.assign(stateProd, cleanData);
     }
+
+    if (!updatedRemotely && lastError && window.db) {
+      throw new Error('Failed to update product in central database: ' + lastError.message);
+    }
+
+    return true;
   },
 
   async updateStock(id, newStock) {
@@ -1261,42 +1416,52 @@ const AdminProducts = {
   },
 
   async delete(id) {
-    let firestoreDeleted = false;
+    let deletedRemotely = false;
+    let lastError = null;
+
+    // 1. Direct Firestore permanent deletion
     if (window.db) {
       try {
         await db.collection('products').doc(id).delete();
-        firestoreDeleted = true;
+        deletedRemotely = true;
       } catch (err) {
-        console.warn('Firestore delete failed, attempting active:false', err);
-        try {
-          await db.collection('products').doc(id).set({
-            active: false,
-            deleted: true,
-            deletedAt: (window.firebase && firebase.firestore && firebase.firestore.FieldValue)
-              ? firebase.firestore.FieldValue.serverTimestamp()
-              : new Date().toISOString()
-          }, { merge: true });
-          firestoreDeleted = true;
-        } catch (_) {}
+        console.warn('Direct Firestore delete failed:', err);
+        lastError = err;
       }
     }
 
-    // Add to deleted products list (persists across page reloads)
-    const deleted = Storage.get('sukhi_deleted_products', []);
-    if (!deleted.includes(id)) {
-      deleted.push(id);
-      Storage.set('sukhi_deleted_products', deleted);
+    // 2. Cloud Function backend permanent deletion (bypasses any rules/auth restriction)
+    if (window.functions && typeof window.functions.httpsCallable === 'function') {
+      try {
+        const callable = window.functions.httpsCallable('adminDeleteProduct');
+        await callable({ productId: id });
+        deletedRemotely = true;
+      } catch (cfErr) {
+        console.warn('Cloud Function adminDeleteProduct error:', cfErr);
+      }
     }
 
-    // Remove from custom products
+    // 3. Realtime Database cleanup if used
+    if (window.rtdb) {
+      try {
+        await rtdb.ref('products/' + id).remove();
+      } catch (_) {}
+    }
+
+    // 4. Remove from custom products storage & active AppState
     let custom = Storage.get('sukhi_custom_products', []);
     custom = custom.filter(p => p.id !== id);
     Storage.set('sukhi_custom_products', custom);
 
-    // Remove from AppState immediately (live update)
     AppState.products = AppState.products.filter(p => p.id !== id);
+    AppState.wishlist = AppState.wishlist.filter(p => p.id !== id);
+    Storage.set('sukhi_wishlist', AppState.wishlist);
 
-    return firestoreDeleted;
+    if (!deletedRemotely && lastError && window.db) {
+      throw new Error('Database deletion failed: ' + lastError.message);
+    }
+
+    return true;
   },
 
   async getAll() {

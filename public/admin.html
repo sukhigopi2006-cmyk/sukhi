@@ -53,41 +53,97 @@
       from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    .animate-shake {
+      animation: shake 0.35s ease-in-out;
+    }
   </style>
 </head>
 <body class="bg-background text-on-surface font-body min-h-screen antialiased flex flex-col">
 
-  <div id="admin-auth-screen" class="min-h-screen flex items-center justify-center bg-background px-4 py-8">
-    <div class="w-full max-w-md rounded-3xl border border-outline-variant/50 bg-white p-7 shadow-[0_18px_50px_rgba(161,64,0,0.08)]">
-      <div class="text-center mb-6">
-        <div class="text-3xl font-headline font-extrabold text-primary-container tracking-tight">Sukhi</div>
-        <h1 class="mt-3 text-2xl font-bold text-stone-900">Admin Login</h1>
-        <p class="mt-2 text-sm text-stone-500">Use your admin credentials to access the dashboard.</p>
+  <!-- ========================================================================= -->
+  <!-- 1. LOCKED ADMIN AUTHENTICATION SCREEN                                      -->
+  <!-- ========================================================================= -->
+  <div id="admin-auth-screen" class="min-h-screen flex items-center justify-center bg-stone-950 px-4 py-8 relative overflow-hidden">
+    <!-- Ambient glowing backdrop circles -->
+    <div class="absolute -top-32 -left-32 w-96 h-96 bg-orange-600/15 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-amber-600/15 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div id="admin-login-card" class="w-full max-w-md rounded-3xl border border-stone-800 bg-stone-900/95 backdrop-blur-xl p-8 shadow-[0_24px_60px_rgba(0,0,0,0.5)] relative z-10 transition-all">
+      
+      <!-- Brand & Lock Header -->
+      <div class="text-center mb-7">
+        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-500/20 to-amber-500/20 border border-orange-500/40 text-orange-400 mb-3.5 shadow-inner">
+          <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">shield_lock</span>
+        </div>
+        <div class="text-2xl font-headline font-extrabold text-white tracking-tight">Sukhi Fireworks</div>
+        <h1 class="mt-1 text-lg font-bold text-stone-200">Admin Control Center</h1>
+        <p class="mt-1.5 text-xs text-stone-400">Strictly locked. Enter administrator credentials to proceed.</p>
       </div>
 
+      <!-- Login Form -->
       <form id="admin-login-form" class="space-y-4">
+        
+        <!-- Username Field -->
         <div class="space-y-1.5">
-          <label for="admin-username" class="text-xs font-bold uppercase tracking-[0.16em] text-stone-500">Username</label>
-          <input id="admin-username" type="text" autocomplete="username" required class="w-full rounded-xl border border-outline-variant bg-surface-container-low px-3.5 py-3 text-sm text-stone-900 focus:border-primary-container focus:ring-2 focus:ring-orange-200" placeholder="sukhigopi" />
+          <label for="admin-username" class="text-[11px] font-bold uppercase tracking-wider text-stone-300">Admin Username</label>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-3.5 top-3 text-stone-400 text-lg">person</span>
+            <input id="admin-username" type="text" autocomplete="username" required
+              class="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-stone-700 bg-stone-800/80 text-sm text-white placeholder-stone-500 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition"
+              placeholder="Username or email" />
+          </div>
         </div>
+
+        <!-- Password Field -->
         <div class="space-y-1.5">
-          <label for="admin-password" class="text-xs font-bold uppercase tracking-[0.16em] text-stone-500">Password</label>
-          <input id="admin-password" type="password" autocomplete="current-password" required class="w-full rounded-xl border border-outline-variant bg-surface-container-low px-3.5 py-3 text-sm text-stone-900 focus:border-primary-container focus:ring-2 focus:ring-orange-200" placeholder="••••••••" />
+          <label for="admin-password" class="text-[11px] font-bold uppercase tracking-wider text-stone-300">Admin Password</label>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-3.5 top-3 text-stone-400 text-lg">lock</span>
+            <input id="admin-password" type="password" autocomplete="current-password" required
+              class="w-full pl-10 pr-10 py-2.5 rounded-xl border border-stone-700 bg-stone-800/80 text-sm text-white placeholder-stone-500 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition"
+              placeholder="••••••••" />
+            <button type="button" onclick="toggleAdminPasswordVisibility()" class="absolute right-3 top-2.5 p-1 text-stone-400 hover:text-stone-200 rounded transition" title="Show/Hide password" aria-label="Toggle password visibility">
+              <span id="admin-password-toggle-icon" class="material-symbols-outlined text-lg">visibility</span>
+            </button>
+          </div>
         </div>
-        <button type="submit" class="w-full rounded-xl bg-gradient-to-r from-primary-container to-orange-600 px-4 py-3 text-sm font-bold text-white shadow-md shadow-orange-500/20 transition hover:brightness-105">Sign in to admin</button>
-        <p id="admin-login-error" class="hidden rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"></p>
-        <div class="rounded-xl bg-orange-50/70 border border-orange-200/60 p-3 text-center text-xs text-stone-600 space-y-0.5">
-          <p class="font-bold text-primary">Direct Admin Access</p>
-          <p class="text-[11px] text-stone-500">Admin Username: <strong class="text-stone-800">sukhigopi</strong> &bull; Direct Authentication</p>
+
+        <!-- Security Requirement Notice -->
+        <div class="flex items-center gap-2 py-1 text-xs text-stone-400">
+          <span class="material-symbols-outlined text-sm text-orange-400">verified_user</span>
+          <span>Administrator authentication required for access</span>
+        </div>
+
+        <!-- Error Alert (hidden by default) -->
+        <div id="admin-login-error" class="hidden rounded-xl border border-red-500/40 bg-red-950/60 p-3 text-xs text-red-200 flex items-center gap-2"></div>
+
+        <!-- Sign In Submit Button -->
+        <button type="submit" id="admin-login-submit-btn"
+          class="w-full rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-500 py-3 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]">
+          <span class="material-symbols-outlined text-base">lock_open</span>
+          <span>Authenticate &amp; Unlock</span>
+        </button>
+
+        <!-- Exit Link -->
+        <div class="pt-2 text-center">
+          <a href="index.html" class="inline-flex items-center gap-1.5 text-xs text-stone-400 hover:text-stone-200 transition">
+            <span class="material-symbols-outlined text-sm">arrow_back</span>
+            <span>Return to Public Store</span>
+          </a>
         </div>
       </form>
     </div>
   </div>
 
   <!-- ========================================================================= -->
-  <!-- ADMIN DASHBOARD VIEW                                                       -->
+  <!-- 2. ADMIN DASHBOARD VIEW (COMPLETELY LOCKED UNTIL AUTHENTICATED)           -->
   <!-- ========================================================================= -->
-  <div id="admin-dashboard-view" class="hidden min-h-screen flex-col md:flex-row">
+  <div id="admin-dashboard-view" class="hidden min-h-screen flex-col md:flex-row" style="display: none !important;">
     
     <!-- Mobile Header -->
     <header class="md:hidden fixed top-0 w-full z-40 bg-white/95 backdrop-blur-md border-b border-outline-variant/40 px-4 h-16 flex items-center justify-between shadow-sm">
@@ -99,8 +155,8 @@
         <button onclick="openAddProductModal()" class="px-3 py-1.5 bg-primary-container text-white text-xs font-bold rounded-lg flex items-center gap-1 shadow-sm">
           <span class="material-symbols-outlined text-base">add</span> Add
         </button>
-        <button onclick="handleAdminLogout()" class="p-2 text-stone-600 hover:text-primary rounded-lg" title="Exit to Store">
-          <span class="material-symbols-outlined text-xl">storefront</span>
+        <button onclick="handleAdminLogout()" class="px-2.5 py-1.5 border border-stone-200 text-stone-700 hover:text-red-600 hover:border-red-200 hover:bg-red-50 text-xs font-bold rounded-lg flex items-center gap-1 transition" title="Sign Out & Lock Admin">
+          <span class="material-symbols-outlined text-base">logout</span> Logout
         </button>
       </div>
     </header>
@@ -132,17 +188,12 @@
         </button>
         <button onclick="switchAdminTab('orders')" id="nav-tab-orders"
           class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-stone-600 hover:bg-surface-container hover:text-primary-container font-medium transition-all text-left">
-          <span class="material-symbols-outlined text-xl">shopping_cart_checkout</span>
+          <span class="material-symbols-outlined text-xl">receipt_long</span>
           <span class="text-sm font-label">Recent Orders</span>
         </button>
-        <a href="shop.html"
-          class="flex items-center gap-3 px-4 py-3 rounded-xl text-stone-600 hover:bg-surface-container hover:text-primary-container font-medium transition-all text-left">
-          <span class="material-symbols-outlined text-xl">store</span>
-          <span class="text-sm font-label">View Live Store</span>
-        </a>
       </nav>
 
-      <!-- User Profile & Exit to Store -->
+      <!-- User Profile & Sign Out -->
       <div class="px-4 mt-auto space-y-3">
         <div class="p-3 bg-surface-container rounded-xl border border-outline-variant/30 flex items-center gap-3">
           <div class="w-9 h-9 rounded-full bg-primary-container text-white flex items-center justify-center font-bold text-sm shadow-sm">
@@ -154,9 +205,9 @@
           </div>
         </div>
         <button onclick="handleAdminLogout()"
-          class="w-full flex items-center justify-center gap-2 py-2.5 border border-outline-variant/70 text-stone-700 rounded-xl hover:border-primary-container hover:text-primary-container hover:bg-orange-50 transition-all text-xs font-bold cursor-pointer">
-          <span class="material-symbols-outlined text-base">storefront</span>
-          Exit to Store
+          class="w-full flex items-center justify-center gap-2 py-2.5 border border-outline-variant/70 text-stone-700 rounded-xl hover:border-red-400 hover:text-red-600 hover:bg-red-50 transition-all text-xs font-bold cursor-pointer">
+          <span class="material-symbols-outlined text-base">logout</span>
+          Sign Out &amp; Lock
         </button>
       </div>
     </aside>
@@ -179,10 +230,6 @@
             <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
             <span>Checking DB…</span>
           </div>
-          <a href="shop.html" class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-outline-variant/80 text-stone-700 hover:text-primary hover:bg-orange-50 font-bold text-xs transition-colors">
-            <span class="material-symbols-outlined text-base">open_in_new</span>
-            Live Store
-          </a>
           <!-- Add Product Button -->
           <button onclick="openAddProductModal()"
             class="bg-gradient-to-r from-primary-container to-orange-600 hover:from-orange-600 hover:to-primary text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-md hover:shadow-orange-500/25 transition-all flex items-center justify-center gap-2 active:scale-95">
@@ -211,17 +258,17 @@
         </div>
 
         <!-- Metric 2: Active Orders -->
-        <div class="card-surface card-hover rounded-2xl p-5 flex flex-col justify-between h-32 transition-all">
+        <div class="card-surface card-hover rounded-2xl p-5 flex flex-col justify-between h-32 transition-all cursor-pointer" onclick="switchAdminTab('orders')" title="Click to view all recent orders">
           <div class="flex justify-between items-start">
             <span class="font-label text-xs font-bold tracking-wider text-stone-500 uppercase">Active Orders</span>
             <div class="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center text-primary-container">
-              <span class="material-symbols-outlined text-lg">local_shipping</span>
+              <span class="material-symbols-outlined text-lg">receipt_long</span>
             </div>
           </div>
           <div>
             <div class="font-headline text-2xl font-extrabold text-stone-900" id="statActiveOrders">0</div>
-            <div class="text-[11px] font-medium text-stone-500 mt-0.5">
-              <span class="text-primary font-bold" id="statPendingOrders">0</span> pending shipment
+            <div class="text-[11px] font-semibold text-primary flex items-center gap-0.5 mt-0.5">
+              <span><span class="font-bold" id="statPendingOrders">0</span> pending &bull; View orders →</span>
             </div>
           </div>
         </div>
@@ -374,8 +421,8 @@
             </div>
           </div>
 
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs md:text-sm">
+          <div class="overflow-x-auto -mx-2 sm:mx-0 px-2 sm:px-0">
+            <table class="w-full text-left border-collapse text-xs md:text-sm min-w-[620px]">
               <thead>
                 <tr class="border-b border-outline-variant/40 text-stone-500 font-label text-xs uppercase tracking-wider">
                   <th class="pb-3 pr-2 font-semibold">Order ID</th>
@@ -412,24 +459,27 @@
     </main>
 
     <!-- Mobile Bottom Navigation Bar -->
-    <nav class="fixed bottom-0 left-0 w-full flex justify-around items-center h-16 px-4 md:hidden bg-white/95 backdrop-blur-xl border-t border-outline-variant/40 shadow-md z-40">
-      <button onclick="switchAdminTab('dashboard')" class="flex flex-col items-center justify-center text-primary-container">
+    <nav class="fixed bottom-0 left-0 w-full flex justify-around items-center h-16 px-1 md:hidden bg-white/95 backdrop-blur-xl border-t border-outline-variant/40 shadow-lg z-40">
+      <button onclick="switchAdminTab('dashboard')" id="mobile-nav-tab-dashboard" class="flex-1 py-1 flex flex-col items-center justify-center text-primary-container font-bold transition-colors">
         <span class="material-symbols-outlined text-xl">dashboard</span>
         <span class="font-label text-[10px]">Dashboard</span>
       </button>
-      <button onclick="switchAdminTab('products')" class="flex flex-col items-center justify-center text-stone-500 hover:text-primary-container">
+      <button onclick="switchAdminTab('products')" id="mobile-nav-tab-products" class="flex-1 py-1 flex flex-col items-center justify-center text-stone-500 hover:text-primary-container font-medium transition-colors">
         <span class="material-symbols-outlined text-xl">inventory_2</span>
         <span class="font-label text-[10px]">Catalog</span>
       </button>
-      <button onclick="openAddProductModal()" class="flex flex-col items-center justify-center text-stone-500 hover:text-primary-container">
+      <button onclick="switchAdminTab('orders')" id="mobile-nav-tab-orders" class="flex-1 py-1 relative flex flex-col items-center justify-center text-stone-500 hover:text-primary-container font-medium transition-colors">
+        <div class="relative">
+          <span class="material-symbols-outlined text-xl">receipt_long</span>
+          <span id="mobileOrdersBadge" class="hidden absolute -top-1.5 -right-2.5 min-w-[16px] h-[16px] px-1 bg-primary text-white text-[9px] font-bold rounded-full flex items-center justify-center">0</span>
+        </div>
+        <span class="font-label text-[10px]">Orders</span>
+      </button>
+      <button onclick="openAddProductModal()" class="flex-1 py-1 flex flex-col items-center justify-center text-stone-500 hover:text-primary-container font-medium transition-colors">
         <span class="material-symbols-outlined text-xl">add_circle</span>
         <span class="font-label text-[10px]">Add Product</span>
       </button>
-      <a href="shop.html" class="flex flex-col items-center justify-center text-stone-500 hover:text-primary-container">
-        <span class="material-symbols-outlined text-xl">store</span>
-        <span class="font-label text-[10px]">Store</span>
-      </a>
-      <button onclick="handleAdminLogout()" class="flex flex-col items-center justify-center text-stone-500 hover:text-red-500">
+      <button onclick="handleAdminLogout()" class="flex-1 py-1 flex flex-col items-center justify-center text-stone-500 hover:text-red-500 font-medium transition-colors">
         <span class="material-symbols-outlined text-xl">logout</span>
         <span class="font-label text-[10px]">Logout</span>
       </button>
@@ -792,28 +842,74 @@
 
     let allLoadedProducts = [];
 
-    // Pure local check: NO database dependency
+    // Strictly check active tab session - never auto-login from permanent localStorage
+    function getValidAdminSession() {
+      try {
+        const raw = sessionStorage.getItem('sukhi_admin_session');
+        if (!raw) return null;
+        const s = JSON.parse(raw);
+        if (s && s.authenticated === true && s.loggedInAt && s.token && s.token.startsWith('adm_sec_')) {
+          return s;
+        }
+        return null;
+      } catch (_) {
+        return null;
+      }
+    }
+
     function isAdminSessionActive() {
-      const session = Storage.get('sukhi_admin_session');
-      return !!(session && session.loggedInAt);
+      return !!getValidAdminSession();
     }
 
     function showAdminAuthScreen(show) {
       const authScreen = document.getElementById('admin-auth-screen');
       const dashView = document.getElementById('admin-dashboard-view');
-      if (authScreen) authScreen.classList.toggle('hidden', !show);
-      if (dashView) dashView.classList.toggle('hidden', show);
+      if (authScreen) {
+        authScreen.classList.toggle('hidden', !show);
+        authScreen.style.display = show ? 'flex' : 'none';
+      }
+      if (dashView) {
+        dashView.classList.toggle('hidden', show);
+        if (show) {
+          dashView.style.setProperty('display', 'none', 'important');
+        } else {
+          dashView.style.display = 'flex';
+        }
+      }
+      if (show) {
+        window.scrollTo(0, 0);
+      }
     }
 
     function saveAdminSession(username) {
-      Storage.set('sukhi_admin_session', {
-        username: username || 'admin',
+      const cleanUser = (username || 'admin').trim();
+      const sessionObj = {
+        authenticated: true,
+        username: cleanUser,
         email: ADMIN_LOGIN_EMAIL,
         displayName: 'Store Administrator',
         role: 'admin',
+        token: 'adm_sec_' + btoa(cleanUser + ':' + Date.now()),
         loggedInAt: Date.now()
-      });
+      };
+
+      // Save strictly to sessionStorage for current tab session only
+      sessionStorage.setItem('sukhi_admin_session', JSON.stringify(sessionObj));
+      localStorage.removeItem('sukhi_admin_session');
       AppState.isAdmin = true;
+    }
+
+    function toggleAdminPasswordVisibility() {
+      const input = document.getElementById('admin-password');
+      const icon = document.getElementById('admin-password-toggle-icon');
+      if (!input) return;
+      if (input.type === 'password') {
+        input.type = 'text';
+        if (icon) icon.textContent = 'visibility_off';
+      } else {
+        input.type = 'password';
+        if (icon) icon.textContent = 'visibility';
+      }
     }
 
     document.addEventListener('DOMContentLoaded', async () => {
@@ -825,12 +921,29 @@
           event.preventDefault();
           const username = (document.getElementById('admin-username')?.value || '').trim();
           const password = (document.getElementById('admin-password')?.value || '').trim();
+          const rememberMe = document.getElementById('admin-remember')?.checked !== false;
+          const submitBtn = document.getElementById('admin-login-submit-btn');
 
           const isUserMatch = FIXED_ADMIN_USERNAMES.includes(username.toLowerCase());
           const isPassMatch = FIXED_ADMIN_PASSWORDS.includes(password.toLowerCase());
 
+          if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-base">sync</span> Verifying...';
+          }
+
+          await new Promise(r => setTimeout(r, 200));
+
           if (isUserMatch && isPassMatch) {
             saveAdminSession(username);
+            // Sign in anonymously to Firebase Auth if not already signed in so Firebase Auth token exists
+            if (window.auth && !auth.currentUser) {
+              try {
+                await auth.signInAnonymously();
+              } catch (authErr) {
+                console.warn('Anonymous auth sign-in skipped:', authErr);
+              }
+            }
             if (errorBox) {
               errorBox.classList.add('hidden');
               errorBox.textContent = '';
@@ -840,19 +953,35 @@
             showToast('Welcome back, Administrator!');
           } else {
             if (errorBox) {
-              errorBox.textContent = 'Invalid credentials. Enter admin username (sukhigopi) and password (chikko).';
+              errorBox.innerHTML = '<span class="material-symbols-outlined text-base shrink-0">error</span><span>Invalid credentials. Enter valid admin username and password.</span>';
               errorBox.classList.remove('hidden');
             }
+            const card = document.getElementById('admin-login-card');
+            if (card) {
+              card.classList.remove('animate-shake');
+              void card.offsetWidth;
+              card.classList.add('animate-shake');
+            }
+            const passEl = document.getElementById('admin-password');
+            if (passEl) {
+              passEl.value = '';
+              passEl.focus();
+            }
+          }
+
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<span class="material-symbols-outlined text-base">lock_open</span> Authenticate &amp; Unlock';
           }
         });
       }
 
       await checkAdminAuthentication();
-      watchDatabaseConnection();
     });
 
     async function checkAdminAuthentication() {
-      const hasValidSession = isAdminSessionActive();
+      const session = getValidAdminSession();
+      const hasValidSession = !!session;
       AppState.isAdmin = hasValidSession;
       showAdminAuthScreen(!hasValidSession);
 
@@ -860,17 +989,34 @@
 
       const emailEl = document.getElementById('adminEmailDisplay');
       const nameEl = document.getElementById('adminDisplayName');
-      if (emailEl) emailEl.textContent = ADMIN_LOGIN_EMAIL;
-      if (nameEl) nameEl.textContent = 'Store Administrator';
+      if (emailEl) emailEl.textContent = session.email || ADMIN_LOGIN_EMAIL;
+      if (nameEl) nameEl.textContent = session.displayName || 'Store Administrator';
 
+      watchDatabaseConnection();
       await loadAndRenderAdminData();
     }
 
     function handleAdminLogout() {
-      Storage.remove('sukhi_admin_session');
+      try {
+        sessionStorage.removeItem('sukhi_admin_session');
+        localStorage.removeItem('sukhi_admin_session');
+      } catch (_) {}
       AppState.isAdmin = false;
+      if (window.adminOrdersUnsubscribe) {
+        try { window.adminOrdersUnsubscribe(); } catch (_) {}
+        window.adminOrdersUnsubscribe = null;
+      }
+      allLoadedProducts = [];
+      currentAdminOrders = [];
       showAdminAuthScreen(true);
-      showToast('Signed out and returned to the login screen.');
+      const passEl = document.getElementById('admin-password');
+      if (passEl) passEl.value = '';
+      const errorBox = document.getElementById('admin-login-error');
+      if (errorBox) {
+        errorBox.classList.add('hidden');
+        errorBox.textContent = '';
+      }
+      showToast('Admin session locked. Signed out successfully.');
     }
 
     // Load products and populate table + metrics
@@ -1035,9 +1181,24 @@
       const active = orders.filter(order => !['Completed', 'Delivered', 'Cancelled'].includes(order.status));
       const pending = orders.filter(order => order.status === 'Pending');
       const revenue = orders.reduce((sum, order) => sum + (Number(order.total) || 0), 0);
-      document.getElementById('statRevenue').textContent = formatPrice(revenue);
-      document.getElementById('statActiveOrders').textContent = active.length;
-      document.getElementById('statPendingOrders').textContent = pending.length;
+      const revEl = document.getElementById('statRevenue');
+      const actEl = document.getElementById('statActiveOrders');
+      const pendEl = document.getElementById('statPendingOrders');
+      if (revEl) revEl.textContent = formatPrice(revenue);
+      if (actEl) actEl.textContent = active.length;
+      if (pendEl) pendEl.textContent = pending.length;
+
+      const badge = document.getElementById('mobileOrdersBadge');
+      if (badge) {
+        if (pending.length > 0) {
+          badge.textContent = pending.length;
+          badge.classList.remove('hidden');
+          badge.classList.add('flex');
+        } else {
+          badge.classList.add('hidden');
+          badge.classList.remove('flex');
+        }
+      }
     }
 
     let currentAdminOrders = [];
@@ -1422,21 +1583,18 @@
     async function handleDeleteOrder(orderId) {
       const order = currentAdminOrders.find(o => String(o.id) === String(orderId));
       const customer = order?.delivery?.name || 'Customer';
-      if (!confirm(`Delete order #${orderId} (${customer})?\n\nThis action cannot be undone.`)) return;
+      const confirmPrompt = `⚠️ PERMANENT DATABASE DELETION\n\nAre you sure you want to permanently delete Order #${orderId} (${customer}) from the database?\n\nThis will execute a true delete request against the central backend database and permanently remove the order.\n\nClick OK to permanently delete, or Cancel to abort.`;
+      if (!confirm(confirmPrompt)) return;
+
       try {
-        if (window.db) {
-          await db.collection('orders').doc(orderId).delete();
-        }
-        // Remove from local storage too
-        const localOrders = Storage.get('sukhi_orders', []);
-        Storage.set('sukhi_orders', localOrders.filter(o => o.id !== orderId));
-        showToast(`Order #${orderId} deleted.`);
-        // Re-render from live data
+        await Orders.delete(orderId);
+        showToast(`Order #${orderId} permanently deleted from database.`, 'success');
         currentAdminOrders = currentAdminOrders.filter(o => String(o.id) !== String(orderId));
         renderAdminOrders(currentAdminOrders);
         updateOrderMetrics(currentAdminOrders);
       } catch (err) {
-        showToast('Delete failed: ' + err.message, 'error');
+        console.error('Database order delete error:', err);
+        showToast('Database deletion failed: ' + err.message, 'error');
       }
     }
 
@@ -1755,39 +1913,27 @@
 
       const action = editingId ? 'update' : 'add';
       const confirmMsg = editingId
-        ? `Update "${name}" in the catalog?\n\nPrice: ₹${price} | Stock: ${stock} units\n\nThis will immediately update the product on the website for all users.`
-        : `Add "${name}" to the catalog?\n\nCategory: ${category} | Price: ₹${price} | Stock: ${stock} units\n\nThis will immediately appear in the store for all users.`;
+        ? `⚠️ CONFIRM PRODUCT UPDATE\n\nAre you sure you want to save changes to "${name}" in the database?\n\nPrice: ₹${price} | Stock: ${stock} units\n\nThis will update the central database and reflect live everywhere on the website.`
+        : `⚠️ CONFIRM NEW PRODUCT\n\nAre you sure you want to add "${name}" to the store catalog in the database?\n\nCategory: ${category} | Price: ₹${price} | Stock: ${stock} units\n\nThis will save to the central database and immediately appear live in the store.`;
 
       if (!confirm(confirmMsg)) return;
 
       saveBtn.disabled = true;
-      saveBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-base">sync</span> Saving...';
+      saveBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-base">sync</span> Saving to database...';
 
       try {
         if (editingId) {
-          // Primary: Firestore update
-          if (window.db) {
-            try {
-              await db.collection('products').doc(editingId).set({
-                ...newProdData,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-              }, { merge: true });
-            } catch (fsErr) {
-              console.warn('Firestore update failed, saving locally:', fsErr);
-            }
-          }
           await AdminProducts.update(editingId, newProdData);
-          showToast(`"${name}" updated successfully!`);
+          showToast(`"${name}" successfully updated in database!`, 'success');
         } else {
-          // Primary: Firestore add
           await AdminProducts.add(newProdData);
-          showToast(`"${name}" added to catalog successfully!`);
+          showToast(`"${name}" successfully added to database!`, 'success');
         }
         closeAddProductModal();
         await loadAndRenderAdminData();
       } catch (err) {
-        console.error('Error adding/updating product:', err);
-        showToast('Error saving product: ' + (err.message || 'Unknown error'), 'error');
+        console.error('Error adding/updating product in database:', err);
+        showToast('Database save failed: ' + (err.message || 'Unknown error'), 'error');
       } finally {
         saveBtn.disabled = false;
         saveBtn.innerHTML = '<span class="material-symbols-outlined text-base">check</span> Save Product to Store';
@@ -1802,47 +1948,30 @@
       const current = product.stock ?? 10;
       const updated = current + 25;
 
+      if (!confirm(`Add 25 units to stock for "${product.name}" in the database?\n\nNew stock will be: ${updated} units.`)) return;
+
       await AdminProducts.updateStock(productId, updated);
-      showToast(`Restocked "${product.name}" (+25 units)`);
+      showToast(`Restocked "${product.name}" (+25 units in database)`);
       await loadAndRenderAdminData();
     }
 
-    // Delete Product — Reliable Firestore-first with local fallback
+    // Delete Product — Permanent Database Deletion
     async function handleDeleteProduct(productId) {
-      const product = allLoadedProducts.find(p => p.id === productId);
-      const name = product ? product.name : 'item';
-      if (!confirm(`Delete "${name}" from the store catalog?\n\nThis will immediately remove it from the website for all users.`)) return;
+      const product = allLoadedProducts.find(p => String(p.id) === String(productId));
+      const name = product ? product.name : 'this product';
+      const confirmPrompt = `⚠️ PERMANENT DATABASE DELETION\n\nAre you sure you want to permanently delete "${name}" from the database?\n\nThis will execute a true delete request against the central backend database and remove it live from the website immediately for all users.\n\nClick OK to permanently delete, or Cancel to abort.`;
+      if (!confirm(confirmPrompt)) return;
 
       try {
-        // Primary: Firestore delete
-        if (window.db) {
-          try {
-            await db.collection('products').doc(productId).delete();
-          } catch (fsErr) {
-            console.warn('Firestore delete attempt 1 failed, marking inactive:', fsErr);
-            // Fallback: mark as inactive so it's filtered out
-            try {
-              await db.collection('products').doc(productId).set({
-                active: false,
-                deletedAt: firebase.firestore.FieldValue.serverTimestamp()
-              }, { merge: true });
-            } catch (_) {}
-          }
-        }
-        // Always clean up local storage
-        const deleted = Storage.get('sukhi_deleted_products', []);
-        if (!deleted.includes(productId)) {
-          deleted.push(productId);
-          Storage.set('sukhi_deleted_products', deleted);
-        }
-        let custom = Storage.get('sukhi_custom_products', []);
-        Storage.set('sukhi_custom_products', custom.filter(p => p.id !== productId));
-        AppState.products = AppState.products.filter(p => p.id !== productId);
-
-        showToast(`"${name}" removed from store.`);
-        await loadAndRenderAdminData();
+        await AdminProducts.delete(productId);
+        showToast(`"${name}" permanently deleted from database and website.`, 'success');
+        allLoadedProducts = allLoadedProducts.filter(p => String(p.id) !== String(productId));
+        renderProductsTable(allLoadedProducts);
+        renderLowInventory(allLoadedProducts);
+        updateDashboardMetrics(allLoadedProducts);
       } catch (err) {
-        showToast('Delete failed: ' + err.message, 'error');
+        console.error('Database product deletion failed:', err);
+        showToast('Database deletion failed: ' + err.message, 'error');
       }
     }
 
@@ -1966,9 +2095,10 @@
     }
 
     async function removeAdminOffer(id) {
+      if (!confirm('Are you sure you want to permanently delete this promotional offer from the database?')) return;
       try {
         await Offers.remove(id);
-        showToast('Offer removed.');
+        showToast('Offer permanently deleted from database.');
         await loadAdminOffers();
       } catch (err) {
         showToast('Offer removal failed: ' + err.message, 'error');

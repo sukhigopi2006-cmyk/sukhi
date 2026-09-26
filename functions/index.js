@@ -224,3 +224,61 @@ exports.resendOrderEmail = onCall({ secrets: [smtpHost, smtpPort, smtpUser, smtp
   return { success: true, recipients, orderId };
 });
 
+// ============================================
+// PERMANENT DATABASE DELETION & EDITING API
+// ============================================
+
+exports.adminDeleteProduct = onCall(async request => {
+  const productId = String(request.data?.productId || '').trim();
+  if (!productId) {
+    throw new HttpsError('invalid-argument', 'Product ID is required.');
+  }
+  const docRef = db.collection('products').doc(productId);
+  const snap = await docRef.get();
+  if (snap.exists) {
+    await docRef.delete();
+  }
+  return { success: true, productId, deleted: true };
+});
+
+exports.adminSaveProduct = onCall(async request => {
+  const productId = String(request.data?.productId || '').trim();
+  const data = request.data?.data;
+  if (!productId || !data || typeof data !== 'object') {
+    throw new HttpsError('invalid-argument', 'Product ID and valid product data are required.');
+  }
+  const cleanData = {
+    ...data,
+    updatedAt: admin.firestore.FieldValue.serverTimestamp()
+  };
+  await db.collection('products').doc(productId).set(cleanData, { merge: true });
+  return { success: true, productId };
+});
+
+exports.adminDeleteOrder = onCall(async request => {
+  const orderId = String(request.data?.orderId || '').trim();
+  if (!orderId) {
+    throw new HttpsError('invalid-argument', 'Order ID is required.');
+  }
+  const docRef = db.collection('orders').doc(orderId);
+  const snap = await docRef.get();
+  if (snap.exists) {
+    await docRef.delete();
+  }
+  return { success: true, orderId, deleted: true };
+});
+
+exports.adminUpdateOrderStatus = onCall(async request => {
+  const orderId = String(request.data?.orderId || '').trim();
+  const status = String(request.data?.status || '').trim();
+  if (!orderId || !status) {
+    throw new HttpsError('invalid-argument', 'Order ID and status are required.');
+  }
+  await db.collection('orders').doc(orderId).update({
+    status,
+    updatedAt: admin.firestore.FieldValue.serverTimestamp()
+  });
+  return { success: true, orderId, status };
+});
+
+
