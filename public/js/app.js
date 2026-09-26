@@ -77,11 +77,45 @@ const EmailService = {
       new_status: newStatus,
       order_total: '₹' + Number(order.total || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })
     };
+  },
+
+  /**
+   * Send order notification or invoice directly to customer.
+   */
+  async sendCustomerOrderNotification(order, options = {}) {
+    await this.init();
+    const delivery = order.delivery || {};
+    const targetEmail = (options.targetEmail || order.customerEmail || delivery.email || '').trim();
+    if (!targetEmail) return { success: false, reason: 'missing_customer_email' };
+
+    const items = Array.isArray(order.items) ? order.items : [];
+    const itemsSummary = items.map(i => `${i.name} x${i.qty || 1} @ ₹${Number(i.price || 0).toFixed(2)}`).join(' | ');
+    const templateParams = {
+      to_email: targetEmail,
+      order_id: order.id || 'N/A',
+      customer_name: delivery.name || 'Valued Customer',
+      customer_email: targetEmail,
+      customer_phone: delivery.phone || 'N/A',
+      shipping_address: [
+        delivery.unit, delivery.street || delivery.address,
+        delivery.city, delivery.district, delivery.state, delivery.pincode
+      ].filter(Boolean).join(', '),
+      items_summary: itemsSummary || 'No items',
+      order_total: '₹' + Number(order.total || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 }),
+      order_status: order.status || 'Pending',
+      custom_note: options.note || '',
+      subject: options.subject || `Order Confirmation & Invoice #${order.id} - Sukhi Fireworks`,
+      admin_cc: options.ccAdmin ? this.ADMIN_EMAIL : ''
+    };
+    if (typeof emailjs === 'undefined') {
+      return { success: false, reason: 'emailjs_not_loaded' };
+    }
     try {
-      await emailjs.send(this.SERVICE_ID, STATUS_TEMPLATE_ID, templateParams);
-      return { success: true };
+      const result = await emailjs.send(this.SERVICE_ID, this.TEMPLATE_ID, templateParams);
+      console.log('Customer email sent via EmailJS:', result.status);
+      return { success: true, status: result.status, targetEmail };
     } catch (err) {
-      console.warn('EmailJS status update failed:', err);
+      console.warn('EmailJS customer send failed:', err);
       return { success: false, error: err };
     }
   }
@@ -953,6 +987,37 @@ const Orders = {
     // Remove from local storage
     const localOrders = Storage.get('sukhi_orders', []);
     Storage.set('sukhi_orders', localOrders.filter(o => o.id !== orderId));
+    return true;
+  },
+
+  async recordEmailSent(orderId, sentToEmail) {
+    const timestampStr = new Date().toLocaleString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    if (window.db) {
+      try {
+        await db.collection('orders').doc(orderId).update({
+          lastEmailSentAt: firebase.firestore.FieldValue.serverTimestamp(),
+          lastEmailSentTo: sentToEmail,
+          lastEmailSentDisplay: timestampStr,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      } catch (e) {
+        console.warn('Firestore recordEmailSent skipped:', e);
+      }
+    }
+    const localOrders = Storage.get('sukhi_orders', []);
+    const ord = localOrders.find(o => o.id === orderId);
+    if (ord) {
+      ord.lastEmailSentTo = sentToEmail;
+      ord.lastEmailSentDisplay = timestampStr;
+      ord.lastEmailSentAt = new Date().toISOString();
+      Storage.set('sukhi_orders', localOrders);
+    }
     return true;
   }
 };

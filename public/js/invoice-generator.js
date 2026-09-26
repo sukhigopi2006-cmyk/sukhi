@@ -497,7 +497,139 @@ Admin Notification: sukhigopi2006@gmail.com`;
       subject,
       dispatchedAt: Date.now()
     };
+  },
+
+  generateCustomerEmailText(order, customNote = '') {
+    const orderId = order.id || 'SK-REQ-' + Date.now().toString().slice(-6);
+    const delivery = order.delivery || {};
+    const items = Array.isArray(order.items) ? order.items : [];
+    const subtotal = items.reduce((sum, item) => sum + (Number(item.price || 0) * Number(item.qty || 1)), 0);
+    const taxes = this.calculateTaxes(subtotal, delivery.state);
+    const grandTotal = order.total ? Number(order.total) : taxes.grandTotal;
+
+    const itemLines = items.map((i, idx) => `  ${idx + 1}. ${i.name || 'Firework'} x ${i.qty || 1} = ${this.formatCurrency((Number(i.price || 0) * Number(i.qty || 1)))}`).join('\n');
+
+    let text = `Dear ${delivery.name || 'Customer'},\n\nThank you for ordering with Sukhi Fireworks (Pencil Brand), Sivakasi!\n\n`;
+    text += `ORDER SUMMARY\n`;
+    text += `==========================================\n`;
+    text += `Order ID    : #${orderId}\n`;
+    text += `Order Status: ${order.status || 'Pending'}\n`;
+    text += `Order Date  : ${order.createdAt ? new Date(order.createdAt).toLocaleString('en-IN') : new Date().toLocaleString('en-IN')}\n`;
+    text += `==========================================\n\n`;
+
+    if (customNote && customNote.trim()) {
+      text += `SPECIAL NOTE FROM OUR DISPATCH TEAM:\n`;
+      text += `------------------------------------------\n`;
+      text += `${customNote.trim()}\n`;
+      text += `------------------------------------------\n\n`;
+    }
+
+    text += `ORDERED FIREWORKS ITEMS:\n`;
+    text += `${itemLines || '  No items listed'}\n\n`;
+    text += `Subtotal : ${this.formatCurrency(subtotal)}\n`;
+    text += `GST Tax  : ${this.formatCurrency(taxes.taxTotal)}\n`;
+    text += `Shipping : FREE DELIVERY\n`;
+    text += `TOTAL    : ${this.formatCurrency(grandTotal)}\n\n`;
+
+    text += `SHIPPING ADDRESS:\n`;
+    text += `${delivery.unit ? delivery.unit + ', ' : ''}${delivery.street || delivery.address || ''}\n`;
+    if (delivery.landmark) text += `Landmark: ${delivery.landmark}\n`;
+    text += `${delivery.city ? delivery.city + ', ' : ''}${delivery.district ? delivery.district + ', ' : ''}${delivery.state || 'Tamil Nadu'}${delivery.pincode ? ' - ' + delivery.pincode : ''}\n`;
+    text += `Contact Phone: ${delivery.phone || 'N/A'}\n\n`;
+
+    text += `OUR CONTACT & SUPPORT:\n`;
+    text += `Sukhi Fireworks - Pencil Trademark\n`;
+    text += `227, Amman Kovil Patti Middle Street, Sivakasi - 626 189\n`;
+    text += `Email: ${this.ADMIN_EMAIL}\n`;
+    text += `Phone: ${this.COMPANY_PHONE}\n\n`;
+    text += `We appreciate your business and wish you a sparkling celebration!`;
+
+    return text;
+  },
+
+  getGmailComposeUrl(order, targetEmail, customNote = '', customSubject = '') {
+    const email = (targetEmail || order.customerEmail || order.delivery?.email || '').trim();
+    const orderId = order.id || 'SK-REQ-' + Date.now().toString().slice(-6);
+    const subject = customSubject || `Order Confirmation & Invoice #${orderId} - Sukhi Fireworks`;
+    const body = this.generateCustomerEmailText(order, customNote);
+    return `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  },
+
+  getMailtoUrl(order, targetEmail, customNote = '', customSubject = '', ccAdmin = false) {
+    const email = (targetEmail || order.customerEmail || order.delivery?.email || '').trim();
+    const orderId = order.id || 'SK-REQ-' + Date.now().toString().slice(-6);
+    const subject = customSubject || `Order Confirmation & Invoice #${orderId} - Sukhi Fireworks`;
+    const body = this.generateCustomerEmailText(order, customNote);
+    const ccPart = ccAdmin ? `&cc=${encodeURIComponent(this.ADMIN_EMAIL)}` : '';
+    return `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}${ccPart}&body=${encodeURIComponent(body)}`;
+  },
+
+  async sendCustomerEmail(order, options = {}) {
+    const targetEmail = (options.targetEmail || order.customerEmail || order.delivery?.email || '').trim();
+    if (!targetEmail) {
+      throw new Error('Customer email address is required.');
+    }
+    const orderId = order.id || 'SK-REQ-' + Date.now().toString().slice(-6);
+    const customNote = options.note || '';
+    const subject = options.subject || `Order Confirmation & Invoice #${orderId} - Sukhi Fireworks`;
+    const ccAdmin = Boolean(options.ccAdmin);
+
+    // 1. Try Firebase Cloud Function if available
+    if (window.functions && typeof window.functions.httpsCallable === 'function') {
+      try {
+        const callable = window.functions.httpsCallable('resendOrderEmail');
+        const res = await callable({
+          orderId: order.id,
+          targetEmail,
+          note: customNote,
+          subject,
+          sendToCustomer: true,
+          sendToAdmin: ccAdmin
+        });
+        if (res?.data?.success) {
+          if (window.Orders && typeof window.Orders.recordEmailSent === 'function') {
+            await window.Orders.recordEmailSent(order.id, targetEmail);
+          }
+          return { success: true, method: 'cloud_function', targetEmail, orderId };
+        }
+      } catch (err) {
+        console.warn('Cloud function resendOrderEmail failed, trying EmailJS/Client fallback:', err);
+      }
+    }
+
+    // 2. Try EmailJS background dispatch if configured
+    if (typeof emailjs !== 'undefined' && window.EmailService) {
+      try {
+        const emailjsRes = await window.EmailService.sendCustomerOrderNotification(order, {
+          targetEmail,
+          note: customNote,
+          subject,
+          ccAdmin
+        });
+        if (emailjsRes && emailjsRes.success) {
+          if (window.Orders && typeof window.Orders.recordEmailSent === 'function') {
+            await window.Orders.recordEmailSent(order.id, targetEmail);
+          }
+          return { success: true, method: 'emailjs', targetEmail, orderId };
+        }
+      } catch (e) {
+        console.warn('EmailService customer send error:', e);
+      }
+    }
+
+    // 3. Fallback: Open web compose or mailto
+    if (options.openClient !== false) {
+      const composeUrl = this.getGmailComposeUrl(order, targetEmail, customNote, subject);
+      window.open(composeUrl, '_blank');
+      if (window.Orders && typeof window.Orders.recordEmailSent === 'function') {
+        await window.Orders.recordEmailSent(order.id, targetEmail);
+      }
+      return { success: true, method: 'gmail_compose', targetEmail, orderId };
+    }
+
+    return { success: false, reason: 'no_sender_configured', targetEmail, orderId };
   }
 };
 
 window.InvoiceGenerator = InvoiceGenerator;
+

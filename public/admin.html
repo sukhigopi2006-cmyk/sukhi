@@ -597,6 +597,166 @@
     </div>
   </div>
 
+  <!-- ========================================================================= -->
+  <!-- RESEND ORDER EMAIL TO CUSTOMER MODAL                                      -->
+  <!-- ========================================================================= -->
+  <div id="resendOrderModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden p-4 animate-fadeIn">
+    <div class="bg-white rounded-2xl w-full max-w-2xl shadow-2xl border border-outline-variant/60 overflow-hidden flex flex-col max-h-[92vh]">
+      
+      <!-- Modal Header -->
+      <div class="px-6 py-4 bg-orange-50/80 border-b border-outline-variant/40 flex justify-between items-center">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-orange-100 text-primary-container flex items-center justify-center shadow-inner">
+            <span class="material-symbols-outlined text-xl">mark_email_read</span>
+          </div>
+          <div>
+            <h3 class="font-headline text-lg font-bold text-stone-900 flex items-center gap-2">
+              Send / Resend Email to Customer
+              <span id="resendModalOrderBadge" class="text-xs px-2 py-0.5 rounded-full bg-orange-100 text-primary font-mono font-bold">#ORD</span>
+            </h3>
+            <p class="text-xs text-stone-500">Dispatch invoice, order updates, or custom notes directly to the customer</p>
+          </div>
+        </div>
+        <button onclick="closeResendOrderModal()" class="p-1.5 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-200/50 transition">
+          <span class="material-symbols-outlined text-lg">close</span>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6 overflow-y-auto space-y-4">
+        <!-- Order Quick Info Summary Card -->
+        <div class="p-3.5 rounded-xl bg-surface-container-low border border-outline-variant/40 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+          <div>
+            <span class="text-stone-400 block text-[10px] uppercase font-bold tracking-wider">Customer Name</span>
+            <span id="resendModalCustomerName" class="font-bold text-stone-800 truncate block">Customer</span>
+          </div>
+          <div>
+            <span class="text-stone-400 block text-[10px] uppercase font-bold tracking-wider">Order Total</span>
+            <span id="resendModalTotal" class="font-bold text-primary truncate block">₹0.00</span>
+          </div>
+          <div>
+            <span class="text-stone-400 block text-[10px] uppercase font-bold tracking-wider">Current Status</span>
+            <span id="resendModalStatus" class="font-bold text-stone-700 truncate block">Pending</span>
+          </div>
+          <div>
+            <span class="text-stone-400 block text-[10px] uppercase font-bold tracking-wider">Phone</span>
+            <span id="resendModalPhone" class="font-semibold text-stone-700 truncate block">N/A</span>
+          </div>
+        </div>
+
+        <!-- Customer Target Email Input -->
+        <div class="space-y-1">
+          <label for="resendCustomerEmailInput" class="block text-xs font-bold text-stone-700 uppercase tracking-wider">
+            Customer Email Address <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-3 top-2.5 text-stone-400 text-lg">email</span>
+            <input type="email" id="resendCustomerEmailInput" required oninput="updateResendPreview()"
+              class="w-full pl-9 pr-3.5 py-2 rounded-xl border border-outline-variant/70 text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-stone-900 bg-white"
+              placeholder="customer@example.com" />
+          </div>
+          <p class="text-[11px] text-stone-400">Order invoice &amp; dispatch details will be sent directly to this customer address.</p>
+        </div>
+
+        <!-- Recipient Options -->
+        <div class="space-y-1.5">
+          <label class="block text-xs font-bold text-stone-700 uppercase tracking-wider">Send Options</label>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-orange-200 bg-orange-50/50 cursor-pointer hover:bg-orange-50 transition">
+              <input type="radio" name="resendRecipientOption" value="customer" checked onchange="updateResendPreview()" class="text-primary-container focus:ring-orange-300" />
+              <div>
+                <strong class="text-stone-800 block">Customer Only</strong>
+                <span class="text-[10px] text-stone-500">Direct to customer</span>
+              </div>
+            </label>
+            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-stone-200 bg-white cursor-pointer hover:bg-orange-50 transition">
+              <input type="radio" name="resendRecipientOption" value="both" onchange="updateResendPreview()" class="text-primary-container focus:ring-orange-300" />
+              <div>
+                <strong class="text-stone-800 block">Customer + Admin CC</strong>
+                <span class="text-[10px] text-stone-500">Copy to store email</span>
+              </div>
+            </label>
+            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-stone-200 bg-white cursor-pointer hover:bg-orange-50 transition">
+              <input type="radio" name="resendRecipientOption" value="admin" onchange="updateResendPreview()" class="text-primary-container focus:ring-orange-300" />
+              <div>
+                <strong class="text-stone-800 block">Admin Copy Only</strong>
+                <span class="text-[10px] text-stone-500">Store reference copy</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Email Template / Subject -->
+        <div class="space-y-1">
+          <div class="flex justify-between items-center">
+            <label for="resendEmailSubjectInput" class="block text-xs font-bold text-stone-700 uppercase tracking-wider">Subject Line</label>
+            <select id="resendSubjectPresetSelect" onchange="handleResendSubjectPresetChange()" class="text-xs border-outline-variant/60 rounded-lg py-1 px-2 text-stone-600 bg-stone-50">
+              <option value="confirm">Template: Order Confirmation &amp; Invoice</option>
+              <option value="shipped">Template: Order Shipped &amp; Dispatched</option>
+              <option value="completed">Template: Order Completed</option>
+              <option value="payment">Template: Payment &amp; Confirmation Info</option>
+              <option value="custom">Custom Subject</option>
+            </select>
+          </div>
+          <input type="text" id="resendEmailSubjectInput" oninput="updateResendPreview()"
+            class="w-full px-3.5 py-2 rounded-xl border border-outline-variant/70 text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-stone-900"
+            value="Order Confirmation &amp; Invoice - Sukhi Fireworks" />
+        </div>
+
+        <!-- Optional Custom Note / Tracking Message -->
+        <div class="space-y-1">
+          <label for="resendCustomerNoteInput" class="block text-xs font-bold text-stone-700 uppercase tracking-wider">
+            Custom Message / Tracking Note for Customer <span class="text-stone-400 font-normal lowercase">(optional)</span>
+          </label>
+          <textarea id="resendCustomerNoteInput" rows="2" oninput="updateResendPreview()"
+            class="w-full px-3.5 py-2 rounded-xl border border-outline-variant/70 text-xs focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-stone-900"
+            placeholder="e.g. Your order is packed and dispatched via Sivakasi Parcel Service. Tracking LR# 98213. Delivery expected in 2 days. Contact our dispatch desk: +91 98765 43210"></textarea>
+        </div>
+
+        <!-- Message Preview Dropdown -->
+        <details class="group border border-outline-variant/40 rounded-xl bg-surface-container-low/50 overflow-hidden" open>
+          <summary class="flex justify-between items-center p-3 text-xs font-bold text-stone-700 cursor-pointer select-none group-open:border-b group-open:border-outline-variant/30">
+            <span class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-base text-primary">visibility</span>
+              Live Email Content &amp; Invoice Preview
+            </span>
+            <span class="material-symbols-outlined text-sm text-stone-400 transition-transform group-open:rotate-180">expand_more</span>
+          </summary>
+          <div class="p-3 bg-white font-mono text-[11px] text-stone-700 whitespace-pre-wrap max-h-48 overflow-y-auto leading-relaxed border-t border-stone-100" id="resendEmailPreviewBox">
+            Generating preview...
+          </div>
+        </details>
+      </div>
+
+      <!-- Modal Footer with Sending Options -->
+      <div class="px-6 py-4 bg-stone-50 border-t border-outline-variant/40 flex flex-wrap justify-between items-center gap-2">
+        <div class="flex items-center gap-1.5">
+          <button type="button" onclick="copyResendEmailText()" class="px-3 py-1.5 rounded-lg border border-outline-variant text-stone-600 hover:bg-stone-100 text-xs font-bold transition flex items-center gap-1" title="Copy formatted text to clipboard">
+            <span class="material-symbols-outlined text-sm">content_copy</span> Copy Text
+          </button>
+          <button type="button" onclick="triggerResendViaGmail()" class="px-3 py-1.5 rounded-lg border border-orange-200 text-primary-container hover:bg-orange-100/60 text-xs font-bold transition flex items-center gap-1" title="Open Gmail in browser with pre-filled email to customer">
+            <span class="material-symbols-outlined text-sm">open_in_new</span> Gmail Web
+          </button>
+          <button type="button" onclick="triggerResendViaMailto()" class="px-3 py-1.5 rounded-lg border border-stone-200 text-stone-600 hover:bg-stone-100 text-xs font-bold transition flex items-center gap-1" title="Open default email application">
+            <span class="material-symbols-outlined text-sm">mail</span> Default App
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="closeResendOrderModal()" class="px-3.5 py-2 rounded-xl border border-outline-variant text-stone-600 hover:bg-stone-100 text-xs font-bold transition">
+            Cancel
+          </button>
+          <button type="button" id="btnSendCustomerEmailSubmit" onclick="submitResendOrderEmail()"
+            class="px-5 py-2 rounded-xl bg-gradient-to-r from-primary-container to-orange-600 hover:from-orange-600 hover:to-primary text-white text-xs font-bold shadow-md transition flex items-center gap-1.5 active:scale-95">
+            <span class="material-symbols-outlined text-base">send</span>
+            <span id="btnSendCustomerEmailText">Send Email to Customer</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <!-- Toast Notification Root -->
   <div id="toast-container" class="fixed bottom-6 right-6 z-[9999] flex flex-col gap-2"></div>
 
@@ -906,6 +1066,7 @@
           <td class="py-3.5 pr-2">
             <div class="text-primary-container font-bold text-xs">#${order.id}</div>
             <div class="text-[10px] text-stone-400">${dateStr}</div>
+            ${order.lastEmailSentTo ? `<div class="text-[10px] text-emerald-600 font-semibold flex items-center gap-0.5 mt-0.5" title="Email sent to ${order.lastEmailSentTo}${order.lastEmailSentDisplay ? ' on ' + order.lastEmailSentDisplay : ''}"><span class="material-symbols-outlined text-[12px]">done_all</span> Emailed</div>` : ''}
           </td>
           <td class="py-3.5 pr-2 font-medium text-stone-800">${order.delivery?.name || 'Customer'}<span class="block text-[11px] text-stone-400">${order.customerEmail || order.delivery?.email || ''}</span></td>
           <td class="py-3.5 pr-2 text-stone-500">${order.itemCount || (order.items ? order.items.length : 0)} item(s)<span class="block font-bold text-stone-800">${formatPrice(order.total)}</span></td>
@@ -917,6 +1078,9 @@
               <select onchange="changeOrderStatus('${order.id}', this)" class="rounded-lg border border-outline-variant/70 bg-white px-2 py-1 text-xs font-bold text-stone-700 max-w-[100px]">
                 ${['Pending', 'Shipped', 'Completed', 'Cancelled'].map(s => `<option value="${s}" ${order.status === s ? 'selected' : ''}>${s}</option>`).join('')}
               </select>
+              <button onclick="openResendOrderModal('${order.id}')" title="Send / Resend Email to Customer" class="p-1.5 text-stone-600 hover:text-primary-container hover:bg-orange-50 rounded-lg transition" aria-label="Send or Resend Email">
+                <span class="material-symbols-outlined text-base">forward_to_inbox</span>
+              </button>
               <button onclick="viewOrderInvoice('${order.id}')" title="Download Invoice" class="p-1.5 text-stone-600 hover:text-primary-container hover:bg-orange-50 rounded-lg transition">
                 <span class="material-symbols-outlined text-base">receipt</span>
               </button>
@@ -943,16 +1107,252 @@
     }
 
     function emailOrderInvoiceAdmin(orderId) {
+      openResendOrderModal(orderId, 'confirm');
+    }
+
+    // =========================================================================
+    // RESEND ORDER EMAIL MODAL CONTROLLERS
+    // =========================================================================
+    let currentResendOrderId = null;
+
+    function openResendOrderModal(orderId, presetType = 'confirm') {
       const order = currentAdminOrders.find(o => String(o.id) === String(orderId));
       if (!order) {
         showToast('Order not found', 'error');
         return;
       }
-      if (window.InvoiceGenerator && InvoiceGenerator.sendInvoiceEmails) {
-        InvoiceGenerator.sendInvoiceEmails(order);
-      } else {
-        showToast('Email generator unavailable', 'error');
+      currentResendOrderId = String(orderId);
+      const delivery = order.delivery || {};
+      const customerEmail = (order.customerEmail || delivery.email || '').trim();
+
+      const badge = document.getElementById('resendModalOrderBadge');
+      if (badge) badge.textContent = `#${order.id}`;
+      const nameEl = document.getElementById('resendModalCustomerName');
+      if (nameEl) nameEl.textContent = delivery.name || 'Customer';
+      const totEl = document.getElementById('resendModalTotal');
+      if (totEl) totEl.textContent = formatPrice(order.total);
+      const statEl = document.getElementById('resendModalStatus');
+      if (statEl) statEl.textContent = order.status || 'Pending';
+      const phoneEl = document.getElementById('resendModalPhone');
+      if (phoneEl) phoneEl.textContent = delivery.phone || 'N/A';
+
+      const emailInput = document.getElementById('resendCustomerEmailInput');
+      if (emailInput) emailInput.value = customerEmail;
+
+      const presetSelect = document.getElementById('resendSubjectPresetSelect');
+      if (presetSelect) {
+        if (['confirm', 'shipped', 'completed', 'payment'].includes(presetType)) {
+          presetSelect.value = presetType;
+        } else {
+          presetSelect.value = 'confirm';
+        }
       }
+      handleResendSubjectPresetChange();
+
+      // Reset options & note
+      const radios = document.getElementsByName('resendRecipientOption');
+      if (radios && radios.length) radios[0].checked = true;
+      const noteInput = document.getElementById('resendCustomerNoteInput');
+      if (noteInput) {
+        if (presetType === 'shipped') {
+          noteInput.value = 'Your fireworks package has been packed safely and dispatched from our Sivakasi hub. Expected delivery in 2-3 business days.';
+        } else if (presetType === 'completed') {
+          noteInput.value = 'Your fireworks order has been delivered and completed. Thank you for celebrating with Sukhi Fireworks!';
+        } else {
+          noteInput.value = '';
+        }
+      }
+
+      updateResendPreview();
+      const modal = document.getElementById('resendOrderModal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeResendOrderModal() {
+      currentResendOrderId = null;
+      const modal = document.getElementById('resendOrderModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function handleResendSubjectPresetChange() {
+      const preset = document.getElementById('resendSubjectPresetSelect')?.value || 'confirm';
+      const order = currentAdminOrders.find(o => String(o.id) === String(currentResendOrderId));
+      const orderId = order?.id || currentResendOrderId || 'ORD';
+      const subjectInput = document.getElementById('resendEmailSubjectInput');
+      if (!subjectInput) return;
+
+      switch(preset) {
+        case 'confirm':
+          subjectInput.value = `Order Confirmation & Invoice #${orderId} - Sukhi Fireworks`;
+          break;
+        case 'shipped':
+          subjectInput.value = `Your Order #${orderId} Has Been Dispatched! - Sukhi Fireworks`;
+          break;
+        case 'completed':
+          subjectInput.value = `Order #${orderId} Completed - Sukhi Fireworks`;
+          break;
+        case 'payment':
+          subjectInput.value = `Payment & Verification Details for Order #${orderId} - Sukhi Fireworks`;
+          break;
+        default:
+          break;
+      }
+      updateResendPreview();
+    }
+
+    function getSelectedRecipientOption() {
+      const radios = document.getElementsByName('resendRecipientOption');
+      for (const r of radios) {
+        if (r.checked) return r.value;
+      }
+      return 'customer';
+    }
+
+    function updateResendPreview() {
+      const previewBox = document.getElementById('resendEmailPreviewBox');
+      if (!previewBox) return;
+      const order = currentAdminOrders.find(o => String(o.id) === String(currentResendOrderId));
+      if (!order) {
+        previewBox.textContent = 'Select an order to view preview.';
+        return;
+      }
+      const note = document.getElementById('resendCustomerNoteInput')?.value || '';
+      const subject = document.getElementById('resendEmailSubjectInput')?.value || '';
+      const recipientOpt = getSelectedRecipientOption();
+      const customerEmail = document.getElementById('resendCustomerEmailInput')?.value || order.customerEmail || 'customer@example.com';
+      
+      let toDisplay = customerEmail;
+      if (recipientOpt === 'both') toDisplay = `${customerEmail} (CC: sukhigopi2006@gmail.com)`;
+      else if (recipientOpt === 'admin') toDisplay = `sukhigopi2006@gmail.com (Store Admin)`;
+
+      let preview = `TO     : ${toDisplay}\n`;
+      preview += `SUBJECT: ${subject}\n\n`;
+      if (window.InvoiceGenerator && typeof InvoiceGenerator.generateCustomerEmailText === 'function') {
+        preview += InvoiceGenerator.generateCustomerEmailText(order, note);
+      } else {
+        preview += `Order #${order.id}\nCustomer: ${order.delivery?.name || 'Customer'}\nTotal: ${formatPrice(order.total)}`;
+      }
+      previewBox.textContent = preview;
+    }
+
+    async function submitResendOrderEmail() {
+      const order = currentAdminOrders.find(o => String(o.id) === String(currentResendOrderId));
+      if (!order) {
+        showToast('Order not found', 'error');
+        return;
+      }
+      const customerEmail = (document.getElementById('resendCustomerEmailInput')?.value || '').trim();
+      const recipientOpt = getSelectedRecipientOption();
+
+      if (recipientOpt !== 'admin' && (!customerEmail || !customerEmail.includes('@'))) {
+        showToast('Please enter a valid customer email address.', 'error');
+        document.getElementById('resendCustomerEmailInput')?.focus();
+        return;
+      }
+
+      const note = document.getElementById('resendCustomerNoteInput')?.value || '';
+      const subject = document.getElementById('resendEmailSubjectInput')?.value || '';
+      const sendBtn = document.getElementById('btnSendCustomerEmailSubmit');
+      const sendText = document.getElementById('btnSendCustomerEmailText');
+
+      try {
+        if (sendBtn) sendBtn.disabled = true;
+        if (sendText) sendText.textContent = 'Sending email...';
+
+        const targetEmail = recipientOpt === 'admin' ? 'sukhigopi2006@gmail.com' : customerEmail;
+        const ccAdmin = (recipientOpt === 'both');
+
+        let result = null;
+        if (window.InvoiceGenerator && typeof InvoiceGenerator.sendCustomerEmail === 'function') {
+          result = await InvoiceGenerator.sendCustomerEmail(order, {
+            targetEmail,
+            note,
+            subject,
+            ccAdmin,
+            openClient: true
+          });
+        } else if (window.EmailService && typeof EmailService.sendCustomerOrderNotification === 'function') {
+          result = await EmailService.sendCustomerOrderNotification(order, {
+            targetEmail,
+            note,
+            subject,
+            ccAdmin
+          });
+        }
+
+        // Mark as sent
+        const timestampStr = new Date().toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+        order.lastEmailSentTo = targetEmail;
+        order.lastEmailSentDisplay = timestampStr;
+        if (window.Orders && typeof Orders.recordEmailSent === 'function') {
+          await Orders.recordEmailSent(order.id, targetEmail);
+        }
+
+        renderAdminOrders(currentAdminOrders);
+        showToast(`Email dispatched for Order #${order.id} to ${targetEmail}!`, 'success');
+        closeResendOrderModal();
+      } catch (err) {
+        console.error('submitResendOrderEmail error:', err);
+        showToast(err.message || 'Failed to dispatch email. Opening Gmail composer...', 'error');
+        triggerResendViaGmail();
+      } finally {
+        if (sendBtn) sendBtn.disabled = false;
+        if (sendText) sendText.textContent = 'Send Email to Customer';
+      }
+    }
+
+    function triggerResendViaGmail() {
+      const order = currentAdminOrders.find(o => String(o.id) === String(currentResendOrderId));
+      if (!order) return;
+      const targetEmail = (document.getElementById('resendCustomerEmailInput')?.value || order.customerEmail || '').trim();
+      const note = document.getElementById('resendCustomerNoteInput')?.value || '';
+      const subject = document.getElementById('resendEmailSubjectInput')?.value || '';
+
+      if (window.InvoiceGenerator && typeof InvoiceGenerator.getGmailComposeUrl === 'function') {
+        const url = InvoiceGenerator.getGmailComposeUrl(order, targetEmail, note, subject);
+        window.open(url, '_blank');
+        if (window.Orders && typeof Orders.recordEmailSent === 'function') {
+          Orders.recordEmailSent(order.id, targetEmail);
+        }
+        order.lastEmailSentTo = targetEmail;
+        order.lastEmailSentDisplay = new Date().toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+        renderAdminOrders(currentAdminOrders);
+        showToast(`Opened Gmail compose tab for ${targetEmail}`, 'info');
+      }
+    }
+
+    function triggerResendViaMailto() {
+      const order = currentAdminOrders.find(o => String(o.id) === String(currentResendOrderId));
+      if (!order) return;
+      const targetEmail = (document.getElementById('resendCustomerEmailInput')?.value || order.customerEmail || '').trim();
+      const note = document.getElementById('resendCustomerNoteInput')?.value || '';
+      const subject = document.getElementById('resendEmailSubjectInput')?.value || '';
+      const recipientOpt = getSelectedRecipientOption();
+      const ccAdmin = (recipientOpt === 'both');
+
+      if (window.InvoiceGenerator && typeof InvoiceGenerator.getMailtoUrl === 'function') {
+        const url = InvoiceGenerator.getMailtoUrl(order, targetEmail, note, subject, ccAdmin);
+        window.location.href = url;
+        if (window.Orders && typeof Orders.recordEmailSent === 'function') {
+          Orders.recordEmailSent(order.id, targetEmail);
+        }
+        order.lastEmailSentTo = targetEmail;
+        order.lastEmailSentDisplay = new Date().toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+        renderAdminOrders(currentAdminOrders);
+        showToast(`Opening default email client for ${targetEmail}`, 'info');
+      }
+    }
+
+    function copyResendEmailText() {
+      const order = currentAdminOrders.find(o => String(o.id) === String(currentResendOrderId));
+      if (!order) return;
+      const note = document.getElementById('resendCustomerNoteInput')?.value || '';
+      const text = window.InvoiceGenerator ? InvoiceGenerator.generateCustomerEmailText(order, note) : `Order #${order.id}`;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('Email & invoice text copied to clipboard!', 'success');
+      }).catch(() => {
+        showToast('Could not copy text to clipboard', 'error');
+      });
     }
 
     function generateOrderReport() {
@@ -1005,6 +1405,14 @@
       try {
         await Orders.updateStatus(orderId, status);
         showToast(`Order ${orderId} marked ${status}.`);
+        if (order) order.status = status;
+        if (status === 'Shipped' || status === 'Completed') {
+          setTimeout(() => {
+            if (confirm(`Order status is now "${status}". Would you like to send an update email to the customer?`)) {
+              openResendOrderModal(orderId, status.toLowerCase());
+            }
+          }, 350);
+        }
       } catch (error) {
         showToast(error.message || 'Could not update order status.', 'error');
         await loadAndRenderAdminData();

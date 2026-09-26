@@ -100,5 +100,127 @@ exports.emailOrderRequest = onDocumentCreated({ document: 'orders/{orderId}', se
   const transporter = nodemailer.createTransport({ host: smtpHost.value(), port: Number(smtpPort.value() || 587), secure: Number(smtpPort.value()) === 465, auth: { user: smtpUser.value(), pass: smtpPassword.value() } });
   const rows = (order.items || []).map(item => `<tr><td>${item.name}</td><td>${item.qty}</td><td>${Number(item.price || 0).toFixed(2)}</td><td>${(Number(item.price || 0) * Number(item.qty || 1)).toFixed(2)}</td></tr>`).join('');
   const html = `<div style="font-family:Arial,sans-serif;color:#172033"><h1>Sukhi Fireworks</h1><p>Order request <strong>${order.id}</strong></p><p>Customer: ${order.delivery?.name || ''}<br>Email: ${order.customerEmail}<br>Phone: ${order.delivery?.phone || ''}</p><table style="border-collapse:collapse;width:100%"><tr><th align="left">Product</th><th>Qty</th><th>Unit</th><th>Total</th></tr>${rows}</table><p><strong>Total: INR ${Number(order.total || 0).toFixed(2)}</strong></p><p>Status: Pending confirmation</p></div>`;
+  
+  // Send notification to Admin
   await transporter.sendMail({ from: smtpFrom.value(), to: ADMIN_EMAIL, subject: `New Order Request ${order.id} - Sukhi Fireworks`, html, attachments: [{ filename: `sukhi-invoice-${order.id}.html`, content: html, contentType: 'text/html' }] });
+
+  // Also send confirmation copy to Customer
+  if (order.customerEmail) {
+    try {
+      const customerHtml = `
+        <div style="font-family:Arial,sans-serif;color:#1e293b;max-width:600px;margin:0 auto;padding:24px;border:1px solid #e2e8f0;border-radius:12px;">
+          <h2 style="color:#ea580c;margin-top:0;">Sukhi Fireworks (Pencil Brand)</h2>
+          <p>Dear <strong>${order.delivery?.name || 'Customer'}</strong>,</p>
+          <p>Thank you for choosing Sukhi Fireworks! We have received your order request <strong>#${order.id}</strong>.</p>
+          <p>Our sales team in Sivakasi is reviewing your request and will contact you shortly to confirm stock availability and arrange dispatch.</p>
+          <table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:13px;">
+            <thead>
+              <tr style="background:#fff7ed;border-bottom:2px solid #fdba74;">
+                <th align="left" style="padding:8px;">Item</th>
+                <th align="center" style="padding:8px;">Qty</th>
+                <th align="right" style="padding:8px;">Price</th>
+                <th align="right" style="padding:8px;">Total</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+          <p style="text-align:right;font-size:15px;margin-top:12px;"><strong>Grand Total: INR ${Number(order.total || 0).toFixed(2)}</strong></p>
+          <p style="margin-top:20px;font-size:12px;color:#64748b;border-top:1px solid #e2e8f0;padding-top:12px;">
+            Delivery Address: ${order.delivery?.unit ? order.delivery.unit + ', ' : ''}${order.delivery?.street || order.delivery?.address || ''}, ${order.delivery?.city || ''}, ${order.delivery?.state || 'Tamil Nadu'} ${order.delivery?.pincode || ''}<br>
+            For assistance, contact our support team at ${ADMIN_EMAIL}.
+          </p>
+        </div>
+      `;
+      await transporter.sendMail({
+        from: smtpFrom.value(),
+        to: order.customerEmail,
+        subject: `Your Order Request #${order.id} - Sukhi Fireworks`,
+        html: customerHtml,
+        attachments: [{ filename: `sukhi-invoice-${order.id}.html`, content: html, contentType: 'text/html' }]
+      });
+    } catch (custErr) {
+      console.error('Failed to send order email to customer:', custErr);
+    }
+  }
 });
+
+exports.resendOrderEmail = onCall({ secrets: [smtpHost, smtpPort, smtpUser, smtpPassword, smtpFrom] }, async request => {
+  const { orderId, targetEmail, note, subject, sendToAdmin, sendToCustomer = true } = request.data || {};
+  if (!orderId) {
+    throw new HttpsError('invalid-argument', 'Order ID is required.');
+  }
+
+  const orderDoc = await db.collection('orders').doc(orderId).get();
+  if (!orderDoc.exists) {
+    throw new HttpsError('not-found', 'Order not found.');
+  }
+  const order = orderDoc.data();
+  const recipient = (targetEmail || order.customerEmail || order.delivery?.email || '').trim();
+
+  if (sendToCustomer && !recipient) {
+    throw new HttpsError('invalid-argument', 'A valid customer email address is required.');
+  }
+
+  const transporter = nodemailer.createTransport({
+    host: smtpHost.value(),
+    port: Number(smtpPort.value() || 587),
+    secure: Number(smtpPort.value()) === 465,
+    auth: { user: smtpUser.value(), pass: smtpPassword.value() }
+  });
+
+  const rows = (order.items || []).map(item => `<tr><td style="padding:8px;border-bottom:1px solid #eee">${item.name}</td><td style="padding:8px;text-align:center;border-bottom:1px solid #eee">${item.qty}</td><td style="padding:8px;text-align:right;border-bottom:1px solid #eee">₹${Number(item.price || 0).toFixed(2)}</td><td style="padding:8px;text-align:right;border-bottom:1px solid #eee">₹${(Number(item.price || 0) * Number(item.qty || 1)).toFixed(2)}</td></tr>`).join('');
+  const noteHtml = note ? `<div style="background:#fff7ed;border-left:4px solid #ea580c;padding:12px;margin:16px 0;font-size:14px;color:#9a3412;"><strong>Message from Sukhi Fireworks:</strong><br>${note}</div>` : '';
+
+  const emailHtml = `
+    <div style="font-family:Arial,sans-serif;color:#1e293b;max-width:600px;margin:0 auto;padding:24px;border:1px solid #e2e8f0;border-radius:12px;">
+      <h2 style="color:#ea580c;margin-top:0;">Sukhi Fireworks</h2>
+      <p style="font-size:15px;font-weight:bold;">Order #${orderId} - Invoice &amp; Status Update</p>
+      <p>Hello <strong>${order.delivery?.name || 'Customer'}</strong>,</p>
+      <p>Here is an update regarding your order request (Current Status: <strong style="color:#ea580c;">${order.status || 'Pending'}</strong>):</p>
+      ${noteHtml}
+      <table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:13px;">
+        <thead>
+          <tr style="background:#f8fafc;border-bottom:2px solid #cbd5e1;">
+            <th align="left" style="padding:8px;">Product</th>
+            <th align="center" style="padding:8px;">Qty</th>
+            <th align="right" style="padding:8px;">Price</th>
+            <th align="right" style="padding:8px;">Total</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div style="text-align:right;font-size:14px;margin-top:12px;">
+        <p style="margin:4px 0;">Subtotal: ₹${Number(order.subtotal || 0).toFixed(2)}</p>
+        <p style="margin:4px 0;">Taxes: ₹${Number(order.taxes?.taxTotal || 0).toFixed(2)}</p>
+        <p style="margin:4px 0;font-size:16px;font-weight:bold;color:#ea580c;">Grand Total: INR ${Number(order.total || 0).toFixed(2)}</p>
+      </div>
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid #e2e8f0;font-size:12px;color:#64748b;">
+        <p>Delivery: ${order.delivery?.unit ? order.delivery.unit + ', ' : ''}${order.delivery?.street || order.delivery?.address || ''}, ${order.delivery?.city || ''}, ${order.delivery?.state || 'Tamil Nadu'} ${order.delivery?.pincode || ''}</p>
+        <p>Contact Phone: ${order.delivery?.phone || 'N/A'}</p>
+        <p>Sukhi Fireworks (Pencil Brand), 227, Amman Kovil Patti Middle Street, Sivakasi</p>
+      </div>
+    </div>
+  `;
+
+  const recipients = [];
+  if (sendToCustomer && recipient) recipients.push(recipient);
+  if (sendToAdmin && !recipients.includes(ADMIN_EMAIL)) recipients.push(ADMIN_EMAIL);
+
+  const finalSubject = subject || `Sukhi Fireworks - Order #${orderId} Details & Invoice`;
+
+  await transporter.sendMail({
+    from: smtpFrom.value(),
+    to: recipients.join(', '),
+    subject: finalSubject,
+    html: emailHtml
+  });
+
+  await db.collection('orders').doc(orderId).update({
+    lastEmailSentAt: admin.firestore.FieldValue.serverTimestamp(),
+    lastEmailSentTo: recipient,
+    updatedAt: admin.firestore.FieldValue.serverTimestamp()
+  });
+
+  return { success: true, recipients, orderId };
+});
+
