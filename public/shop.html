@@ -30,13 +30,61 @@
 <style>
   body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; }
   .light-card { background: #fff; border: 1px solid #e9e1dd; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
-  .glow-hover:hover { box-shadow: 0 8px 30px rgba(255,106,0,0.12); transform: translateY(-2px); }
+  .glow-hover:hover { box-shadow: 0 8px 30px rgba(255,106,0,0.15); transform: translateY(-3px); }
   .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
   .offer-track { display: flex; width: max-content; animation: offer-marquee 24s linear infinite; }
   .offer-slide { display: flex; align-items: center; gap: 10px; min-width: 360px; padding: 15px 28px; color: #fff; font-size: 13px; }
   .offer-slide img { width: 34px; height: 34px; object-fit: cover; border-radius: 8px; }
   @keyframes offer-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
   @media (prefers-reduced-motion: reduce) { .offer-track { animation: none; } }
+
+  /* Premium Buy/Request Button Styles */
+  .btn-buy-primary {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 9px 16px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ff6a00 0%, #ee4b06 100%);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(255,106,0,0.35);
+    transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+    flex: 1;
+    justify-content: center;
+  }
+  .btn-buy-primary:hover {
+    background: linear-gradient(135deg, #ee4b06 0%, #ff6a00 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(255,106,0,0.45);
+  }
+  .btn-buy-primary:active { transform: scale(0.97); }
+
+  .btn-wishlist-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    border: 1.5px solid #f0ddd6;
+    background: #fff9f7;
+    color: #d6562a;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+  .btn-wishlist-icon:hover {
+    background: #fff0ec;
+    border-color: #ff6a00;
+    transform: scale(1.08);
+  }
+
+  /* Category filter pill active */
+  .cat-btn.active-cat {
+    background: linear-gradient(135deg, #ff6a00, #ee4b06) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgba(255,106,0,0.3);
+  }
 </style>
 <link rel="stylesheet" href="js/site-shell.css"/>
 </head>
@@ -46,8 +94,8 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-16">
       <a href="index.html" class="flex items-center gap-2">
-        <span class="text-2xl font-display font-bold text-primary">Sukhi</span>
-        <span class="text-xs font-semibold text-stone-500 hidden sm:inline">FIREWORKS</span>
+        <span class="text-xl font-display font-bold text-primary">Sukhi</span>
+        <span class="text-[10px] font-semibold text-stone-500 hidden sm:inline">FIREWORKS</span>
       </a>
       <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-stone-600">
         <a href="index.html" class="hover:text-primary transition">Home</a>
@@ -81,6 +129,7 @@
       <p class="text-stone-500 mt-1">April 2026 price list and stock</p>
     </div>
     <div class="flex flex-wrap gap-2" id="category-filters">
+      <button data-cat="all" class="cat-btn px-4 py-2 rounded-full bg-primary text-white text-sm font-semibold">All</button>
       <button data-cat="Pencils" class="cat-btn px-4 py-2 rounded-full bg-stone-100 text-stone-700 text-sm font-medium hover:bg-orange-50">Pencils</button>
       <button data-cat="Ground Chakker" class="cat-btn px-4 py-2 rounded-full bg-stone-100 text-stone-700 text-sm font-medium hover:bg-orange-50">Ground Chakker</button>
       <button data-cat="Flower Pots" class="cat-btn px-4 py-2 rounded-full bg-stone-100 text-stone-700 text-sm font-medium hover:bg-orange-50">Flower Pots</button>
@@ -130,6 +179,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+<!-- EmailJS SDK for background email sending -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="js/firebase-config.js"></script>
 <script src="js/app.js"></script>
 <script src="js/site-shell.js"></script>
@@ -146,47 +197,79 @@
     grid.innerHTML = list.map(p => {
       const discount = p.originalPrice ? Math.round((1 - p.price / p.originalPrice) * 100) : 0;
       const inWish = Wishlist.has(p.id);
+      const stockOk = (p.stock || 0) > 0;
       return `
-      <div class="light-card rounded-2xl p-4 flex flex-col gap-3 glow-hover transition-all duration-300 group">
-        <a href="product.html?id=${p.id}" class="relative w-full h-48 rounded-xl overflow-hidden bg-stone-100 block">
+      <div class="light-card rounded-2xl overflow-hidden flex flex-col glow-hover transition-all duration-300 group">
+        <!-- Product Image -->
+        <a href="product.html?id=${p.id}" class="relative w-full h-52 overflow-hidden bg-stone-100 block">
           <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${p.image}" onerror="handleImageError(this)" alt="${p.name}"/>
-          ${discount ? `<div class="absolute top-3 left-3 bg-red-600 text-white px-2.5 py-1 rounded-md text-[11px] font-bold">${discount}% OFF</div>` : ''}
-          <button data-toggle-wishlist="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${p.image}"
-            class="absolute top-3 right-3 p-2 rounded-full bg-white/90 hover:bg-white shadow-sm" onclick="event.preventDefault()">
-            <span class="material-symbols-outlined text-[20px] ${inWish ? 'text-primary' : 'text-stone-600'}" style="font-variation-settings: 'FILL' ${inWish ? 1 : 0};">favorite</span>
-          </button>
+          ${discount ? `<div class="absolute top-3 left-3 bg-red-600 text-white px-2.5 py-1 rounded-lg text-[11px] font-bold shadow-sm">${discount}% OFF</div>` : ''}
+          <div class="absolute top-3 right-3 flex flex-col gap-1.5">
+            <button data-toggle-wishlist="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${p.image}"
+              class="btn-wishlist-icon" onclick="event.preventDefault()" title="${inWish ? 'Remove from wishlist' : 'Add to wishlist'}">
+              <span class="material-symbols-outlined text-[18px] ${inWish ? 'text-primary' : 'text-stone-500'}" style="font-variation-settings: 'FILL' ${inWish ? 1 : 0};">favorite</span>
+            </button>
+          </div>
+          ${!stockOk ? '<div class="absolute inset-0 bg-black/40 flex items-center justify-center"><span class="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full">Out of Stock</span></div>' : ''}
         </a>
-        <div>
-          <a href="product.html?id=${p.id}" class="font-semibold text-stone-900 group-hover:text-primary transition line-clamp-1">${p.name}</a>
-          <div class="flex items-center gap-1 text-emerald-600 mt-1">
-            <span class="material-symbols-outlined text-[14px]">check_circle</span>
-            <span class="text-xs font-medium">In Stock (${p.stock || 0})</span>
-          </div>
-        </div>
-        <div class="flex items-center justify-between mt-auto pt-2">
+
+        <!-- Card Body -->
+        <div class="p-4 flex flex-col gap-2 flex-1">
           <div>
-            <span class="text-lg font-bold text-stone-900">${formatPrice(p.price)}</span>
-            ${p.originalPrice ? `<span class="text-sm text-stone-400 line-through ml-1">${formatPrice(p.originalPrice)}</span>` : ''}
+            <a href="product.html?id=${p.id}" class="font-bold text-stone-900 group-hover:text-primary transition line-clamp-2 text-sm leading-snug">${p.name}</a>
+            <div class="flex items-center gap-1 mt-1.5">
+              <span class="material-symbols-outlined text-[13px] ${stockOk ? 'text-emerald-600' : 'text-red-500'}">${stockOk ? 'check_circle' : 'cancel'}</span>
+              <span class="text-xs font-semibold ${stockOk ? 'text-emerald-700' : 'text-red-600'}">${stockOk ? 'In Stock (' + (p.stock || 0) + ')' : 'Out of Stock'}</span>
+            </div>
           </div>
-          <button data-add-cart="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${p.image}"
-            class="p-2.5 rounded-full bg-primary text-white hover:bg-orange-600 transition shadow-sm">
-            <span class="material-symbols-outlined text-[20px]">add_shopping_cart</span>
-          </button>
+
+          <!-- Price and Add Button Row (matching index page) -->
+          <div class="flex justify-between items-end mt-auto pt-3 border-t border-stone-100">
+            <div>
+              ${p.originalPrice && p.originalPrice > p.price ? `<div class="text-xs text-stone-400 line-through">${formatPrice(p.originalPrice)}</div>` : ''}
+              <div class="font-price-display text-price-display text-primary font-bold text-xl">${formatPrice(p.price)}</div>
+            </div>
+            <button data-add-cart="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${p.image}"
+              class="bg-orange-50 hover:bg-primary text-primary hover:text-white border border-primary/40 hover:border-primary px-4 py-2 rounded-xl font-label-lg text-sm font-semibold transition-all flex items-center gap-2 shadow-sm active:scale-95 ${!stockOk ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}"
+              ${!stockOk ? 'disabled' : ''}>
+              <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+              <span>${stockOk ? 'Add' : 'Out of Stock'}</span>
+            </button>
+          </div>
         </div>
       </div>`;
     }).join('');
   }
 
+  function renderCategoryFilters(products) {
+    const categories = (window.Products && Products.getCategories)
+      ? Products.getCategories()
+      : ['Pencils', 'Ground Chakker', 'Flower Pots', 'Twinkling Star', 'Rockets', 'Sparklers'];
+
+    const container = document.getElementById('category-filters');
+    if (!container) return;
+
+    container.innerHTML = `
+      <button data-cat="all" class="cat-btn px-4 py-2 rounded-full text-sm font-semibold transition-all ${currentCat.toLowerCase() === 'all' ? 'bg-primary text-white shadow-sm' : 'bg-stone-100 text-stone-700 hover:bg-orange-50'}">All</button>
+      ${categories.map(cat => {
+        const isActive = cat.toLowerCase() === currentCat.toLowerCase();
+        return `<button data-cat="${cat}" class="cat-btn px-4 py-2 rounded-full text-sm font-medium transition-all ${isActive ? 'bg-primary text-white font-semibold shadow-sm' : 'bg-stone-100 text-stone-700 hover:bg-orange-50'}">${cat}</button>`;
+      }).join('')}
+    `;
+
+    container.querySelectorAll('.cat-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        setCategory(btn.dataset.cat);
+      });
+    });
+  }
+
   function setCategory(cat) {
-    currentCat = cat;
+    currentCat = cat || 'all';
     document.querySelectorAll('.cat-btn').forEach(b => {
-      const match = b.dataset.cat.toLowerCase() === cat.toLowerCase();
-      b.classList.toggle('bg-primary', match);
-      b.classList.toggle('text-white', match);
-      b.classList.toggle('font-semibold', match);
-      b.classList.toggle('bg-stone-100', !match);
-      b.classList.toggle('text-stone-700', !match);
-      b.classList.toggle('font-medium', !match);
+      const bCat = (b.dataset.cat || 'all').toLowerCase();
+      const match = bCat === currentCat.toLowerCase();
+      b.className = `cat-btn px-4 py-2 rounded-full text-sm transition-all ${match ? 'bg-primary text-white font-semibold shadow-sm' : 'bg-stone-100 text-stone-700 font-medium hover:bg-orange-50'}`;
     });
     renderProducts(getFilteredProducts());
   }
@@ -198,19 +281,14 @@
     });
   }
 
-  document.querySelectorAll('.cat-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      setCategory(btn.dataset.cat);
-    });
-  });
-
-  Products.load().then(() => {
+  Products.load().then(products => {
     const catParam = getQueryParam('cat');
     currentSearch = (getQueryParam('search') || '').trim().toLowerCase();
+    renderCategoryFilters(products);
     if (catParam) {
       setCategory(catParam);
     } else {
-      renderProducts(getFilteredProducts());
+      setCategory('all');
     }
   });
 

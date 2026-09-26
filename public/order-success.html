@@ -245,6 +245,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+<!-- EmailJS SDK for silent background admin email -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="js/firebase-config.js"></script>
 <script src="js/app.js"></script>
 <script src="js/invoice-generator.js"></script>
@@ -280,7 +282,13 @@ document.addEventListener('DOMContentLoaded', () => {
     addressEl.textContent = [delivery.unit, delivery.street || delivery.address, delivery.city, delivery.district, delivery.state, delivery.pincode].filter(Boolean).join(', ');
   }
   const downloadButton = document.getElementById('download-success-invoice');
-  if (downloadButton && order.items?.length) downloadButton.onclick = () => InvoiceGenerator.download(order);
+  if (downloadButton && order.items?.length) {
+    downloadButton.onclick = () => {
+      if (confirm('Do you want to download the invoice for this order?')) {
+        InvoiceGenerator.download(order);
+      }
+    };
+  }
 
   // Inject success details
   const info = document.createElement('div');

@@ -4,6 +4,92 @@
  */
 
 // ============================================
+// EMAILJS BACKGROUND EMAIL SENDER
+// ============================================
+const EmailService = {
+  // EmailJS public key and service/template IDs
+  PUBLIC_KEY: 'YOUR_EMAILJS_PUBLIC_KEY',    // Replace with your EmailJS public key
+  SERVICE_ID: 'service_sukhi',              // Replace with your EmailJS service ID
+  TEMPLATE_ID: 'template_order_notify',     // Replace with your EmailJS template ID
+  ADMIN_EMAIL: 'sukhigopi2006@gmail.com',
+  _initialized: false,
+
+  async init() {
+    if (this._initialized || typeof emailjs === 'undefined') return;
+    try {
+      emailjs.init(this.PUBLIC_KEY);
+      this._initialized = true;
+    } catch (e) {
+      console.warn('EmailJS init failed:', e);
+    }
+  },
+
+  /**
+   * Send order notification silently to admin via EmailJS.
+   * No mail client popup - runs entirely in the background.
+   */
+  async sendOrderNotification(order) {
+    await this.init();
+    if (typeof emailjs === 'undefined') {
+      console.warn('EmailJS not loaded - skipping background email');
+      return { success: false, reason: 'emailjs_not_loaded' };
+    }
+    const delivery = order.delivery || {};
+    const items = Array.isArray(order.items) ? order.items : [];
+    const itemsSummary = items.map(i => `${i.name} x${i.qty || 1} @ ₹${Number(i.price || 0).toFixed(2)}`).join(' | ');
+    const templateParams = {
+      to_email: this.ADMIN_EMAIL,
+      order_id: order.id || 'N/A',
+      customer_name: delivery.name || 'Customer',
+      customer_email: delivery.email || order.customerEmail || 'N/A',
+      customer_phone: delivery.phone || 'N/A',
+      shipping_address: [
+        delivery.unit, delivery.street || delivery.address,
+        delivery.city, delivery.district, delivery.state, delivery.pincode
+      ].filter(Boolean).join(', '),
+      items_summary: itemsSummary || 'No items',
+      order_total: '₹' + Number(order.total || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 }),
+      order_status: order.status || 'Pending',
+      order_date: order.createdAt ? new Date(order.createdAt).toLocaleString('en-IN') : new Date().toLocaleString('en-IN')
+    };
+    try {
+      const result = await emailjs.send(this.SERVICE_ID, this.TEMPLATE_ID, templateParams);
+      console.log('Admin email sent via EmailJS:', result.status);
+      return { success: true, status: result.status };
+    } catch (err) {
+      console.warn('EmailJS send failed:', err);
+      return { success: false, error: err };
+    }
+  },
+
+  /**
+   * Send order status update notification.
+   */
+  async sendStatusUpdate(order, newStatus) {
+    await this.init();
+    if (typeof emailjs === 'undefined') return { success: false };
+    const delivery = order.delivery || {};
+    const STATUS_TEMPLATE_ID = 'template_status_update'; // Replace with your EmailJS status template ID
+    const templateParams = {
+      to_email: this.ADMIN_EMAIL,
+      order_id: order.id || 'N/A',
+      customer_name: delivery.name || 'Customer',
+      new_status: newStatus,
+      order_total: '₹' + Number(order.total || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })
+    };
+    try {
+      await emailjs.send(this.SERVICE_ID, STATUS_TEMPLATE_ID, templateParams);
+      return { success: true };
+    } catch (err) {
+      console.warn('EmailJS status update failed:', err);
+      return { success: false, error: err };
+    }
+  }
+};
+window.EmailService = EmailService;
+
+
+// ============================================
 // STATE
 // ============================================
 const AppState = {
@@ -366,6 +452,35 @@ const Products = {
   getByCategory(cat) {
     if (!cat || cat === 'all') return AppState.products;
     return AppState.products.filter(p => (p.category || '').toLowerCase() === cat.toLowerCase());
+  },
+
+  getCategories() {
+    const defaultCats = ['Pencils', 'Ground Chakker', 'Flower Pots', 'Twinkling Star', 'Rockets', 'Sparklers'];
+    const customCats = Storage.get('sukhi_custom_categories', []);
+    const prodCats = (AppState.products || []).map(p => p.category).filter(Boolean);
+    const seen = new Set();
+    const result = [];
+    [...defaultCats, ...customCats, ...prodCats].forEach(c => {
+      const trimmed = (c || '').trim();
+      if (!trimmed) return;
+      const lower = trimmed.toLowerCase();
+      if (!seen.has(lower)) {
+        seen.add(lower);
+        result.push(trimmed);
+      }
+    });
+    return result;
+  },
+
+  addCategory(name) {
+    if (!name || !name.trim()) return false;
+    const cat = name.trim();
+    const customCats = Storage.get('sukhi_custom_categories', []);
+    if (!customCats.some(c => c.toLowerCase() === cat.toLowerCase())) {
+      customCats.push(cat);
+      Storage.set('sukhi_custom_categories', customCats);
+    }
+    return cat;
   }
 };
 
@@ -723,6 +838,9 @@ const Orders = {
       sessionStorage.setItem('sukhi_last_order', JSON.stringify(orderPayload));
     }
 
+    // Send silent background email to admin via EmailJS (no mail client popup)
+    EmailService.sendOrderNotification(orderPayload).catch(e => console.warn('Background email error:', e));
+
     return orderPayload;
   },
 
@@ -820,6 +938,21 @@ const Orders = {
       ord.status = status;
       Storage.set('sukhi_orders', localOrders);
     }
+    return true;
+  },
+
+  async delete(orderId) {
+    // Delete from Firestore (authoritative source)
+    if (window.db) {
+      try {
+        await db.collection('orders').doc(orderId).delete();
+      } catch (e) {
+        console.warn('Firestore order delete failed:', e);
+      }
+    }
+    // Remove from local storage
+    const localOrders = Storage.get('sukhi_orders', []);
+    Storage.set('sukhi_orders', localOrders.filter(o => o.id !== orderId));
     return true;
   }
 };
@@ -1063,23 +1196,27 @@ const AdminProducts = {
   },
 
   async delete(id) {
+    let firestoreDeleted = false;
     if (window.db) {
       try {
         await db.collection('products').doc(id).delete();
+        firestoreDeleted = true;
       } catch (err) {
-        console.warn('Firestore delete failed, attempting update active:false', err);
+        console.warn('Firestore delete failed, attempting active:false', err);
         try {
           await db.collection('products').doc(id).set({
             active: false,
-            updatedAt: (window.firebase && firebase.firestore && firebase.firestore.FieldValue)
+            deleted: true,
+            deletedAt: (window.firebase && firebase.firestore && firebase.firestore.FieldValue)
               ? firebase.firestore.FieldValue.serverTimestamp()
               : new Date().toISOString()
           }, { merge: true });
+          firestoreDeleted = true;
         } catch (_) {}
       }
     }
 
-    // Add to deleted products list
+    // Add to deleted products list (persists across page reloads)
     const deleted = Storage.get('sukhi_deleted_products', []);
     if (!deleted.includes(id)) {
       deleted.push(id);
@@ -1091,8 +1228,10 @@ const AdminProducts = {
     custom = custom.filter(p => p.id !== id);
     Storage.set('sukhi_custom_products', custom);
 
-    // Remove from AppState
+    // Remove from AppState immediately (live update)
     AppState.products = AppState.products.filter(p => p.id !== id);
+
+    return firestoreDeleted;
   },
 
   async getAll() {
@@ -1248,6 +1387,7 @@ window.Auth = Auth;
 window.Orders = Orders;
 window.Customers = Customers;
 window.AdminProducts = AdminProducts;
+window.EmailService = EmailService;
 window.showToast = showToast;
 window.formatPrice = formatPrice;
 window.getQueryParam = getQueryParam;

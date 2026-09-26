@@ -439,6 +439,8 @@ Admin Notification: sukhigopi2006@gmail.com`;
 
   download(order, filename) {
     if (typeof window === 'undefined' || typeof document === 'undefined') return;
+    // Prompt user before downloading
+    if (!confirm('Download the invoice as an HTML file to your device?')) return;
     const html = this.generateHtml(order);
     const safeName = filename || `sukhi_invoice_${order.id || Date.now()}.html`;
     const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
@@ -452,36 +454,44 @@ Admin Notification: sukhigopi2006@gmail.com`;
     setTimeout(() => URL.revokeObjectURL(url), 2000);
   },
 
-  sendInvoiceEmails(order) {
+  async sendInvoiceEmails(order) {
     const adminEmail = this.ADMIN_EMAIL || 'sukhigopi2006@gmail.com';
     const customerEmail = (order.customerEmail || order.delivery?.email || '').trim();
     const orderId = order.id || 'SK-ORD-' + Date.now().toString().slice(-6);
     const subject = `Sukhi Fireworks - Official Order Request & Invoice #${orderId}`;
     const body = this.generateEmailText(order);
 
-    const mailToUrl = `mailto:${adminEmail}?cc=${encodeURIComponent(customerEmail)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    // Try EmailJS first (silent background send - no mail client popup)
+    if (typeof emailjs !== 'undefined' && window.EmailService) {
+      try {
+        const result = await window.EmailService.sendOrderNotification(order);
+        if (result && result.success) {
+          if (typeof showToast === 'function') {
+            showToast('Order notification sent to admin via email.', 'success');
+          }
+          return { success: true, method: 'emailjs', adminEmail, customerEmail, dispatchedAt: Date.now() };
+        }
+      } catch (err) {
+        console.warn('EmailJS sendInvoiceEmails failed, falling back to mailto:', err);
+      }
+    }
 
+    // Fallback: open mail client (only if EmailJS is unavailable)
+    const mailToUrl = `mailto:${adminEmail}?cc=${encodeURIComponent(customerEmail)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     if (typeof window !== 'undefined') {
       try {
-        const mailLink = document.createElement('a');
-        mailLink.href = mailToUrl;
-        mailLink.style.display = 'none';
-        if (typeof mailLink.click === 'function') {
-          mailLink.click();
-        }
-        if (typeof mailLink.remove === 'function') {
-          setTimeout(() => mailLink.remove(), 1000);
-        }
+        window.open(mailToUrl, '_blank');
       } catch (err) {
         console.warn('Mail client trigger error:', err);
       }
       if (typeof showToast === 'function') {
-        showToast(`Invoice generated! Email sent to ${adminEmail}${customerEmail ? ' & ' + customerEmail : ''}`, 'success');
+        showToast(`Invoice generated! Opening email client for ${adminEmail}`, 'info');
       }
     }
 
     return {
       success: true,
+      method: 'mailto',
       adminEmail,
       customerEmail,
       subject,

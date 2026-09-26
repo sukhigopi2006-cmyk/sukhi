@@ -110,7 +110,7 @@
       <!-- Logo -->
       <div class="px-6 mb-8">
         <a href="index.html" class="block">
-          <h1 class="font-headline text-3xl font-extrabold text-primary-container tracking-tight">Sukhi</h1>
+          <h1 class="font-headline text-2xl font-extrabold text-primary-container tracking-tight">Sukhi</h1>
         </a>
         <div class="flex items-center gap-1.5 mt-1.5">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -150,7 +150,7 @@
           </div>
           <div class="min-w-0 flex-1">
             <p class="text-xs font-bold text-stone-900 truncate" id="adminDisplayName">Store Administrator</p>
-            <p class="text-[11px] text-emerald-600 font-semibold truncate" id="adminEmailDisplay">● Direct Access Mode</p>
+            <p class="text-[11px] text-emerald-600 font-semibold truncate" id="adminEmailDisplay">sukhigopi2006@gmail.com</p>
           </div>
         </div>
         <button onclick="handleAdminLogout()"
@@ -242,19 +242,17 @@
           </div>
         </div>
 
-        <!-- Metric 4: Low Stock Alerts -->
+        <!-- Metric 4: Stock Level (view-only) -->
         <div class="card-surface card-hover rounded-2xl p-5 flex flex-col justify-between h-32 transition-all">
           <div class="flex justify-between items-start">
-            <span class="font-label text-xs font-bold tracking-wider text-stone-500 uppercase">Low Stock Alerts</span>
-            <div class="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center text-error">
-              <span class="material-symbols-outlined text-lg">warning</span>
+            <span class="font-label text-xs font-bold tracking-wider text-stone-500 uppercase">Stock Level</span>
+            <div class="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center text-purple-700">
+              <span class="material-symbols-outlined text-lg">inventory</span>
             </div>
           </div>
           <div>
-            <div class="font-headline text-2xl font-extrabold text-stone-900" id="statLowStock">...</div>
-            <div class="text-[11px] font-semibold text-error mt-0.5 flex items-center gap-0.5">
-              <span id="statLowStockSub">Items below 20 units</span>
-            </div>
+            <div class="font-headline text-2xl font-extrabold text-stone-900" id="statStockLevel">—</div>
+            <div class="text-[11px] font-semibold text-purple-700 mt-0.5" id="statStockLevelSub">Total units in stock</div>
           </div>
         </div>
       </div>
@@ -288,7 +286,14 @@
               <option value="Ground Chakker">Ground Chakker</option>
               <option value="Flower Pots">Flower Pots</option>
               <option value="Twinkling Star">Twinkling Star</option>
+              <option value="Rockets">Rockets</option>
+              <option value="Sparklers">Sparklers</option>
             </select>
+
+            <button onclick="promptAddNewCategory()"
+              class="py-2 px-3.5 bg-orange-50 hover:bg-orange-100 text-primary-container border border-primary-container/30 rounded-xl text-xs font-bold flex items-center gap-1 shadow-sm transition" title="Add a new category option">
+              <span class="material-symbols-outlined text-base">category</span> + Category
+            </button>
 
             <button onclick="openAddProductModal()"
               class="py-2 px-3.5 bg-primary-container hover:bg-orange-600 text-white rounded-xl text-xs font-bold flex items-center gap-1 shadow-sm transition">
@@ -377,7 +382,7 @@
                   <th class="pb-3 pr-2 font-semibold">Customer</th>
                   <th class="pb-3 pr-2 font-semibold">Items</th>
                   <th class="pb-3 pr-2 font-semibold">Status</th>
-                  <th class="pb-3 font-semibold text-right">Invoice &amp; Actions</th>
+                  <th class="pb-3 font-semibold text-right">Actions</th>
                 </tr>
               </thead>
               <tbody id="adminOrdersTableBody" class="divide-y divide-outline-variant/20">
@@ -467,14 +472,24 @@
         <!-- Category & Stock Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1" for="prodCategory">Category *</label>
-            <select id="prodCategory" name="category" required
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs font-bold uppercase tracking-wider text-stone-700" for="prodCategory">Category *</label>
+              <button type="button" onclick="promptAddNewCategory()" class="text-[11px] text-primary-container hover:underline font-bold">+ New Category</button>
+            </div>
+            <select id="prodCategory" name="category" required onchange="handleCategoryDropdownChange(this)"
               class="w-full px-3.5 py-2.5 rounded-xl border border-outline-variant/70 text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-stone-900 font-medium">
               <option value="Pencils">Pencils</option>
               <option value="Ground Chakker">Ground Chakker</option>
               <option value="Flower Pots">Flower Pots</option>
               <option value="Twinkling Star">Twinkling Star</option>
+              <option value="Rockets">Rockets</option>
+              <option value="Sparklers">Sparklers</option>
+              <option value="__new__">+ Add New Category Option...</option>
             </select>
+            <div id="newCategoryInputWrapper" class="hidden mt-2">
+              <input type="text" id="customCategoryInput" placeholder="Type new category name..."
+                class="w-full px-3 py-2 rounded-xl border border-orange-300 text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-stone-900 bg-orange-50/30" />
+            </div>
           </div>
 
           <div>
@@ -592,6 +607,8 @@
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-functions-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+  <!-- EmailJS SDK for background email sending (no mail client popup) -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script src="js/firebase-config.js"></script>
   <script src="js/app.js"></script>
   <script src="js/invoice-generator.js"></script>
@@ -705,6 +722,7 @@
         allLoadedProducts = AppState.products || [];
       }
 
+      syncAdminCategories();
       renderProductsTable(allLoadedProducts);
       renderLowInventory(allLoadedProducts);
       updateDashboardMetrics(allLoadedProducts);
@@ -715,6 +733,8 @@
       });
       await loadAdminOffers();
       testFirebaseHealth();
+      // Set initial tab to dashboard (shows only 4 metrics)
+      switchAdminTab('dashboard');
     }
 
     // Render Products Table
@@ -832,14 +852,23 @@
     // Update Counters
     function updateDashboardMetrics(products) {
       const totalEl = document.getElementById('statTotalProducts');
-      const lowEl = document.getElementById('statLowStock');
-      const lowSubEl = document.getElementById('statLowStockSub');
+      const stockEl = document.getElementById('statStockLevel');
+      const stockSubEl = document.getElementById('statStockLevelSub');
 
       if (totalEl) totalEl.textContent = products.length;
-      
+
+      const totalUnits = products.reduce((sum, p) => sum + (Number(p.stock) || 0), 0);
       const lowCount = products.filter(p => (p.stock ?? 50) < 20).length;
-      if (lowEl) lowEl.textContent = lowCount + ' Items';
-      if (lowSubEl) lowSubEl.textContent = lowCount > 0 ? `${lowCount} require restocking` : 'Inventory optimal';
+      if (stockEl) stockEl.textContent = totalUnits.toLocaleString('en-IN') + ' units';
+      if (stockSubEl) {
+        if (lowCount > 0) {
+          stockSubEl.textContent = '⚠ ' + lowCount + ' item(s) low on stock';
+          stockSubEl.className = 'text-[11px] font-semibold text-amber-700 mt-0.5';
+        } else {
+          stockSubEl.textContent = '✓ All inventory levels healthy';
+          stockSubEl.className = 'text-[11px] font-semibold text-purple-700 mt-0.5';
+        }
+      }
     }
 
     function updateOrderMetrics(orders) {
@@ -861,29 +890,43 @@
         tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-stone-400">No customer orders yet.</td></tr>';
         return;
       }
-      tbody.innerHTML = orders.map(order => `
-        <tr class="hover:bg-orange-50/40 transition-colors">
-          <td class="py-3.5 pr-2 text-primary-container font-bold">#${order.id}</td>
+      tbody.innerHTML = orders.map(order => {
+        const dateStr = order.createdAt?.toDate
+          ? order.createdAt.toDate().toLocaleDateString('en-IN')
+          : (order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-IN') : '');
+        const statusColors = {
+          'Pending': 'bg-amber-100 text-amber-800',
+          'Shipped': 'bg-blue-100 text-blue-800',
+          'Completed': 'bg-emerald-100 text-emerald-800',
+          'Cancelled': 'bg-red-100 text-red-700'
+        };
+        const statusColor = statusColors[order.status] || 'bg-stone-100 text-stone-700';
+        return `
+        <tr class="hover:bg-orange-50/40 transition-colors border-b border-outline-variant/20">
+          <td class="py-3.5 pr-2">
+            <div class="text-primary-container font-bold text-xs">#${order.id}</div>
+            <div class="text-[10px] text-stone-400">${dateStr}</div>
+          </td>
           <td class="py-3.5 pr-2 font-medium text-stone-800">${order.delivery?.name || 'Customer'}<span class="block text-[11px] text-stone-400">${order.customerEmail || order.delivery?.email || ''}</span></td>
           <td class="py-3.5 pr-2 text-stone-500">${order.itemCount || (order.items ? order.items.length : 0)} item(s)<span class="block font-bold text-stone-800">${formatPrice(order.total)}</span></td>
           <td class="py-3.5 pr-2">
-            <select onchange="changeOrderStatus('${order.id}', this.value)" class="rounded-lg border border-outline-variant/70 bg-white px-2 py-1 text-xs font-bold text-stone-700">
-              ${['Pending', 'Shipped', 'Completed', 'Cancelled'].map(status => `<option value="${status}" ${order.status === status ? 'selected' : ''}>${status}</option>`).join('')}
-            </select>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold ${statusColor}">${order.status || 'Pending'}</span>
           </td>
           <td class="py-3.5 text-right whitespace-nowrap">
-            <div class="flex items-center justify-end gap-1.5">
-              <button onclick="viewOrderInvoice('${order.id}')" title="Download Invoice HTML/PDF"
-                class="p-1.5 text-stone-600 hover:text-primary-container hover:bg-orange-50 rounded-lg transition">
+            <div class="flex items-center justify-end gap-1">
+              <select onchange="changeOrderStatus('${order.id}', this)" class="rounded-lg border border-outline-variant/70 bg-white px-2 py-1 text-xs font-bold text-stone-700 max-w-[100px]">
+                ${['Pending', 'Shipped', 'Completed', 'Cancelled'].map(s => `<option value="${s}" ${order.status === s ? 'selected' : ''}>${s}</option>`).join('')}
+              </select>
+              <button onclick="viewOrderInvoice('${order.id}')" title="Download Invoice" class="p-1.5 text-stone-600 hover:text-primary-container hover:bg-orange-50 rounded-lg transition">
                 <span class="material-symbols-outlined text-base">receipt</span>
               </button>
-              <button onclick="emailOrderInvoiceAdmin('${order.id}')" title="Email invoice to admin & customer"
-                class="p-1.5 text-stone-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition">
-                <span class="material-symbols-outlined text-base">mail</span>
+              <button onclick="handleDeleteOrder('${order.id}')" title="Delete Order" class="p-1.5 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
+                <span class="material-symbols-outlined text-base">delete</span>
               </button>
             </div>
           </td>
-        </tr>`).join('');
+        </tr>`;
+      }).join('');
     }
 
     function viewOrderInvoice(orderId) {
@@ -917,6 +960,9 @@
         showToast('No orders available to generate report.', 'error');
         return;
       }
+      // Prompt user before downloading
+      if (!confirm(`Download order report for ${currentAdminOrders.length} order(s) as a CSV file?`)) return;
+
       const totalRevenue = currentAdminOrders.reduce((sum, o) => sum + (Number(o.total) || 0), 0);
 
       let csvContent = "data:text/csv;charset=utf-8,";
@@ -946,13 +992,43 @@
       showToast(`Order report generated for ${currentAdminOrders.length} orders (Total: ${formatPrice(totalRevenue)})`, 'success');
     }
 
-    async function changeOrderStatus(orderId, status) {
+    async function changeOrderStatus(orderId, selectEl) {
+      const status = selectEl.value;
+      const order = currentAdminOrders.find(o => String(o.id) === String(orderId));
+      const orderLabel = order ? `#${orderId}` : orderId;
+      if (!confirm(`Change order ${orderLabel} status to "${status}"?\n\nThis will immediately reflect in the customer's account.`)) {
+        // Revert select to previous value
+        const prevStatus = order?.status || 'Pending';
+        selectEl.value = prevStatus;
+        return;
+      }
       try {
         await Orders.updateStatus(orderId, status);
         showToast(`Order ${orderId} marked ${status}.`);
       } catch (error) {
         showToast(error.message || 'Could not update order status.', 'error');
         await loadAndRenderAdminData();
+      }
+    }
+
+    async function handleDeleteOrder(orderId) {
+      const order = currentAdminOrders.find(o => String(o.id) === String(orderId));
+      const customer = order?.delivery?.name || 'Customer';
+      if (!confirm(`Delete order #${orderId} (${customer})?\n\nThis action cannot be undone.`)) return;
+      try {
+        if (window.db) {
+          await db.collection('orders').doc(orderId).delete();
+        }
+        // Remove from local storage too
+        const localOrders = Storage.get('sukhi_orders', []);
+        Storage.set('sukhi_orders', localOrders.filter(o => o.id !== orderId));
+        showToast(`Order #${orderId} deleted.`);
+        // Re-render from live data
+        currentAdminOrders = currentAdminOrders.filter(o => String(o.id) !== String(orderId));
+        renderAdminOrders(currentAdminOrders);
+        updateOrderMetrics(currentAdminOrders);
+      } catch (err) {
+        showToast('Delete failed: ' + err.message, 'error');
       }
     }
 
@@ -974,6 +1050,7 @@
     function switchAdminTab(tab) {
       const titleEl = document.getElementById('currentSectionTitle');
       const secProducts = document.getElementById('section-products');
+      const secOffers = document.getElementById('section-offers');
       const secGrid = document.getElementById('section-overview-grid');
 
       document.querySelectorAll('#nav-tab-dashboard, #nav-tab-products, #nav-tab-orders').forEach(btn => {
@@ -990,23 +1067,94 @@
       if (tab === 'products') {
         titleEl.textContent = 'Products Catalog & Inventory';
         secProducts.classList.remove('hidden');
+        if (secOffers) secOffers.classList.remove('hidden');
         secGrid.classList.add('hidden');
       } else if (tab === 'orders') {
-        titleEl.textContent = 'Customer Orders';
+        titleEl.textContent = 'Recent Orders';
         secProducts.classList.add('hidden');
+        if (secOffers) secOffers.classList.add('hidden');
         secGrid.classList.remove('hidden');
       } else {
+        // Dashboard: show only the 4 metric cards (both sections hidden)
         titleEl.textContent = 'Dashboard Overview';
-        secProducts.classList.remove('hidden');
-        secGrid.classList.remove('hidden');
+        secProducts.classList.add('hidden');
+        if (secOffers) secOffers.classList.add('hidden');
+        secGrid.classList.add('hidden');
       }
+    }
+
+    // Category Management
+    function syncAdminCategories() {
+      const categories = (window.Products && Products.getCategories)
+        ? Products.getCategories()
+        : ['Pencils', 'Ground Chakker', 'Flower Pots', 'Twinkling Star', 'Rockets', 'Sparklers'];
+
+      const filterSelect = document.getElementById('productCategoryFilter');
+      if (filterSelect) {
+        const currentVal = filterSelect.value || 'all';
+        filterSelect.innerHTML = `<option value="all">All Categories</option>` +
+          categories.map(c => `<option value="${c}" ${currentVal.toLowerCase() === c.toLowerCase() ? 'selected' : ''}>${c}</option>`).join('');
+      }
+
+      const prodSelect = document.getElementById('prodCategory');
+      if (prodSelect) {
+        const currentVal = prodSelect.value || 'Pencils';
+        prodSelect.innerHTML = categories.map(c => `<option value="${c}" ${currentVal.toLowerCase() === c.toLowerCase() ? 'selected' : ''}>${c}</option>`).join('') +
+          `<option value="__new__">+ Add New Category Option...</option>`;
+      }
+    }
+
+    function handleCategoryDropdownChange(selectEl) {
+      const wrapper = document.getElementById('newCategoryInputWrapper');
+      const input = document.getElementById('customCategoryInput');
+      if (selectEl && selectEl.value === '__new__') {
+        if (wrapper) wrapper.classList.remove('hidden');
+        if (input) {
+          input.focus();
+          input.required = true;
+        }
+      } else {
+        if (wrapper) wrapper.classList.add('hidden');
+        if (input) {
+          input.value = '';
+          input.required = false;
+        }
+      }
+    }
+
+    function promptAddNewCategory() {
+      const cat = prompt('Enter new category name (e.g. Aerial Shots, Rockets, Sparklers):');
+      if (!cat || !cat.trim()) return;
+      const cleanCat = cat.trim();
+      if (window.Products && Products.addCategory) {
+        Products.addCategory(cleanCat);
+      } else {
+        const customCats = Storage.get('sukhi_custom_categories', []);
+        if (!customCats.includes(cleanCat)) {
+          customCats.push(cleanCat);
+          Storage.set('sukhi_custom_categories', customCats);
+        }
+      }
+      syncAdminCategories();
+      const prodSelect = document.getElementById('prodCategory');
+      if (prodSelect) {
+        prodSelect.value = cleanCat;
+        handleCategoryDropdownChange(prodSelect);
+      }
+      showToast(`Category "${cleanCat}" added successfully!`);
     }
 
     // Modal Controls
     function openAddProductModal() {
+      syncAdminCategories();
       document.getElementById('editingProductId').value = '';
       document.getElementById('productModalTitle').textContent = 'Add New Firework Product';
       document.getElementById('btnSaveProduct').innerHTML = '<span class="material-symbols-outlined text-base">check</span> Save Product to Store';
+      const prodCat = document.getElementById('prodCategory');
+      if (prodCat) {
+        prodCat.value = 'Pencils';
+        handleCategoryDropdownChange(prodCat);
+      }
       document.getElementById('addProductModal').classList.remove('hidden');
       document.getElementById('prodName')?.focus();
     }
@@ -1014,9 +1162,18 @@
     function openEditProductModal(productId) {
       const product = allLoadedProducts.find(item => item.id === productId);
       if (!product) return;
+      syncAdminCategories();
       document.getElementById('editingProductId').value = product.id;
       document.getElementById('prodName').value = product.name || '';
-      document.getElementById('prodCategory').value = product.category || 'Pencils';
+      
+      const prodCategorySelect = document.getElementById('prodCategory');
+      if (product.category && !Array.from(prodCategorySelect.options).some(o => o.value.toLowerCase() === product.category.toLowerCase())) {
+        if (window.Products && Products.addCategory) Products.addCategory(product.category);
+        syncAdminCategories();
+      }
+      prodCategorySelect.value = product.category || 'Pencils';
+      handleCategoryDropdownChange(prodCategorySelect);
+
       document.getElementById('prodStock').value = product.stock ?? 0;
       document.getElementById('prodPrice').value = product.price ?? 0;
       document.getElementById('prodOriginalPrice').value = product.originalPrice ?? '';
@@ -1037,6 +1194,8 @@
       document.getElementById('addProductModal').classList.add('hidden');
       document.getElementById('addProductForm')?.reset();
       document.getElementById('editingProductId').value = '';
+      const wrapper = document.getElementById('newCategoryInputWrapper');
+      if (wrapper) wrapper.classList.add('hidden');
       // Reset file upload input and status
       const fileInput = document.getElementById('prodImageFile');
       if (fileInput) fileInput.value = '';
@@ -1147,7 +1306,19 @@
       saveBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-base">sync</span> Saving...';
 
       const name = (document.getElementById('prodName')?.value || '').trim();
-      const category = document.getElementById('prodCategory')?.value || 'Pencils';
+      let category = document.getElementById('prodCategory')?.value || 'Pencils';
+      if (category === '__new__') {
+        const customCat = (document.getElementById('customCategoryInput')?.value || '').trim();
+        if (!customCat) {
+          showToast('Please type a name for the new category.', 'error');
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = '<span class="material-symbols-outlined text-base">check</span> Save Product to Store';
+          return;
+        }
+        category = customCat;
+        if (window.Products && Products.addCategory) Products.addCategory(category);
+        syncAdminCategories();
+      }
       const price = Number(document.getElementById('prodPrice')?.value) || 0;
       const originalPriceVal = document.getElementById('prodOriginalPrice')?.value;
       const originalPrice = originalPriceVal ? Number(originalPriceVal) : Math.round(price * 1.25);
@@ -1170,11 +1341,37 @@
         tags: [category.toLowerCase().replace(/\s+/g, '-'), 'festive', 'handicraft']
       };
 
+      // Re-enable button before confirmation so UI doesn't look frozen
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = '<span class="material-symbols-outlined text-base">check</span> Save Product to Store';
+
+      const action = editingId ? 'update' : 'add';
+      const confirmMsg = editingId
+        ? `Update "${name}" in the catalog?\n\nPrice: ₹${price} | Stock: ${stock} units\n\nThis will immediately update the product on the website for all users.`
+        : `Add "${name}" to the catalog?\n\nCategory: ${category} | Price: ₹${price} | Stock: ${stock} units\n\nThis will immediately appear in the store for all users.`;
+
+      if (!confirm(confirmMsg)) return;
+
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-base">sync</span> Saving...';
+
       try {
         if (editingId) {
+          // Primary: Firestore update
+          if (window.db) {
+            try {
+              await db.collection('products').doc(editingId).set({
+                ...newProdData,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+              }, { merge: true });
+            } catch (fsErr) {
+              console.warn('Firestore update failed, saving locally:', fsErr);
+            }
+          }
           await AdminProducts.update(editingId, newProdData);
           showToast(`"${name}" updated successfully!`);
         } else {
+          // Primary: Firestore add
           await AdminProducts.add(newProdData);
           showToast(`"${name}" added to catalog successfully!`);
         }
@@ -1202,15 +1399,43 @@
       await loadAndRenderAdminData();
     }
 
-    // Delete Product
+    // Delete Product — Reliable Firestore-first with local fallback
     async function handleDeleteProduct(productId) {
       const product = allLoadedProducts.find(p => p.id === productId);
       const name = product ? product.name : 'item';
-      if (!confirm(`Are you sure you want to remove "${name}" from the store catalog?`)) return;
+      if (!confirm(`Delete "${name}" from the store catalog?\n\nThis will immediately remove it from the website for all users.`)) return;
 
-      await AdminProducts.delete(productId);
-      showToast(`Removed "${name}" from store`);
-      await loadAndRenderAdminData();
+      try {
+        // Primary: Firestore delete
+        if (window.db) {
+          try {
+            await db.collection('products').doc(productId).delete();
+          } catch (fsErr) {
+            console.warn('Firestore delete attempt 1 failed, marking inactive:', fsErr);
+            // Fallback: mark as inactive so it's filtered out
+            try {
+              await db.collection('products').doc(productId).set({
+                active: false,
+                deletedAt: firebase.firestore.FieldValue.serverTimestamp()
+              }, { merge: true });
+            } catch (_) {}
+          }
+        }
+        // Always clean up local storage
+        const deleted = Storage.get('sukhi_deleted_products', []);
+        if (!deleted.includes(productId)) {
+          deleted.push(productId);
+          Storage.set('sukhi_deleted_products', deleted);
+        }
+        let custom = Storage.get('sukhi_custom_products', []);
+        Storage.set('sukhi_custom_products', custom.filter(p => p.id !== productId));
+        AppState.products = AppState.products.filter(p => p.id !== productId);
+
+        showToast(`"${name}" removed from store.`);
+        await loadAndRenderAdminData();
+      } catch (err) {
+        showToast('Delete failed: ' + err.message, 'error');
+      }
     }
 
     // Seed/Sync Sample Products to Cloud Firestore Database
