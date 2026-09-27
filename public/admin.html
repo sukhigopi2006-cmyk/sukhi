@@ -1020,7 +1020,7 @@
     }
 
     // Load products and populate table + metrics
-    async function loadAndRenderAdminData() {
+    async function loadAndRenderAdminData(preserveTab = false) {
       try {
         allLoadedProducts = await AdminProducts.getAll();
       } catch (err) {
@@ -1039,8 +1039,14 @@
       });
       await loadAdminOffers();
       testFirebaseHealth();
-      // Set initial tab to dashboard (shows only 4 metrics)
-      switchAdminTab('dashboard');
+      // Set initial tab to dashboard only if not preserving current active tab
+      if (!preserveTab) {
+        const secProducts = document.getElementById('section-products');
+        const isProductsVisible = secProducts && !secProducts.classList.contains('hidden');
+        if (!isProductsVisible) {
+          switchAdminTab('dashboard');
+        }
+      }
     }
 
     // Render Products Table
@@ -1581,15 +1587,20 @@
     }
 
     async function handleDeleteOrder(orderId) {
-      const order = currentAdminOrders.find(o => String(o.id) === String(orderId));
+      const order = currentAdminOrders.find(o => String(o.id) === String(orderId) || String(o.orderNumber) === String(orderId) || String(o.docId) === String(orderId));
       const customer = order?.delivery?.name || 'Customer';
-      const confirmPrompt = `⚠️ PERMANENT DATABASE DELETION\n\nAre you sure you want to permanently delete Order #${orderId} (${customer}) from the database?\n\nThis will execute a true delete request against the central backend database and permanently remove the order.\n\nClick OK to permanently delete, or Cancel to abort.`;
+      const orderDisplayId = order?.orderNumber || orderId;
+      const confirmPrompt = `⚠️ PERMANENT DATABASE DELETION\n\nAre you sure you want to permanently delete Order #${orderDisplayId} (${customer}) from the database?\n\nThis will execute a true delete request against the central backend database and permanently remove the order.\n\nClick OK to permanently delete, or Cancel to abort.`;
       if (!confirm(confirmPrompt)) return;
 
       try {
         await Orders.delete(orderId);
-        showToast(`Order #${orderId} permanently deleted from database.`, 'success');
-        currentAdminOrders = currentAdminOrders.filter(o => String(o.id) !== String(orderId));
+        showToast(`Order #${orderDisplayId} permanently deleted from database.`, 'success');
+        currentAdminOrders = currentAdminOrders.filter(o =>
+          String(o.id) !== String(orderId) &&
+          String(o.orderNumber) !== String(orderId) &&
+          String(o.docId) !== String(orderId)
+        );
         renderAdminOrders(currentAdminOrders);
         updateOrderMetrics(currentAdminOrders);
       } catch (err) {
@@ -1930,7 +1941,7 @@
           showToast(`"${name}" successfully added to database!`, 'success');
         }
         closeAddProductModal();
-        await loadAndRenderAdminData();
+        await loadAndRenderAdminData(true);
       } catch (err) {
         console.error('Error adding/updating product in database:', err);
         showToast('Database save failed: ' + (err.message || 'Unknown error'), 'error');
@@ -1952,7 +1963,7 @@
 
       await AdminProducts.updateStock(productId, updated);
       showToast(`Restocked "${product.name}" (+25 units in database)`);
-      await loadAndRenderAdminData();
+      await loadAndRenderAdminData(true);
     }
 
     // Delete Product — Permanent Database Deletion

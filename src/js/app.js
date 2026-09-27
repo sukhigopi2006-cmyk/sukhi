@@ -318,11 +318,23 @@ const Wishlist = {
 const Products = {
   async load() {
     let list = [];
+    const deletedRemote = new Set();
+
     if (window.db) {
       try {
-        const snap = await db.collection('products').where('active', '==', true).get();
+        const snap = await db.collection('products').get();
         if (!snap.empty) {
-          list = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          snap.docs.forEach(doc => {
+            const data = doc.data() || {};
+            const docId = doc.id;
+            const pId = data.id || docId;
+            if (data.active === false || data.deleted === true) {
+              if (docId) deletedRemote.add(String(docId).trim());
+              if (pId) deletedRemote.add(String(pId).trim());
+            } else {
+              list.push({ id: docId, ...data });
+            }
+          });
         }
       } catch (err) {
         console.warn('Firestore products load failed, using local/cached catalog:', err);
@@ -330,26 +342,48 @@ const Products = {
     }
 
     const custom = Storage.get('sukhi_custom_products', []);
-    const deleted = Storage.get('sukhi_deleted_products', []);
+    const localDeleted = Storage.get('sukhi_deleted_products', []);
+    
+    // Combine deleted IDs from both Firestore and local storage
+    const allDeleted = new Set([...localDeleted.map(String), ...deletedRemote]);
+    Storage.set('sukhi_deleted_products', Array.from(allDeleted));
+
     const samples = getSampleProducts();
     const merged = new Map();
 
-    // Merge: samples -> list (Firestore) -> custom (local additions)
-    const sources = [...samples, ...list, ...custom];
-
-    sources.forEach(product => {
-      if (!product || !product.id || deleted.includes(product.id) || product.active === false) return;
-      const nextProduct = {
-        ...product,
-        price: Number(product.price) || 0,
-        originalPrice: product.originalPrice != null ? Number(product.originalPrice) : Math.round((Number(product.price) || 100) * 1.25),
-        stock: product.stock != null ? Number(product.stock) : 50,
-        image: formatProductImageUrl(product.image || getProductImageUrl(product.id, ''))
-      };
-      merged.set(product.id, nextProduct);
+    // 1. Add base sample catalog products that have not been deleted
+    samples.forEach(p => {
+      const id = String(p.id).trim();
+      if (!allDeleted.has(id) && p.active !== false && p.deleted !== true) {
+        merged.set(id, { ...p });
+      }
     });
 
-    AppState.products = Array.from(merged.values());
+    // 2. Layer in products from Firestore (updates existing samples or appends new products)
+    list.forEach(p => {
+      const id = String(p.id).trim();
+      if (!allDeleted.has(id) && p.active !== false && p.deleted !== true) {
+        merged.set(id, { ...(merged.get(id) || {}), ...p, id });
+      }
+    });
+
+    // 3. Layer in locally saved custom products (ensures newly added or offline items are appended)
+    custom.forEach(p => {
+      const id = String(p.id).trim();
+      if (!allDeleted.has(id) && p.active !== false && p.deleted !== true) {
+        merged.set(id, { ...(merged.get(id) || {}), ...p, id });
+      }
+    });
+
+    const finalProducts = Array.from(merged.values()).map(product => ({
+      ...product,
+      price: Number(product.price) || 0,
+      originalPrice: product.originalPrice != null ? Number(product.originalPrice) : Math.round((Number(product.price) || 100) * 1.25),
+      stock: product.stock != null ? Number(product.stock) : 50,
+      image: formatProductImageUrl(product.image || getProductImageUrl(product.id, ''))
+    }));
+
+    AppState.products = finalProducts;
     const currentProducts = new Map(AppState.products.map(product => [product.id, product]));
     AppState.cart = AppState.cart.map(item => {
       const product = currentProducts.get(item.id);
@@ -689,11 +723,12 @@ const Orders = {
 
     if (!remoteSaved && window.db) {
       try {
-        const ref = await db.collection('orders').add({
+        await db.collection('orders').doc(orderId).set({
           ...orderPayload,
+          id: orderId,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-        orderPayload.id = ref.id;
+        orderPayload.id = orderId;
         remoteSaved = true;
       } catch (e) {
         console.warn('Firestore direct order save failed, persisting locally:', e);
@@ -731,6 +766,7 @@ const Orders = {
   },
 
   async getUserOrders() {
+    const deletedOrders = new Set(Storage.get('sukhi_deleted_orders', []));
     let remoteOrders = [];
     if (AppState.user && window.db) {
       try {
@@ -738,12 +774,23 @@ const Orders = {
           .where('userId', '==', AppState.user.uid)
           .orderBy('createdAt', 'desc')
           .get();
-        remoteOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        remoteOrders = snap.docs.map(d => {
+          const data = d.data() || {};
+          const id = d.id;
+          return {
+            ...data,
+            id: id,
+            docId: id,
+            orderNumber: data.orderNumber || data.id || id
+          };
+        }).filter(o => !deletedOrders.has(o.id) && !deletedOrders.has(o.orderNumber) && !deletedOrders.has(o.docId));
       } catch (err) {
         console.warn('Error fetching user orders from Firestore:', err);
       }
     }
-    const localOrders = Storage.get('sukhi_orders', []);
+    const localOrders = Storage.get('sukhi_orders', []).filter(o =>
+      !deletedOrders.has(o.id) && !deletedOrders.has(o.orderNumber) && !deletedOrders.has(o.docId)
+    );
     const userEmail = (AppState.user?.email || '').toLowerCase();
     const userLocal = localOrders.filter(o => {
       const ordEmail = (o.customerEmail || o.delivery?.email || '').toLowerCase();
@@ -751,35 +798,65 @@ const Orders = {
     });
     const map = new Map();
     remoteOrders.forEach(o => map.set(o.id, o));
-    userLocal.forEach(o => { if (!map.has(o.id)) map.set(o.id, o); });
+    userLocal.forEach(o => {
+      const key = o.id || o.orderNumber;
+      if (!map.has(key)) map.set(key, o);
+    });
     return Array.from(map.values());
   },
 
   async getAllOrders() {
+    const deletedOrders = new Set(Storage.get('sukhi_deleted_orders', []));
     let remote = [];
     if (window.db) {
       try {
         const snap = await db.collection('orders').orderBy('createdAt', 'desc').limit(100).get();
         if (!snap.empty) {
-          remote = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+          remote = snap.docs.map(d => {
+            const data = d.data() || {};
+            const id = d.id;
+            return {
+              ...data,
+              id: id,
+              docId: id,
+              orderNumber: data.orderNumber || data.id || id
+            };
+          }).filter(o => !deletedOrders.has(o.id) && !deletedOrders.has(o.orderNumber) && !deletedOrders.has(o.docId));
         }
       } catch (e) {
         console.warn('Failed to load orders from Firestore:', e);
       }
     }
-    const local = Storage.get('sukhi_orders', []);
+    const local = Storage.get('sukhi_orders', []).filter(o =>
+      !deletedOrders.has(o.id) && !deletedOrders.has(o.orderNumber) && !deletedOrders.has(o.docId)
+    );
     const map = new Map();
     remote.forEach(o => map.set(o.id, o));
-    local.forEach(o => { if (!map.has(o.id)) map.set(o.id, o); });
+    local.forEach(o => {
+      const key = o.id || o.orderNumber;
+      if (!map.has(key)) map.set(key, o);
+    });
     return Array.from(map.values());
   },
 
   listenOrders(callback) {
     const notifyCombined = (remoteOrders = []) => {
-      const local = Storage.get('sukhi_orders', []);
+      const deletedOrders = new Set(Storage.get('sukhi_deleted_orders', []));
+      const validRemote = remoteOrders.filter(o =>
+        !deletedOrders.has(o.id) && !deletedOrders.has(o.orderNumber) && !deletedOrders.has(o.docId)
+      );
+      const local = Storage.get('sukhi_orders', []).filter(o =>
+        !deletedOrders.has(o.id) && !deletedOrders.has(o.orderNumber) && !deletedOrders.has(o.docId)
+      );
       const map = new Map();
-      remoteOrders.forEach(o => map.set(o.id, o));
-      local.forEach(o => { if (!map.has(o.id)) map.set(o.id, o); });
+      validRemote.forEach(o => map.set(o.id, o));
+      local.forEach(o => {
+        const key = o.id || o.orderNumber;
+        const existsInRemote = validRemote.some(r => r.id === key || r.orderNumber === key || (o.orderNumber && r.orderNumber === o.orderNumber));
+        if (!existsInRemote && !map.has(key)) {
+          map.set(key, o);
+        }
+      });
       callback(Array.from(map.values()));
     };
 
@@ -790,7 +867,16 @@ const Orders = {
     try {
       return db.collection('orders').orderBy('createdAt', 'desc').limit(100)
         .onSnapshot(snap => {
-          const orders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+          const orders = snap.docs.map(d => {
+            const data = d.data() || {};
+            const id = d.id;
+            return {
+              ...data,
+              id: id,
+              docId: id,
+              orderNumber: data.orderNumber || data.id || id
+            };
+          });
           notifyCombined(orders);
         }, err => {
           console.warn('Orders onSnapshot error:', err);
@@ -804,22 +890,117 @@ const Orders = {
   },
 
   async updateStatus(orderId, status) {
+    let updatedRemotely = false;
+    let lastError = null;
+
     if (window.db) {
       try {
-        await db.collection('orders').doc(orderId).update({
+        const updatePayload = {
           status,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
+          updatedAt: (window.firebase && firebase.firestore && firebase.firestore.FieldValue)
+            ? firebase.firestore.FieldValue.serverTimestamp()
+            : new Date().toISOString()
+        };
+        const docRef = db.collection('orders').doc(orderId);
+        const docSnap = await docRef.get();
+        if (docSnap.exists) {
+          await docRef.update(updatePayload);
+          updatedRemotely = true;
+        } else {
+          const q1 = await db.collection('orders').where('id', '==', orderId).get();
+          for (const d of q1.docs) {
+            await d.ref.update(updatePayload);
+            updatedRemotely = true;
+          }
+          const q2 = await db.collection('orders').where('orderNumber', '==', orderId).get();
+          for (const d of q2.docs) {
+            await d.ref.update(updatePayload);
+            updatedRemotely = true;
+          }
+        }
       } catch (e) {
         console.warn('Firestore order status update skipped:', e);
+        lastError = e;
       }
     }
+
+    if (window.functions && typeof window.functions.httpsCallable === 'function') {
+      try {
+        const callable = window.functions.httpsCallable('adminUpdateOrderStatus');
+        await callable({ orderId, status });
+        updatedRemotely = true;
+      } catch (cfErr) {
+        console.warn('Cloud Function adminUpdateOrderStatus error:', cfErr);
+      }
+    }
+
     const localOrders = Storage.get('sukhi_orders', []);
-    const ord = localOrders.find(o => o.id === orderId);
+    const ord = localOrders.find(o => o.id === orderId || o.orderNumber === orderId || o.docId === orderId);
     if (ord) {
       ord.status = status;
       Storage.set('sukhi_orders', localOrders);
     }
+    return true;
+  },
+
+  async delete(orderId) {
+    let deletedRemotely = false;
+    let lastError = null;
+
+    if (window.db) {
+      try {
+        const docRef = db.collection('orders').doc(orderId);
+        const docSnap = await docRef.get();
+        if (docSnap.exists) {
+          await docRef.delete();
+          deletedRemotely = true;
+        }
+
+        const query1 = await db.collection('orders').where('id', '==', orderId).get();
+        for (const doc of query1.docs) {
+          await doc.ref.delete();
+          deletedRemotely = true;
+        }
+
+        const query2 = await db.collection('orders').where('orderNumber', '==', orderId).get();
+        for (const doc of query2.docs) {
+          await doc.ref.delete();
+          deletedRemotely = true;
+        }
+      } catch (e) {
+        console.warn('Direct Firestore order delete failed:', e);
+        lastError = e;
+      }
+    }
+
+    if (window.functions && typeof window.functions.httpsCallable === 'function') {
+      try {
+        const callable = window.functions.httpsCallable('adminDeleteOrder');
+        await callable({ orderId });
+        deletedRemotely = true;
+      } catch (cfErr) {
+        console.warn('Cloud Function adminDeleteOrder error:', cfErr);
+      }
+    }
+
+    const deletedOrders = Storage.get('sukhi_deleted_orders', []);
+    if (!deletedOrders.includes(orderId)) {
+      deletedOrders.push(orderId);
+    }
+
+    const localOrders = Storage.get('sukhi_orders', []);
+    const filteredOrders = localOrders.filter(o => {
+      const match = o.id === orderId || o.orderNumber === orderId || o.docId === orderId;
+      if (match) {
+        if (o.id && !deletedOrders.includes(o.id)) deletedOrders.push(o.id);
+        if (o.orderNumber && !deletedOrders.includes(o.orderNumber)) deletedOrders.push(o.orderNumber);
+        if (o.docId && !deletedOrders.includes(o.docId)) deletedOrders.push(o.docId);
+      }
+      return !match;
+    });
+    Storage.set('sukhi_orders', filteredOrders);
+    Storage.set('sukhi_deleted_orders', deletedOrders);
+
     return true;
   }
 };
@@ -1065,17 +1246,31 @@ const AdminProducts = {
   async delete(id) {
     if (window.db) {
       try {
+        await db.collection('products').doc(id).set({
+          active: false,
+          deleted: true,
+          updatedAt: (window.firebase && firebase.firestore && firebase.firestore.FieldValue)
+            ? firebase.firestore.FieldValue.serverTimestamp()
+            : new Date().toISOString()
+        }, { merge: true });
+
         await db.collection('products').doc(id).delete();
+
+        const query = await db.collection('products').where('id', '==', id).get();
+        for (const doc of query.docs) {
+          await doc.ref.delete();
+        }
       } catch (err) {
-        console.warn('Firestore delete failed, attempting update active:false', err);
-        try {
-          await db.collection('products').doc(id).set({
-            active: false,
-            updatedAt: (window.firebase && firebase.firestore && firebase.firestore.FieldValue)
-              ? firebase.firestore.FieldValue.serverTimestamp()
-              : new Date().toISOString()
-          }, { merge: true });
-        } catch (_) {}
+        console.warn('Firestore product delete warning:', err);
+      }
+    }
+
+    if (window.functions && typeof window.functions.httpsCallable === 'function') {
+      try {
+        const callable = window.functions.httpsCallable('adminDeleteProduct');
+        await callable({ productId: id });
+      } catch (cfErr) {
+        console.warn('Cloud Function adminDeleteProduct error:', cfErr);
       }
     }
 
@@ -1091,8 +1286,12 @@ const AdminProducts = {
     custom = custom.filter(p => p.id !== id);
     Storage.set('sukhi_custom_products', custom);
 
-    // Remove from AppState
+    // Remove from AppState & wishlist
     AppState.products = AppState.products.filter(p => p.id !== id);
+    AppState.wishlist = AppState.wishlist.filter(p => p.id !== id);
+    Storage.set('sukhi_wishlist', AppState.wishlist);
+
+    return true;
   },
 
   async getAll() {

@@ -234,10 +234,18 @@ exports.adminDeleteProduct = onCall(async request => {
     throw new HttpsError('invalid-argument', 'Product ID is required.');
   }
   const docRef = db.collection('products').doc(productId);
-  const snap = await docRef.get();
-  if (snap.exists) {
-    await docRef.delete();
+  await docRef.set({
+    active: false,
+    deleted: true,
+    deletedAt: admin.firestore.FieldValue.serverTimestamp()
+  }, { merge: true });
+  await docRef.delete().catch(() => {});
+
+  const qSnap = await db.collection('products').where('id', '==', productId).get();
+  for (const doc of qSnap.docs) {
+    await doc.ref.delete().catch(() => {});
   }
+
   return { success: true, productId, deleted: true };
 });
 
@@ -260,12 +268,32 @@ exports.adminDeleteOrder = onCall(async request => {
   if (!orderId) {
     throw new HttpsError('invalid-argument', 'Order ID is required.');
   }
+
+  let deleted = false;
+
+  // 1. Direct document deletion
   const docRef = db.collection('orders').doc(orderId);
   const snap = await docRef.get();
   if (snap.exists) {
     await docRef.delete();
+    deleted = true;
   }
-  return { success: true, orderId, deleted: true };
+
+  // 2. Delete by 'id' field if document ID was different
+  const qId = await db.collection('orders').where('id', '==', orderId).get();
+  for (const doc of qId.docs) {
+    await doc.ref.delete();
+    deleted = true;
+  }
+
+  // 3. Delete by 'orderNumber' field
+  const qNum = await db.collection('orders').where('orderNumber', '==', orderId).get();
+  for (const doc of qNum.docs) {
+    await doc.ref.delete();
+    deleted = true;
+  }
+
+  return { success: true, orderId, deleted: true, foundAndRemoved: deleted };
 });
 
 exports.adminUpdateOrderStatus = onCall(async request => {
@@ -274,10 +302,24 @@ exports.adminUpdateOrderStatus = onCall(async request => {
   if (!orderId || !status) {
     throw new HttpsError('invalid-argument', 'Order ID and status are required.');
   }
-  await db.collection('orders').doc(orderId).update({
+  const updatePayload = {
     status,
     updatedAt: admin.firestore.FieldValue.serverTimestamp()
-  });
+  };
+  const docRef = db.collection('orders').doc(orderId);
+  const snap = await docRef.get();
+  if (snap.exists) {
+    await docRef.update(updatePayload);
+  } else {
+    const q1 = await db.collection('orders').where('id', '==', orderId).get();
+    for (const doc of q1.docs) {
+      await doc.ref.update(updatePayload);
+    }
+    const q2 = await db.collection('orders').where('orderNumber', '==', orderId).get();
+    for (const doc of q2.docs) {
+      await doc.ref.update(updatePayload);
+    }
+  }
   return { success: true, orderId, status };
 });
 

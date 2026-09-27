@@ -219,7 +219,8 @@
       const adminSession = Storage.get('sukhi_admin_session');
       if (adminSession && adminSession.loggedInAt) {
         updateProfile({ displayName: 'Store Administrator', email: adminSession.email || 'sukhigopi2006@gmail.com' });
-        render(Storage.get('sukhi_orders', []));
+        const delOrders = new Set(Storage.get('sukhi_deleted_orders', []));
+        render(Storage.get('sukhi_orders', []).filter(o => !delOrders.has(o.id) && !delOrders.has(o.orderNumber)));
       }
 
       if (window.auth) {
@@ -234,9 +235,14 @@
           if (window.db && user) {
             try {
               db.collection('orders').where('userId', '==', user.uid).onSnapshot(snapshot => {
-                const fsOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+                const delOrders = new Set(Storage.get('sukhi_deleted_orders', []));
+                const fsOrders = snapshot.docs.map(doc => {
+                  const data = doc.data() || {};
+                  const id = doc.id;
+                  return { ...data, id, docId: id, orderNumber: data.orderNumber || data.id || id };
+                }).filter(o => !delOrders.has(o.id) && !delOrders.has(o.orderNumber) && !delOrders.has(o.docId))
                   .sort((a, b) => String(b.createdAt?.seconds || '').localeCompare(String(a.createdAt?.seconds || '')));
-                const localOrders = getLocalOrdersForUser(user);
+                const localOrders = getLocalOrdersForUser(user).filter(o => !delOrders.has(o.id) && !delOrders.has(o.orderNumber) && !delOrders.has(o.docId));
                 // Merge unique orders
                 const map = new Map();
                 fsOrders.forEach(o => map.set(o.id, o));
@@ -244,17 +250,21 @@
                 render(Array.from(map.values()));
               }, err => {
                 console.warn('Firestore orders error, using local orders:', err);
-                render(getLocalOrdersForUser(user));
+                const delOrders = new Set(Storage.get('sukhi_deleted_orders', []));
+                render(getLocalOrdersForUser(user).filter(o => !delOrders.has(o.id) && !delOrders.has(o.orderNumber)));
               });
             } catch (err) {
-              render(getLocalOrdersForUser(user));
+              const delOrders = new Set(Storage.get('sukhi_deleted_orders', []));
+              render(getLocalOrdersForUser(user).filter(o => !delOrders.has(o.id) && !delOrders.has(o.orderNumber)));
             }
           } else {
-            render(getLocalOrdersForUser(user));
+            const delOrders = new Set(Storage.get('sukhi_deleted_orders', []));
+            render(getLocalOrdersForUser(user).filter(o => !delOrders.has(o.id) && !delOrders.has(o.orderNumber)));
           }
         });
       } else {
-        render(Storage.get('sukhi_orders', []));
+        const delOrders = new Set(Storage.get('sukhi_deleted_orders', []));
+        render(Storage.get('sukhi_orders', []).filter(o => !delOrders.has(o.id) && !delOrders.has(o.orderNumber)));
       }
     });
   </script>
